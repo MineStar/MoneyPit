@@ -1,0 +1,8 @@
+name: MoneyPit
+main: de.minestar.moneypit.Core
+version: ${pom.version}
+depend: [MineStarLibrary, MinestarCore]
+commands:
+  mp:
+    description: MoneyPit-related commands
+    usage: /tr <command>
