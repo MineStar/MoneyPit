@@ -8,7 +8,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
@@ -44,35 +43,35 @@ public class DebugListener implements Listener {
 
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK) {
-            ConsoleUtils.printInfo(Core.NAME, "------------------------------");
-
             BlockVector vector = new BlockVector(event.getClickedBlock().getLocation());
-
             // no sneak => print info about protections & return
             if (!event.getPlayer().isSneaking()) {
                 // CHECK: Protection?
                 Protection protection = this.protectionManager.getProtection(vector);
                 if (protection != null) {
-                    ConsoleUtils.printInfo(Core.NAME, "Block is protected!");
-                    ConsoleUtils.printInfo(Core.NAME, protection.toString());
+                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected!");
+                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, protection.toString());
                     return;
                 }
 
                 // CHECK: SubProtection?
                 SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
                 if (holder != null) {
-                    ConsoleUtils.printInfo(Core.NAME, "Block is a subprotection!");
+                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Block is a subprotection!");
                     for (int i = 0; i < holder.getSize(); i++) {
-                        ConsoleUtils.printInfo(Core.NAME, "#" + (i + 1) + " : " + holder.getProtections().get(i));
+                        PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "#" + (i + 1) + " : " + holder.getProtections().get(i));
                     }
                     return;
                 }
+
+                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is not protected!");
                 return;
             }
 
             // the module must be registered
             Module module = this.moduleManager.getModule(event.getClickedBlock().getTypeId());
             if (module == null) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
                 return;
             }
 
