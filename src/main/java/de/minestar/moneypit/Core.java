@@ -21,6 +21,7 @@ package de.minestar.moneypit;
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
+import de.minestar.moneypit.manager.DebugListener;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 
@@ -31,6 +32,7 @@ public class Core extends AbstractCore {
     public static final String NAME = "MoneyPit";
 
     /** LISTENER */
+    public static DebugListener debugListener;
 
     /** MANAGER */
     public static ModuleManager moduleManager;
@@ -58,6 +60,7 @@ public class Core extends AbstractCore {
 
     @Override
     protected boolean createListener() {
+        debugListener = new DebugListener();
         return true;
     }
 
@@ -68,6 +71,7 @@ public class Core extends AbstractCore {
 
     @Override
     protected boolean registerEvents(PluginManager pm) {
+        pm.registerEvents(debugListener, this);
         return true;
     }
 

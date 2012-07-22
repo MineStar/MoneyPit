@@ -2,7 +2,7 @@ package de.minestar.moneypit.modules;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.Protection;
+import de.minestar.moneypit.data.ProtectionType;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public abstract class Module {
@@ -32,7 +32,9 @@ public abstract class Module {
         this.moduleName = moduleName;
     }
 
-    public abstract void addProtection(BlockVector vector, Protection protection, byte subData);
+    public void removeProtection(BlockVector vector) {
+        getProtectionManager().removeProtection(vector);
+    }
 
-    public abstract void removeProtection(BlockVector vector, Protection protection, byte subData);
+    public abstract void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData);
 }

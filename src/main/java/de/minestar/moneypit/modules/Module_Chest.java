@@ -7,6 +7,8 @@ import com.bukkit.gemo.utils.BlockUtils;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.Protection;
+import de.minestar.moneypit.data.ProtectionType;
+import de.minestar.moneypit.data.SubProtection;
 
 public class Module_Chest extends Module {
 
@@ -16,26 +18,18 @@ public class Module_Chest extends Module {
     }
 
     @Override
-    public void addProtection(BlockVector vector, Protection protection, byte subData) {
-        // add the normal chest
-        getProtectionManager().addProtection(vector, protection);
+    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
+        // create the protection
+        Protection protection = new Protection(ID, vector, owner, type);
 
-        // search a second chest and add the protection, if found
+        // search a second chest and add the subprotection, if found
         Chest secondChest = BlockUtils.isDoubleChest(vector.getLocation().getBlock());
         if (secondChest != null) {
-            getProtectionManager().addProtection(new BlockVector(secondChest.getLocation()), protection);
+            SubProtection subProtection = new SubProtection(new BlockVector(secondChest.getLocation()), protection);
+            protection.addSubProtection(subProtection);
         }
-    }
 
-    @Override
-    public void removeProtection(BlockVector vector, Protection protection, byte subData) {
-        // remove the normal chest
-        getProtectionManager().removeProtection(vector, protection);
-
-        // search a second chest and remove the protection, if found
-        Chest secondChest = BlockUtils.isDoubleChest(vector.getLocation().getBlock());
-        if (secondChest != null) {
-            getProtectionManager().removeProtection(new BlockVector(secondChest.getLocation()), protection);
-        }
+        // register the protection
+        getProtectionManager().addProtection(protection);
     }
 }

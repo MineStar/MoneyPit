@@ -4,6 +4,8 @@ import org.bukkit.Material;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.Protection;
+import de.minestar.moneypit.data.ProtectionType;
+import de.minestar.moneypit.data.SubProtection;
 import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
@@ -14,20 +16,15 @@ public class Module_WallSign extends Module {
     }
 
     @Override
-    public void addProtection(BlockVector vector, Protection protection, byte subData) {
-        // add the wallsign
-        getProtectionManager().addProtection(vector, protection);
+    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
+        // create the protection
+        Protection protection = new Protection(ID, vector, owner, type);
 
-        // add the protection to the signanchor
-        getProtectionManager().addProtection(SignHelper.getAnchor(vector, subData), protection);
-    }
+        // protect the block below
+        SubProtection subProtection = new SubProtection(SignHelper.getAnchor(vector, subData), protection);
+        protection.addSubProtection(subProtection);
 
-    @Override
-    public void removeProtection(BlockVector vector, Protection protection, byte subData) {
-        // remove the wallsign
-        getProtectionManager().removeProtection(vector, protection);
-
-        // remove the protection from the signanchor
-        getProtectionManager().removeProtection(SignHelper.getAnchor(vector, subData), protection);
+        // register the protection
+        getProtectionManager().addProtection(protection);
     }
 }

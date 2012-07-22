@@ -4,7 +4,8 @@ import org.bukkit.Material;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.Protection;
-import de.minestar.moneypit.utils.SignHelper;
+import de.minestar.moneypit.data.ProtectionType;
+import de.minestar.moneypit.data.SubProtection;
 
 public class Module_SignPost extends Module {
 
@@ -14,20 +15,15 @@ public class Module_SignPost extends Module {
     }
 
     @Override
-    public void addProtection(BlockVector vector, Protection protection, byte subData) {
-        // add the signpost
-        getProtectionManager().addProtection(vector, protection);
+    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
+        // create the protection
+        Protection protection = new Protection(ID, vector, owner, type);
 
-        // add the protection to the block below
-        getProtectionManager().addProtection(SignHelper.getAnchor(vector, subData), protection);
-    }
+        // protect the block below
+        SubProtection subProtection = new SubProtection(vector.getRelative(0, -1, 0), protection);
+        protection.addSubProtection(subProtection);
 
-    @Override
-    public void removeProtection(BlockVector vector, Protection protection, byte subData) {
-        // remove the signpost
-        getProtectionManager().removeProtection(vector, protection);
-
-        // remove the protection from the block below
-        getProtectionManager().removeProtection(SignHelper.getAnchor(vector, subData), protection);
+        // register the protection
+        getProtectionManager().addProtection(protection);
     }
 }
