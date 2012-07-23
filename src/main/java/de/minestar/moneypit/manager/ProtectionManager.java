@@ -22,12 +22,23 @@ public class ProtectionManager {
 
         // TODO: load protections
     }
+
     // ////////////////////////////////////////////////////////////////
     //
     // Protection
     //
     // ////////////////////////////////////////////////////////////////
 
+    /**
+     * Check if the given BlockVector has any protection
+     * 
+     * @param vector
+     * @return <b>true</b> if the block is protected, otherwise <b>false</b>
+     */
+    public boolean hasAnyProtection(BlockVector vector) {
+        return (this.hasProtection(vector) || this.hasSubProtectionHolder(vector));
+    }
+    
     public Protection getProtection(BlockVector vector) {
         return this.protections.get(vector);
     }
@@ -92,6 +103,12 @@ public class ProtectionManager {
         }
     }
 
+    /**
+     * Check if the given BlockVector has a Protection
+     * 
+     * @param vector
+     * @return <b>true</b> if the block is protected, otherwise <b>false</b>
+     */
     public boolean hasProtection(BlockVector vector) {
         return this.protections.containsKey(vector);
     }
