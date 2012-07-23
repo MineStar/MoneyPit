@@ -34,6 +34,42 @@ public class DebugListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
+        
+        // update the BlockVector
+        this.vector.update(event.getBlock().getLocation());
+        
+        // Block is not protected => return
+        if(!this.protectionManager.hasAnyProtection(vector)) {
+            return;
+        }
+        
+        // Block is protected => check: Protection OR SubProtection
+        if(this.protectionManager.hasProtection(vector)) {
+            // we have a regular protection => get the module (must be registered)
+            Module module = this.moduleManager.getModule(event.getClickedBlock().getTypeId());
+            if (module == null) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                return;
+            }
+            
+            // check permission
+            if(!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName())) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this protected block.");
+                event.setCancelled(true);
+                return;
+            }
+            
+            // remove protection
+            this.protectionManager.removeProtection(vector);
+            
+            // send info
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed");
+        }
+        else {
+            // we have a SubProtection => send error & cancel the event
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block has a subprotection and cannot be broken.");
+            event.setCancelled(true);            
+        }
     }
 
     @EventHandler
