@@ -15,6 +15,8 @@ public class BlockVector implements Comparable<BlockVector> {
      * Constructor
      * 
      * @param the
+     *            worldName
+     * @param the
      *            x
      * @param the
      *            y
@@ -32,10 +34,21 @@ public class BlockVector implements Comparable<BlockVector> {
      *            location
      */
     public BlockVector(Location location) {
-        this(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-        this.location = location;
+        this.update(location);
     }
 
+    /**
+     * Update the BlockVector
+     *
+     * @param the
+     *            worldName
+     * @param the
+     *            x
+     * @param the
+     *            y
+     * @param the
+     *            z
+     */
     public void update(String worldName, int x, int y, int z) {
         this.worldName = worldName;
         this.x = x;
@@ -45,6 +58,10 @@ public class BlockVector implements Comparable<BlockVector> {
         this.hashCode = Integer.MIN_VALUE;
     }
     
+    /** Update the BlockVector
+     * 
+     * @param location
+     */
     public void update(Location location) {
         this.update(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()))
         this.location = location;
@@ -52,6 +69,8 @@ public class BlockVector implements Comparable<BlockVector> {
     }
 
     /**
+     * Get the Location
+     * 
      * @return the location
      */
     public Location getLocation() {
