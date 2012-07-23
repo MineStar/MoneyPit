@@ -22,10 +22,7 @@ public class BlockVector implements Comparable<BlockVector> {
      *            z
      */
     public BlockVector(String worldName, int x, int y, int z) {
-        this.worldName = worldName;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.update(worldName, x, y, z);
     }
 
     /**
