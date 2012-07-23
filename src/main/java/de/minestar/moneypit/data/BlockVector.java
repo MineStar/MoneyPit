@@ -6,7 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 
 public class BlockVector implements Comparable<BlockVector> {
-    private final int x, y, z;
+    private int x, y, z;
     private String worldName;
     private int hashCode = Integer.MIN_VALUE;
     private Location location = null;
@@ -22,10 +22,10 @@ public class BlockVector implements Comparable<BlockVector> {
      *            z
      */
     public BlockVector(String worldName, int x, int y, int z) {
+        this.worldName = worldName;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.worldName = worldName;
     }
 
     /**
@@ -37,6 +37,15 @@ public class BlockVector implements Comparable<BlockVector> {
     public BlockVector(Location location) {
         this(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.location = location;
+    }
+
+    public void update(String worldName, int x, int y, int z) {
+        this.worldName = worldName;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.location = null;
+        this.hashCode = Integer.MIN_VALUE;
     }
 
     /**
