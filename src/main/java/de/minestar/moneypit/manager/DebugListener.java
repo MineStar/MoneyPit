@@ -52,8 +52,11 @@ public class DebugListener implements Listener {
                 return;
             }
             
+            // get the protection
+            Protection protection = this.protectionManager.getProtection(vector);
+            
             // check permission
-            if(!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName())) {
+            if(!protection.isOwner(event.getPlayer().getName())) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this protected block.");
                 event.setCancelled(true);
                 return;
@@ -63,7 +66,7 @@ public class DebugListener implements Listener {
             this.protectionManager.removeProtection(vector);
             
             // send info
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed");
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
         }
         else {
             // we have a SubProtection => send error & cancel the event
