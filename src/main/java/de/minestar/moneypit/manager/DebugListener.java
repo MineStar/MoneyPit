@@ -20,10 +20,12 @@ public class DebugListener implements Listener {
 
     private ModuleManager moduleManager;
     private ProtectionManager protectionManager;
+    private BlockVector vector;
 
     public DebugListener() {
         this.moduleManager = Core.moduleManager;
         this.protectionManager = Core.protectionManager;
+        this.vector = new BlockVector("", 0, 0, 0);
     }
 
     @EventHandler
@@ -43,11 +45,11 @@ public class DebugListener implements Listener {
 
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK) {
-            BlockVector vector = new BlockVector(event.getClickedBlock().getLocation());
+            this.vector.update(event.getClickedBlock().getLocation());
             // no sneak => print info about protections & return
             if (!event.getPlayer().isSneaking()) {
                 // CHECK: Protection?
-                Protection protection = this.protectionManager.getProtection(vector);
+                Protection protection = this.protectionManager.getProtection(this.vector);
                 if (protection != null) {
                     PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected!");
                     PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, protection.toString());
@@ -55,7 +57,7 @@ public class DebugListener implements Listener {
                 }
 
                 // CHECK: SubProtection?
-                SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
+                SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(this.vector);
                 if (holder != null) {
                     PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Block is a subprotection!");
                     for (int i = 0; i < holder.getSize(); i++) {
@@ -79,7 +81,7 @@ public class DebugListener implements Listener {
             // left click => try to add a protection
             // right click => try to remove the protection
             if (isLeftClick) {
-                if (!this.protectionManager.hasProtection(vector) && !this.protectionManager.hasSubProtectionHolder(vector)) {
+                if (!this.protectionManager.hasProtection(this.vector) && !this.protectionManager.hasSubProtectionHolder(this.vector)) {
                     Random random = new Random();
                     module.addProtection(random.nextInt(1000000), vector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
                     PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "This block is now protected!");
@@ -88,10 +90,10 @@ public class DebugListener implements Listener {
                 }
                 return;
             } else {
-                if (!this.protectionManager.hasProtection(vector)) {
+                if (!this.protectionManager.hasProtection(this.vector)) {
                     PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected!");
                 } else {
-                    this.protectionManager.removeProtection(vector);
+                    this.protectionManager.removeProtection(this.vector);
                     PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is no longer protected!");
                 }
             }
