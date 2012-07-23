@@ -39,6 +39,12 @@ public class ProtectionManager {
         return (this.hasProtection(vector) || this.hasSubProtectionHolder(vector));
     }
     
+     /**
+     * Get the Protection of a block
+     * 
+     * @param vector
+     * @return the Protection
+     */
     public Protection getProtection(BlockVector vector) {
         return this.protections.get(vector);
     }
@@ -46,7 +52,6 @@ public class ProtectionManager {
     /**
      * Add a protection
      * 
-     * @param vector
      * @param protection
      */
     public void addProtection(Protection protection) {
@@ -62,6 +67,11 @@ public class ProtectionManager {
         }
     }
 
+    /**
+     * Add a SubProtection
+     * 
+     * @param subProtection
+     */
     private void addSubProtection(SubProtection subProtection) {
         SubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder == null) {
@@ -72,10 +82,9 @@ public class ProtectionManager {
     }
 
     /**
-     * Remove a protection
+     * Remove a Protection from a block
      * 
      * @param vector
-     * @param protection
      */
     public void removeProtection(BlockVector vector) {
         Protection protection = this.protections.get(vector);
@@ -92,6 +101,11 @@ public class ProtectionManager {
         }
     }
 
+    /**
+     * Remove a SubProtection from a block
+     * 
+     * @param subProtection
+     */
     private void removeSubProtection(SubProtection subProtection) {
         SubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder != null) {
@@ -133,6 +147,7 @@ public class ProtectionManager {
      * Add a ProtectionHolder to a block
      * 
      * @param vector
+     * @param holder
      */
     private void addSubProtectionHolder(BlockVector vector, SubProtectionHolder holder) {
         if (!this.hasSubProtectionHolder(vector)) {
@@ -141,10 +156,10 @@ public class ProtectionManager {
     }
 
     /**
-     * Get the ProtectionHolder from a block
+     * Get the SubProtectionHolder from a block
      * 
      * @param vector
-     * @return
+     * @return the SubProtectionHolder
      */
     public SubProtectionHolder getSubProtectionHolder(BlockVector vector) {
         return this.subProtections.get(vector);
