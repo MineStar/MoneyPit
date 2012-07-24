@@ -14,7 +14,7 @@ public class Module_Chest extends Module {
 
     public Module_Chest() {
         super();
-        this.init(Material.CHEST.getId(), "Module_Chest");
+        this.init(Material.CHEST.getId(), "chest");
     }
 
     @Override

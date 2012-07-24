@@ -11,7 +11,7 @@ public class Module_SignPost extends Module {
 
     public Module_SignPost() {
         super();
-        this.init(Material.SIGN_POST.getId(), "Module_SignPost");
+        this.init(Material.SIGN_POST.getId(), "signpost");
     }
 
     @Override

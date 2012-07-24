@@ -12,7 +12,7 @@ public class Module_WallSign extends Module {
 
     public Module_WallSign() {
         super();
-        this.init(Material.WALL_SIGN.getId(), "Module_WallSign");
+        this.init(Material.WALL_SIGN.getId(), "wallsign");
     }
 
     @Override
