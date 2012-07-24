@@ -1,8 +1,11 @@
 package de.minestar.moneypit.modules;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public abstract class Module {
@@ -10,12 +13,10 @@ public abstract class Module {
     private ProtectionManager protectionManager;
     private String moduleName = "UNKNOWN";
     private int registeredTypeID = -1;
+    private boolean autoLock = false;
 
-    private boolean autoLock;
-
-    protected Module(boolean autoLock) {
+    protected Module() {
         this.protectionManager = Core.protectionManager;
-        this.autoLock = autoLock;
     }
 
     public int getRegisteredTypeID() {
@@ -34,9 +35,19 @@ public abstract class Module {
         return this.protectionManager;
     }
 
-    protected void init(int registeredTypeID, String moduleName) {
+    protected void init(ModuleManager moduleManager, YamlConfiguration ymlFile, int registeredTypeID, String moduleName) {
         this.registeredTypeID = registeredTypeID;
         this.moduleName = moduleName;
+        boolean isEnabled = ymlFile.getBoolean("protect." + this.getModuleName(), true);
+        this.autoLock = ymlFile.getBoolean("protect." + this.getModuleName() + ".lockOnPlace", false);
+        if (isEnabled) {
+            moduleManager.registerModule(this);
+        }
+    }
+
+    public void writeDefaultConfig(YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + this.getModuleName(), true);
+        ymlFile.set("protect." + this.getModuleName() + ".lockOnPlace", autoLock);
     }
 
     public void removeProtection(BlockVector vector) {

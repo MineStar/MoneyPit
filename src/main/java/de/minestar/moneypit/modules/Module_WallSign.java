@@ -1,18 +1,20 @@
 package de.minestar.moneypit.modules;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
+import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
 
-    public Module_WallSign(boolean autoLock) {
-        super(autoLock);
-        this.init(Material.WALL_SIGN.getId(), "wallsign");
+    public Module_WallSign(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+        super();
+        this.init(moduleManager, ymlFile, Material.WALL_SIGN.getId(), "wallsign");
     }
 
     @Override

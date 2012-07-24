@@ -2,6 +2,7 @@ package de.minestar.moneypit.modules;
 
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.utils.BlockUtils;
 
@@ -9,12 +10,13 @@ import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
+import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Chest extends Module {
 
-    public Module_Chest(boolean autoLock) {
-        super(autoLock);
-        this.init(Material.CHEST.getId(), "chest");
+    public Module_Chest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+        super();
+        this.init(moduleManager, ymlFile, Material.CHEST.getId(), "chest");
     }
 
     @Override

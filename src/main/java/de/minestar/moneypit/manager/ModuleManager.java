@@ -27,22 +27,17 @@ public class ModuleManager {
 
     public void init() {
         this.loadConfig();
-        this.registerModules();
+        this.printInfo();
     }
 
-    private void registerModules() {
-        // REGISTER MODULES
-        this.registerModule(new Module_Chest(this.autoLockChests), this.protectChests);
-        this.registerModule(new Module_SignPost(this.autoLockSigns), this.protectSigns);
-        this.registerModule(new Module_WallSign(this.autoLockSigns), this.protectSigns);
-
+    private void printInfo() {
         // PRINT INFO
         ConsoleUtils.printInfo(Core.NAME, this.registeredModules.size() + " Modules registered!");
     }
 
-    private void registerModule(Module module, boolean isEnabled) {
-        // ONLY REGISTER, IF ENABLED AND NOT ALREADY REGISTERED
-        if (isEnabled && !this.isModuleRegistered(module.getRegisteredTypeID())) {
+    public void registerModule(Module module) {
+        // ONLY REGISTER IF NOT ALREADY REGISTERED
+        if (!this.isModuleRegistered(module.getRegisteredTypeID())) {
             this.registeredModules.put(module.getRegisteredTypeID(), module);
         }
     }
@@ -69,25 +64,10 @@ public class ModuleManager {
             ymlFile.load(file);
 
             // @formatter:off
-            // PROTECTIONS
-            protectChests       = ymlFile.getBoolean("protect.chests",          protectChests);
-            protectSigns        = ymlFile.getBoolean("protect.signs",           protectSigns);
-            protectLevers       = ymlFile.getBoolean("protect.levers",          protectLevers);
-            protectButtons      = ymlFile.getBoolean("protect.buttons",         protectButtons);
-            protectWoodDoors    = ymlFile.getBoolean("protect.doors.wood",      protectWoodDoors);
-            protectIronDoors    = ymlFile.getBoolean("protect.doors.iron",      protectIronDoors);
-            protectTrapDoors    = ymlFile.getBoolean("protect.doors.trap",      protectTrapDoors);
-            protectFenceGates   = ymlFile.getBoolean("protect.doors.fencegate", protectFenceGates);
-            
-            // AUTOLOCK
-            autoLockChests      = ymlFile.getBoolean("protect.chests.autolock",          autoLockChests);
-            autoLockSigns       = ymlFile.getBoolean("protect.signs.autolock",           autoLockSigns);
-            autoLockLevers      = ymlFile.getBoolean("protect.levers.autolock",          autoLockLevers);
-            autoLockButtons     = ymlFile.getBoolean("protect.buttons.autolock",         autoLockButtons);
-            autoLockWoodDoors   = ymlFile.getBoolean("protect.doors.wood.autolock",      autoLockWoodDoors);
-            autoLockIronDoors   = ymlFile.getBoolean("protect.doors.iron.autolock",      autoLockIronDoors);
-            autoLockTrapDoors   = ymlFile.getBoolean("protect.doors.trap.autolock",      autoLockTrapDoors);
-            autoLockFenceGates  = ymlFile.getBoolean("protect.doors.fencegate.autolock", autoLockFenceGates);
+            // INIT MODULES
+            new Module_Chest    (this, ymlFile);
+            new Module_SignPost (this, ymlFile);
+            new Module_WallSign (this, ymlFile);
             // @formatter:on
 
         } catch (Exception e) {
