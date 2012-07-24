@@ -1,8 +1,11 @@
-package de.minestar.moneypit.data;
+package de.minestar.moneypit.data.protection;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class Protection {
     private final int ID;

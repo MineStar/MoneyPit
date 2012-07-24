@@ -3,9 +3,9 @@ package de.minestar.moneypit.modules;
 import org.bukkit.Material;
 
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.Protection;
-import de.minestar.moneypit.data.ProtectionType;
-import de.minestar.moneypit.data.SubProtection;
+import de.minestar.moneypit.data.protection.Protection;
+import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class Module_SignPost extends Module {
 

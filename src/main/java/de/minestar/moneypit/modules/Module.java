@@ -2,7 +2,7 @@ package de.minestar.moneypit.modules;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.ProtectionType;
+import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public abstract class Module {

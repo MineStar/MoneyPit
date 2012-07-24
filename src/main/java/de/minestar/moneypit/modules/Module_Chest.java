@@ -6,9 +6,9 @@ import org.bukkit.block.Chest;
 import com.bukkit.gemo.utils.BlockUtils;
 
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.Protection;
-import de.minestar.moneypit.data.ProtectionType;
-import de.minestar.moneypit.data.SubProtection;
+import de.minestar.moneypit.data.protection.Protection;
+import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class Module_Chest extends Module {
 

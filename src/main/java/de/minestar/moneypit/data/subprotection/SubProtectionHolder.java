@@ -1,4 +1,4 @@
-package de.minestar.moneypit.data;
+package de.minestar.moneypit.data.subprotection;
 
 import java.util.ArrayList;
 

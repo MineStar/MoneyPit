@@ -1,4 +1,8 @@
-package de.minestar.moneypit.data;
+package de.minestar.moneypit.data.subprotection;
+
+import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.protection.Protection;
+import de.minestar.moneypit.data.protection.ProtectionType;
 
 public class SubProtection {
 

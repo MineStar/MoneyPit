@@ -1,6 +1,7 @@
-package de.minestar.moneypit.data;
+package de.minestar.moneypit.data.protection;
 
 import de.minestar.moneypit.Core;
+import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public class ProtectionInfo {

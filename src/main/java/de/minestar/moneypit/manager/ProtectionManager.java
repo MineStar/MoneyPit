@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.Protection;
-import de.minestar.moneypit.data.SubProtection;
-import de.minestar.moneypit.data.SubProtectionHolder;
+import de.minestar.moneypit.data.protection.Protection;
+import de.minestar.moneypit.data.subprotection.SubProtection;
+import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 
 public class ProtectionManager {
 
@@ -17,8 +17,8 @@ public class ProtectionManager {
      * Initialize the manager
      */
     public void init() {
-        this.protections = new HashMap<BlockVector, Protection>();
-        this.subProtections = new HashMap<BlockVector, SubProtectionHolder>();
+        this.protections = new HashMap<BlockVector, Protection>(512);
+        this.subProtections = new HashMap<BlockVector, SubProtectionHolder>(1024);
 
         // TODO: load protections
     }
