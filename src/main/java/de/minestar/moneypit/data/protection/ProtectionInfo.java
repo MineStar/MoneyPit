@@ -2,11 +2,13 @@ package de.minestar.moneypit.data.protection;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public class ProtectionInfo {
-    private boolean hasAnyProtection;
-    private boolean hasProtection, hasSubProtection;
+    private boolean hasProtection, hasSubProtection, hasAnyProtection;
+    private Protection protection;
+    private SubProtectionHolder subProtections;
 
     private final ProtectionManager protectionManager;
 
@@ -18,6 +20,28 @@ public class ProtectionInfo {
         this.hasProtection = this.protectionManager.hasProtection(vector);
         this.hasSubProtection = this.protectionManager.hasSubProtectionHolder(vector);
         this.hasAnyProtection = this.hasProtection || this.hasSubProtection;
+
+        if (this.hasProtection) {
+            this.protection = this.protectionManager.getProtection(vector);
+        }
+
+        if (this.hasSubProtection) {
+            this.subProtections = this.protectionManager.getSubProtectionHolder(vector);
+        }
+    }
+
+    /**
+     * @return the protection
+     */
+    public Protection getProtection() {
+        return protection;
+    }
+
+    /**
+     * @return the subProtections
+     */
+    public SubProtectionHolder getSubProtections() {
+        return subProtections;
     }
 
     /**

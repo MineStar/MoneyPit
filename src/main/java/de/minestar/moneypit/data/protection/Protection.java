@@ -57,6 +57,14 @@ public class Protection {
         return owner;
     }
 
+    public boolean isPublic() {
+        return this.type == ProtectionType.PUBLIC;
+    }
+
+    public boolean isPrivate() {
+        return this.type == ProtectionType.PRIVATE;
+    }
+
     /**
      * Get the type of this protection
      * 

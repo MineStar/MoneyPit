@@ -23,6 +23,7 @@ import org.bukkit.plugin.PluginManager;
 import de.minestar.minestarlibrary.AbstractCore;
 import de.minestar.moneypit.listener.DebugListener;
 import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 
 public class Core extends AbstractCore {
@@ -37,6 +38,7 @@ public class Core extends AbstractCore {
     /** MANAGER */
     public static ModuleManager moduleManager;
     public static ProtectionManager protectionManager;
+    public static PlayerManager playerManager;
 
     /** CONSTRUCTOR */
     public Core() {
@@ -49,10 +51,12 @@ public class Core extends AbstractCore {
 
         // create
         moduleManager = new ModuleManager();
+        playerManager = new PlayerManager();
         protectionManager = new ProtectionManager();
 
         // init
         moduleManager.init();
+        playerManager.init();
         protectionManager.init();
 
         return true;

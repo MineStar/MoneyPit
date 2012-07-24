@@ -13,6 +13,13 @@ public class PlayerManager {
         this.playerList = new HashMap<String, PlayerData>(128);
     }
 
+    /**
+     * Initialize the manager
+     */
+    public void init() {
+
+    }
+
     public PlayerData getData(String playerName) {
         PlayerData data = this.playerList.get(playerName.toLowerCase());
         if (data == null) {
@@ -22,11 +29,11 @@ public class PlayerManager {
         return data;
     }
 
-    public void setPlayerState(String playerName, PlayerState state) {
+    public void setState(String playerName, PlayerState state) {
         this.getData(playerName).setState(state);
     }
 
-    public PlayerState getPlayerState(String playerName) {
+    public PlayerState getState(String playerName) {
         return this.getData(playerName).getState();
     }
 }

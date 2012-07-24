@@ -5,8 +5,6 @@ public enum PlayerState {
 
     PROTECTION_ADD,
 
-    PROTECTION_INFO,
-
     PROTECTION_REMOVE,
 
     PROTECTION_CHANGE
