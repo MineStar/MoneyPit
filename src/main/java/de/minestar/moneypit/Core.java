@@ -21,7 +21,7 @@ package de.minestar.moneypit;
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
-import de.minestar.moneypit.manager.DebugListener;
+import de.minestar.moneypit.listener.DebugListener;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 

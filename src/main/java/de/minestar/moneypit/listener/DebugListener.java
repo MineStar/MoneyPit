@@ -1,4 +1,4 @@
-package de.minestar.moneypit.manager;
+package de.minestar.moneypit.listener;
 
 import java.util.Random;
 
@@ -16,6 +16,8 @@ import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.Protection;
 import de.minestar.moneypit.data.ProtectionType;
 import de.minestar.moneypit.data.SubProtectionHolder;
+import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.modules.Module;
 
 public class DebugListener implements Listener {
@@ -41,12 +43,12 @@ public class DebugListener implements Listener {
         this.vector.update(event.getBlock().getLocation());
 
         // Block is not protected => return
-        if (!this.protectionManager.hasAnyProtection(vector)) {
+        if (!this.protectionManager.hasAnyProtection(this.vector)) {
             return;
         }
 
         // Block is protected => check: Protection OR SubProtection
-        if (this.protectionManager.hasProtection(vector)) {
+        if (this.protectionManager.hasProtection(this.vector)) {
             // we have a regular protection => get the module (must be
             // registered)
             Module module = this.moduleManager.getModule(event.getBlock().getTypeId());
@@ -56,7 +58,7 @@ public class DebugListener implements Listener {
             }
 
             // get the protection
-            Protection protection = this.protectionManager.getProtection(vector);
+            Protection protection = this.protectionManager.getProtection(this.vector);
 
             // check permission
             if (!protection.isOwner(event.getPlayer().getName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
@@ -66,7 +68,7 @@ public class DebugListener implements Listener {
             }
 
             // remove protection
-            this.protectionManager.removeProtection(vector);
+            this.protectionManager.removeProtection(this.vector);
 
             // send info
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
@@ -124,7 +126,7 @@ public class DebugListener implements Listener {
             if (isLeftClick) {
                 if (!this.protectionManager.hasProtection(this.vector) && !this.protectionManager.hasSubProtectionHolder(this.vector)) {
                     Random random = new Random();
-                    module.addProtection(random.nextInt(1000000), vector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
+                    module.addProtection(random.nextInt(1000000), this.vector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
                     PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "This block is now protected!");
                 } else {
                     PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is already protected!");
