@@ -38,7 +38,7 @@ public abstract class Module {
     protected void init(ModuleManager moduleManager, YamlConfiguration ymlFile, int registeredTypeID, String moduleName) {
         this.registeredTypeID = registeredTypeID;
         this.moduleName = moduleName;
-        boolean isEnabled = ymlFile.getBoolean("protect." + this.getModuleName(), true);
+        boolean isEnabled = ymlFile.getBoolean("protect." + this.getModuleName() + ".enabled", true);
         this.autoLock = ymlFile.getBoolean("protect." + this.getModuleName() + ".lockOnPlace", false);
         if (isEnabled) {
             moduleManager.registerModule(this);
@@ -46,7 +46,7 @@ public abstract class Module {
     }
 
     public void writeDefaultConfig(String moduleName, YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + moduleName, true);
+        ymlFile.set("protect." + moduleName + ".enabled", true);
         ymlFile.set("protect." + moduleName + ".lockOnPlace", false);
     }
 

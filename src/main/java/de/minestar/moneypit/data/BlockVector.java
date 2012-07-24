@@ -167,6 +167,11 @@ public class BlockVector implements Comparable<BlockVector> {
     }
 
     @Override
+    public BlockVector clone() {
+        return new BlockVector(this.worldName, this.x, this.y, this.z);
+    }
+
+    @Override
     public String toString() {
         return "BlockVector={ " + this.worldName + " ; " + this.x + " ; " + this.y + " ; " + this.z + " }";
     }

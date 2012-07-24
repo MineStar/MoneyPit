@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -37,6 +38,43 @@ public class ActionListener implements Listener {
         this.protectionManager = Core.protectionManager;
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        // event is already cancelled => return
+        if (event.isCancelled()) {
+            return;
+        }
+
+        // get the module
+        Module module = this.moduleManager.getRegisteredModule(event.getBlockPlaced().getTypeId());
+        if (module == null) {
+            return;
+        }
+
+        // only act, if the module is in autolockmode
+        if (!module.isAutoLock()) {
+            return;
+        }
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getBlock().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // add protection, if it isn't protected yet
+        if (!this.protectionInfo.hasAnyProtection()) {
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
+
+            // protect private
+            Random random = new Random();
+            module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getBlock().getData());
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
+        } else {
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
+        }
     }
 
     @EventHandler
@@ -108,7 +146,7 @@ public class ActionListener implements Listener {
 
         // get PlayerState
         PlayerState state = this.playerManager.getState(event.getPlayer().getName());
-        boolean inAddMode = (state == PlayerState.PROTECTION_ADD);
+        boolean inAddMode = (state == PlayerState.PROTECTION_ADD_PRIVATE || state == PlayerState.PROTECTION_ADD_PUBLIC);
         boolean inRemoveMode = (state == PlayerState.PROTECTION_REMOVE);
 
         // no sneak => print info about protections & return
@@ -168,11 +206,23 @@ public class ActionListener implements Listener {
 
             // add protection, if it isn't protected yet
             if (!this.protectionInfo.hasAnyProtection()) {
-                Random random = new Random();
-                module.addProtection(random.nextInt(1000000), this.vector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection set.");
+                // create the vector
+                BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
+
+                if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+                    // protect private
+                    Random random = new Random();
+                    module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
+                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
+                } else {
+                    // protect public
+                    Random random = new Random();
+                    module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PUBLIC, event.getClickedBlock().getData());
+                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Public protection created.");
+                }
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is already protected!");
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
             }
             return;
         } else if (inRemoveMode) {

@@ -3,9 +3,9 @@ package de.minestar.moneypit.data;
 public enum PlayerState {
     NORMAL,
 
-    PROTECTION_ADD,
+    PROTECTION_ADD_PUBLIC,
 
-    PROTECTION_REMOVE,
+    PROTECTION_ADD_PRIVATE,
 
-    PROTECTION_CHANGE
+    PROTECTION_REMOVE;
 }
