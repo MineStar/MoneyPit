@@ -39,7 +39,7 @@ public class BlockVector implements Comparable<BlockVector> {
 
     /**
      * Update the BlockVector
-     *
+     * 
      * @param the
      *            worldName
      * @param the
@@ -57,13 +57,14 @@ public class BlockVector implements Comparable<BlockVector> {
         this.location = null;
         this.hashCode = Integer.MIN_VALUE;
     }
-    
-    /** Update the BlockVector
+
+    /**
+     * Update the BlockVector
      * 
      * @param location
      */
     public void update(Location location) {
-        this.update(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()))
+        this.update(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.location = location;
         this.hashCode = Integer.MIN_VALUE;
     }

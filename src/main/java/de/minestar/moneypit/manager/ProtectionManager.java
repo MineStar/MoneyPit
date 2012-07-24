@@ -38,8 +38,8 @@ public class ProtectionManager {
     public boolean hasAnyProtection(BlockVector vector) {
         return (this.hasProtection(vector) || this.hasSubProtectionHolder(vector));
     }
-    
-     /**
+
+    /**
      * Get the Protection of a block
      * 
      * @param vector

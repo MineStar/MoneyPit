@@ -8,6 +8,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.bukkit.gemo.utils.UtilPermissions;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
@@ -34,44 +36,44 @@ public class DebugListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        
+
         // update the BlockVector
         this.vector.update(event.getBlock().getLocation());
-        
+
         // Block is not protected => return
-        if(!this.protectionManager.hasAnyProtection(vector)) {
+        if (!this.protectionManager.hasAnyProtection(vector)) {
             return;
         }
-        
+
         // Block is protected => check: Protection OR SubProtection
-        if(this.protectionManager.hasProtection(vector)) {
-            // we have a regular protection => get the module (must be registered)
-            Module module = this.moduleManager.getModule(event.getClickedBlock().getTypeId());
+        if (this.protectionManager.hasProtection(vector)) {
+            // we have a regular protection => get the module (must be
+            // registered)
+            Module module = this.moduleManager.getModule(event.getBlock().getTypeId());
             if (module == null) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getBlock().getType().name() + "' is not registered!");
                 return;
             }
-            
+
             // get the protection
             Protection protection = this.protectionManager.getProtection(vector);
-            
+
             // check permission
-            if(!protection.isOwner(event.getPlayer().getName())) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
+            if (!protection.isOwner(event.getPlayer().getName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this protected block.");
                 event.setCancelled(true);
                 return;
             }
-            
+
             // remove protection
             this.protectionManager.removeProtection(vector);
-            
+
             // send info
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
-        }
-        else {
+        } else {
             // we have a SubProtection => send error & cancel the event
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block has a subprotection and cannot be broken.");
-            event.setCancelled(true);            
+            event.setCancelled(true);
         }
     }
 
