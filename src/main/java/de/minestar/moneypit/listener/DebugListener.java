@@ -14,6 +14,7 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.Protection;
+import de.minestar.moneypit.data.ProtectionInfo;
 import de.minestar.moneypit.data.ProtectionType;
 import de.minestar.moneypit.data.SubProtectionHolder;
 import de.minestar.moneypit.manager.ModuleManager;
@@ -24,12 +25,15 @@ public class DebugListener implements Listener {
 
     private ModuleManager moduleManager;
     private ProtectionManager protectionManager;
+
     private BlockVector vector;
+    private ProtectionInfo protectionInfo;
 
     public DebugListener() {
         this.moduleManager = Core.moduleManager;
         this.protectionManager = Core.protectionManager;
         this.vector = new BlockVector("", 0, 0, 0);
+        this.protectionInfo = new ProtectionInfo();
     }
 
     @EventHandler
@@ -39,16 +43,17 @@ public class DebugListener implements Listener {
             return;
         }
 
-        // update the BlockVector
+        // update the BlockVector & the ProtectionInfo
         this.vector.update(event.getBlock().getLocation());
+        this.protectionInfo.update(this.vector);
 
         // Block is not protected => return
-        if (!this.protectionManager.hasAnyProtection(this.vector)) {
+        if (!this.protectionInfo.hasAnyProtection()) {
             return;
         }
 
         // Block is protected => check: Protection OR SubProtection
-        if (this.protectionManager.hasProtection(this.vector)) {
+        if (this.protectionInfo.hasProtection()) {
             // we have a regular protection => get the module (must be
             // registered)
             Module module = this.moduleManager.getModule(event.getBlock().getTypeId());
@@ -61,7 +66,9 @@ public class DebugListener implements Listener {
             Protection protection = this.protectionManager.getProtection(this.vector);
 
             // check permission
-            if (!protection.isOwner(event.getPlayer().getName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
+            boolean isOwner = protection.isOwner(event.getPlayer().getName());
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+            if (!isOwner && !isAdmin) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this protected block.");
                 event.setCancelled(true);
                 return;
