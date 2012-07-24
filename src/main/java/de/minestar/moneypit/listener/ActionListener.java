@@ -58,7 +58,10 @@ public class ActionListener implements Listener {
             return;
         }
 
-        // TODO: implement onNeighbourPlace here
+        // check for neighbours, if the module wants it
+        if (module.doNeighbourCheck()) {
+            // TODO: implement onNeighbourPlace here
+        }
 
         // update the BlockVector & the ProtectionInfo
         this.vector.update(event.getBlock().getLocation());

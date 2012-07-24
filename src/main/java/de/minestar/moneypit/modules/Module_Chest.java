@@ -24,6 +24,7 @@ public class Module_Chest extends Module {
     public Module_Chest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.CHEST.getId(), NAME);
+        this.setDoNeighbourCheck(true);
     }
 
     @Override

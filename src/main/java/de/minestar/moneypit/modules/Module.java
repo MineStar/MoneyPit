@@ -15,9 +15,18 @@ public abstract class Module {
     private String moduleName = "UNKNOWN";
     private int registeredTypeID = -1;
     private boolean autoLock = false;
+    private boolean doNeighbourCheck = false;
 
     protected Module() {
         this.protectionManager = Core.protectionManager;
+    }
+
+    public boolean doNeighbourCheck() {
+        return doNeighbourCheck;
+    }
+
+    public void setDoNeighbourCheck(boolean doNeighbourCheck) {
+        this.doNeighbourCheck = doNeighbourCheck;
     }
 
     public int getRegisteredTypeID() {
