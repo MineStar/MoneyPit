@@ -14,13 +14,15 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Chest extends Module {
 
+    private final String NAME = "chest";
+
     public Module_Chest(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig("chest", ymlFile);
+        this.writeDefaultConfig(NAME, ymlFile);
     }
 
     public Module_Chest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.CHEST.getId(), "chest");
+        this.init(moduleManager, ymlFile, Material.CHEST.getId(), NAME);
     }
 
     @Override

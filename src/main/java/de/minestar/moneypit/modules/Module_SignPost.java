@@ -11,13 +11,15 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_SignPost extends Module {
 
+    private final String NAME = "signpost";
+
     public Module_SignPost(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig("signpost", ymlFile);
+        this.writeDefaultConfig(NAME, ymlFile);
     }
 
     public Module_SignPost(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.SIGN_POST.getId(), "signpost");
+        this.init(moduleManager, ymlFile, Material.SIGN_POST.getId(), NAME);
     }
 
     @Override

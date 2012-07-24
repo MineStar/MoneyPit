@@ -12,13 +12,15 @@ import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
 
+    private final String NAME = "wallsign";
+
     public Module_WallSign(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig("wallsign", ymlFile);
+        this.writeDefaultConfig(NAME, ymlFile);
     }
 
     public Module_WallSign(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.WALL_SIGN.getId(), "wallsign");
+        this.init(moduleManager, ymlFile, Material.WALL_SIGN.getId(), NAME);
     }
 
     @Override
