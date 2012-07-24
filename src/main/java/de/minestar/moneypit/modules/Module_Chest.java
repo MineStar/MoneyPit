@@ -1,5 +1,6 @@
 package de.minestar.moneypit.modules;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,5 +40,11 @@ public class Module_Chest extends Module {
 
         // register the protection
         getProtectionManager().addProtection(protection);
+    }
+
+    @Override
+    public void onNeighbourPlace(Location neighbourLocation) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -58,15 +58,17 @@ public class ActionListener implements Listener {
             return;
         }
 
+        // TODO: implement onNeighbourPlace here
+
         // update the BlockVector & the ProtectionInfo
         this.vector.update(event.getBlock().getLocation());
         this.protectionInfo.update(this.vector);
 
+        // create the vector
+        BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
+
         // add protection, if it isn't protected yet
         if (!this.protectionInfo.hasAnyProtection()) {
-            // create the vector
-            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
-
             // protect private
             Random random = new Random();
             module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getBlock().getData());

@@ -1,5 +1,6 @@
 package de.minestar.moneypit.modules;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.minestar.moneypit.Core;
@@ -53,6 +54,8 @@ public abstract class Module {
     public void removeProtection(BlockVector vector) {
         getProtectionManager().removeProtection(vector);
     }
+
+    public abstract void onNeighbourPlace(Location neighbourLocation);
 
     public abstract void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData);
 }
