@@ -17,7 +17,6 @@ import de.minestar.moneypit.data.PlayerState;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.data.protection.ProtectionType;
-import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -67,7 +66,7 @@ public class DebugListener implements Listener {
             }
 
             // get the protection
-            Protection protection = this.protectionManager.getProtection(this.vector);
+            Protection protection = this.protectionInfo.getProtection();
 
             // check permission
             boolean isOwner = protection.isOwner(event.getPlayer().getName());
