@@ -9,8 +9,8 @@ import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class Module_SignPost extends Module {
 
-    public Module_SignPost() {
-        super();
+    public Module_SignPost(boolean autoLock) {
+        super(autoLock);
         this.init(Material.SIGN_POST.getId(), "signpost");
     }
 

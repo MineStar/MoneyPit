@@ -10,8 +10,8 @@ import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
 
-    public Module_WallSign() {
-        super();
+    public Module_WallSign(boolean autoLock) {
+        super(autoLock);
         this.init(Material.WALL_SIGN.getId(), "wallsign");
     }
 

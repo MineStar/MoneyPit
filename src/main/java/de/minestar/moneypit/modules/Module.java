@@ -11,8 +11,11 @@ public abstract class Module {
     private String moduleName = "UNKNOWN";
     private int registeredTypeID = -1;
 
-    protected Module() {
+    private boolean autoLock;
+
+    protected Module(boolean autoLock) {
         this.protectionManager = Core.protectionManager;
+        this.autoLock = autoLock;
     }
 
     public int getRegisteredTypeID() {
@@ -21,6 +24,10 @@ public abstract class Module {
 
     public String getModuleName() {
         return this.moduleName;
+    }
+
+    public boolean isAutoLock() {
+        return autoLock;
     }
 
     protected ProtectionManager getProtectionManager() {

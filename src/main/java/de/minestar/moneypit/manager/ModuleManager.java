@@ -20,6 +20,9 @@ public class ModuleManager {
     private boolean protectChests = true, protectLevers = true, protectButtons = true, protectFenceGates = true;
     private boolean protectSigns = true, protectWoodDoors = true, protectIronDoors = true, protectTrapDoors = true;
 
+    private boolean autoLockChests = true, autoLockLevers = true, autoLockButtons = true, autoLockFenceGates = true;
+    private boolean autoLockSigns = true, autoLockWoodDoors = true, autoLockIronDoors = true, autoLockTrapDoors = true;
+
     private HashMap<Integer, Module> registeredModules = new HashMap<Integer, Module>();
 
     public void init() {
@@ -29,9 +32,9 @@ public class ModuleManager {
 
     private void registerModules() {
         // REGISTER MODULES
-        this.registerModule(new Module_Chest(), this.protectChests);
-        this.registerModule(new Module_SignPost(), this.protectSigns);
-        this.registerModule(new Module_WallSign(), this.protectSigns);
+        this.registerModule(new Module_Chest(this.autoLockChests), this.protectChests);
+        this.registerModule(new Module_SignPost(this.autoLockSigns), this.protectSigns);
+        this.registerModule(new Module_WallSign(this.autoLockSigns), this.protectSigns);
 
         // PRINT INFO
         ConsoleUtils.printInfo(Core.NAME, this.registeredModules.size() + " Modules registered!");
@@ -65,8 +68,8 @@ public class ModuleManager {
             // LOAD
             ymlFile.load(file);
 
-            // PROTECTIONS
             // @formatter:off
+            // PROTECTIONS
             protectChests       = ymlFile.getBoolean("protect.chests",          protectChests);
             protectSigns        = ymlFile.getBoolean("protect.signs",           protectSigns);
             protectLevers       = ymlFile.getBoolean("protect.levers",          protectLevers);
@@ -75,6 +78,16 @@ public class ModuleManager {
             protectIronDoors    = ymlFile.getBoolean("protect.doors.iron",      protectIronDoors);
             protectTrapDoors    = ymlFile.getBoolean("protect.doors.trap",      protectTrapDoors);
             protectFenceGates   = ymlFile.getBoolean("protect.doors.fencegate", protectFenceGates);
+            
+            // AUTOLOCK
+            autoLockChests      = ymlFile.getBoolean("protect.chests.autolock",          autoLockChests);
+            autoLockSigns       = ymlFile.getBoolean("protect.signs.autolock",           autoLockSigns);
+            autoLockLevers      = ymlFile.getBoolean("protect.levers.autolock",          autoLockLevers);
+            autoLockButtons     = ymlFile.getBoolean("protect.buttons.autolock",         autoLockButtons);
+            autoLockWoodDoors   = ymlFile.getBoolean("protect.doors.wood.autolock",      autoLockWoodDoors);
+            autoLockIronDoors   = ymlFile.getBoolean("protect.doors.iron.autolock",      autoLockIronDoors);
+            autoLockTrapDoors   = ymlFile.getBoolean("protect.doors.trap.autolock",      autoLockTrapDoors);
+            autoLockFenceGates  = ymlFile.getBoolean("protect.doors.fencegate.autolock", autoLockFenceGates);
             // @formatter:on
 
         } catch (Exception e) {
@@ -92,8 +105,8 @@ public class ModuleManager {
             // CREATE
             YamlConfiguration ymlFile = new YamlConfiguration();
 
-            // PROTECTIONS
             // @formatter:off
+            // PROTECTIONS
             ymlFile.set("protect.chests",           protectChests);
             ymlFile.set("protect.signs",            protectSigns);
             ymlFile.set("protect.levers",           protectLevers);
@@ -102,6 +115,16 @@ public class ModuleManager {
             ymlFile.set("protect.doors.iron",       protectIronDoors);
             ymlFile.set("protect.doors.trap",       protectTrapDoors);
             ymlFile.set("protect.doors.fencegate",  protectFenceGates);
+            
+            // AUTOLOCK
+            ymlFile.set("protect.chests.autolock",          autoLockChests);
+            ymlFile.set("protect.signs.autolock",           autoLockSigns);
+            ymlFile.set("protect.levers.autolock",          autoLockLevers);
+            ymlFile.set("protect.buttons.autolock",         autoLockButtons);
+            ymlFile.set("protect.doors.wood.autolock",      autoLockWoodDoors);
+            ymlFile.set("protect.doors.iron.autolock",      autoLockIronDoors);
+            ymlFile.set("protect.doors.trap.autolock",      autoLockTrapDoors);
+            ymlFile.set("protect.doors.fencegate.autolock", autoLockFenceGates);
             // @formatter:on
 
             // SAVE

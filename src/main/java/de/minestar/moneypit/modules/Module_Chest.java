@@ -12,8 +12,8 @@ import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class Module_Chest extends Module {
 
-    public Module_Chest() {
-        super();
+    public Module_Chest(boolean autoLock) {
+        super(autoLock);
         this.init(Material.CHEST.getId(), "chest");
     }
 
