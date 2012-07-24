@@ -22,7 +22,7 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.modules.Module;
 
-public class DebugListener implements Listener {
+public class ActionListener implements Listener {
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -31,7 +31,7 @@ public class DebugListener implements Listener {
     private BlockVector vector;
     private ProtectionInfo protectionInfo;
 
-    public DebugListener() {
+    public ActionListener() {
         this.moduleManager = Core.moduleManager;
         this.playerManager = Core.playerManager;
         this.protectionManager = Core.protectionManager;
