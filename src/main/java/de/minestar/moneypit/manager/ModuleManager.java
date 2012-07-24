@@ -17,12 +17,6 @@ public class ModuleManager {
 
     private static String FILENAME = "modules.yml";
 
-    private boolean protectChests = true, protectLevers = true, protectButtons = true, protectFenceGates = true;
-    private boolean protectSigns = true, protectWoodDoors = true, protectIronDoors = true, protectTrapDoors = true;
-
-    private boolean autoLockChests = true, autoLockLevers = true, autoLockButtons = true, autoLockFenceGates = true;
-    private boolean autoLockSigns = true, autoLockWoodDoors = true, autoLockIronDoors = true, autoLockTrapDoors = true;
-
     private HashMap<Integer, Module> registeredModules = new HashMap<Integer, Module>();
 
     public void init() {
@@ -46,7 +40,7 @@ public class ModuleManager {
         return this.registeredModules.containsKey(TypeId);
     }
 
-    public Module getModule(int TypeId) {
+    public Module getRegisteredModule(int TypeId) {
         return this.registeredModules.get(TypeId);
     }
 
@@ -64,10 +58,12 @@ public class ModuleManager {
             ymlFile.load(file);
 
             // @formatter:off
+            
             // INIT MODULES
             new Module_Chest    (this, ymlFile);
             new Module_SignPost (this, ymlFile);
             new Module_WallSign (this, ymlFile);
+            
             // @formatter:on
 
         } catch (Exception e) {
@@ -86,25 +82,12 @@ public class ModuleManager {
             YamlConfiguration ymlFile = new YamlConfiguration();
 
             // @formatter:off
-            // PROTECTIONS
-            ymlFile.set("protect.chests",           protectChests);
-            ymlFile.set("protect.signs",            protectSigns);
-            ymlFile.set("protect.levers",           protectLevers);
-            ymlFile.set("protect.buttons",          protectButtons);
-            ymlFile.set("protect.doors.wood",       protectWoodDoors);
-            ymlFile.set("protect.doors.iron",       protectIronDoors);
-            ymlFile.set("protect.doors.trap",       protectTrapDoors);
-            ymlFile.set("protect.doors.fencegate",  protectFenceGates);
             
-            // AUTOLOCK
-            ymlFile.set("protect.chests.autolock",          autoLockChests);
-            ymlFile.set("protect.signs.autolock",           autoLockSigns);
-            ymlFile.set("protect.levers.autolock",          autoLockLevers);
-            ymlFile.set("protect.buttons.autolock",         autoLockButtons);
-            ymlFile.set("protect.doors.wood.autolock",      autoLockWoodDoors);
-            ymlFile.set("protect.doors.iron.autolock",      autoLockIronDoors);
-            ymlFile.set("protect.doors.trap.autolock",      autoLockTrapDoors);
-            ymlFile.set("protect.doors.fencegate.autolock", autoLockFenceGates);
+            // SAVE MODULES
+            new Module_Chest    (ymlFile);
+            new Module_SignPost (ymlFile);
+            new Module_WallSign (ymlFile);
+            
             // @formatter:on
 
             // SAVE

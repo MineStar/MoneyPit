@@ -59,7 +59,7 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // we have a regular protection => get the module (must be
             // registered)
-            Module module = this.moduleManager.getModule(event.getBlock().getTypeId());
+            Module module = this.moduleManager.getRegisteredModule(event.getBlock().getTypeId());
             if (module == null) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getBlock().getType().name() + "' is not registered!");
                 return;
@@ -150,7 +150,7 @@ public class ActionListener implements Listener {
         }
 
         // the module must be registered
-        Module module = this.moduleManager.getModule(event.getClickedBlock().getTypeId());
+        Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
         if (module == null) {
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
             return;

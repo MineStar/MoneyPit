@@ -45,9 +45,9 @@ public abstract class Module {
         }
     }
 
-    public void writeDefaultConfig(YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + this.getModuleName(), true);
-        ymlFile.set("protect." + this.getModuleName() + ".lockOnPlace", autoLock);
+    public void writeDefaultConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + moduleName, true);
+        ymlFile.set("protect." + moduleName + ".lockOnPlace", false);
     }
 
     public void removeProtection(BlockVector vector) {

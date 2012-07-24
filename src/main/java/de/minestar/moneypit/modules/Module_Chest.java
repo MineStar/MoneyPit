@@ -14,6 +14,10 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Chest extends Module {
 
+    public Module_Chest(YamlConfiguration ymlFile) {
+        this.writeDefaultConfig("chest", ymlFile);
+    }
+
     public Module_Chest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.CHEST.getId(), "chest");

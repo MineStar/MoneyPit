@@ -12,6 +12,10 @@ import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
 
+    public Module_WallSign(YamlConfiguration ymlFile) {
+        this.writeDefaultConfig("wallsign", ymlFile);
+    }
+
     public Module_WallSign(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.WALL_SIGN.getId(), "wallsign");
