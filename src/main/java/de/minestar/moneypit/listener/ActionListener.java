@@ -53,12 +53,9 @@ public class ActionListener implements Listener {
             return;
         }
 
-        // update the BlockVector
-        this.vector.update(event.getBlock().getLocation());
-
         // check for neighbours, if the module wants it
         if (module.doNeighbourCheck()) {
-            if (module.onPlace(event, vector)) {
+            if (module.onPlace(event, new BlockVector(event.getBlockPlaced().getLocation()))) {
                 return;
             }
         }
@@ -68,23 +65,25 @@ public class ActionListener implements Listener {
             return;
         }
 
-        // update the ProtectionInfo
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getBlock().getLocation());
         this.protectionInfo.update(this.vector);
-
-        // create the vector
-        BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
 
         // add protection, if it isn't protected yet
         if (!this.protectionInfo.hasAnyProtection()) {
+
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
             // protect private
             Random random = new Random();
             module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getBlock().getData());
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
         } else {
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
-            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
+            PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");
         }
     }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         // event is already cancelled => return
@@ -180,18 +179,26 @@ public class ActionListener implements Listener {
 
             // CHECK: SubProtection?
             if (this.protectionInfo.hasSubProtection()) {
-                // cancel event
-                event.setCancelled(true);
 
-                // send info
-                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Block is a subprotection!");
-                for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
-                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "#" + (i + 1) + " : " + this.protectionInfo.getSubProtections().getProtections().get(i));
+                // check permission
+                boolean isOwner = this.protectionInfo.getProtection().isOwner(event.getPlayer().getName());
+                boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+
+                // is this protection private?
+                if (this.protectionInfo.getProtection().isPrivate()) {
+                    if (!isOwner && !isAdmin) {
+                        // cancel event
+                        event.setCancelled(true);
+
+                        // send info
+                        PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Block is a subprotection!");
+                        for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
+                            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "#" + (i + 1) + " : " + this.protectionInfo.getSubProtections().getProtections().get(i));
+                        }
+                    }
                 }
                 return;
             }
-
-            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is not protected!");
             return;
         }
 

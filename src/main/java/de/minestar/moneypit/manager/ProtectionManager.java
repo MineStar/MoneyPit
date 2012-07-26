@@ -72,7 +72,7 @@ public class ProtectionManager {
      * 
      * @param subProtection
      */
-    private void addSubProtection(SubProtection subProtection) {
+    public void addSubProtection(SubProtection subProtection) {
         SubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder == null) {
             holder = new SubProtectionHolder();

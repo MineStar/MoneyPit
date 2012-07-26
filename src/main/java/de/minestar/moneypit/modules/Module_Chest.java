@@ -68,9 +68,11 @@ public class Module_Chest extends Module {
             return true;
         }
 
-        // add subprotection
-        SubProtection subProtection = new SubProtection(doubleChest, protection);
+        // add the SubProtection to the Protection
+        SubProtection subProtection = new SubProtection(vector, protection);
         protection.addSubProtection(subProtection);
+        // add the SubProtection to the ProtectionManager
+        Core.protectionManager.addSubProtection(subProtection);
 
         // send info
         PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Subprotection created.");

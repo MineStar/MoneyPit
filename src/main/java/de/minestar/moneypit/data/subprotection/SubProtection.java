@@ -1,5 +1,7 @@
 package de.minestar.moneypit.data.subprotection;
 
+import org.bukkit.entity.Player;
+
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
@@ -81,6 +83,10 @@ public class SubProtection {
      */
     public boolean isGuest(String guest) {
         return this.parent.isGuest(guest);
+    }
+
+    public boolean canEdit(Player player) {
+        return this.parent.canEdit(player);
     }
 
     /**
