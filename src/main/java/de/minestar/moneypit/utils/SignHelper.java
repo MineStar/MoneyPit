@@ -3,6 +3,7 @@ package de.minestar.moneypit.utils;
 import de.minestar.moneypit.data.BlockVector;
 
 public class SignHelper {
+
     public static BlockVector getAnchor(BlockVector vector, final byte subData) {
         switch (subData) {
             case 2 : {

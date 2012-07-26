@@ -1,7 +1,7 @@
 package de.minestar.moneypit.modules;
 
-import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
@@ -64,7 +64,17 @@ public abstract class Module {
         getProtectionManager().removeProtection(vector);
     }
 
-    public abstract void onNeighbourPlace(Location neighbourLocation);
+    /**
+     * This method is called on a blockplace of a registered module
+     * 
+     * @param event
+     * @param vector
+     * @return <b>true</b> if the blockplace-event should abort after the check,
+     *         <b>false</b> if it should continue
+     */
+    public boolean onPlace(BlockPlaceEvent event, BlockVector vector) {
+        return false;
+    }
 
     public abstract void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData);
 }

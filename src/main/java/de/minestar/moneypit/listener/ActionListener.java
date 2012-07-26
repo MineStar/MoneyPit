@@ -53,18 +53,22 @@ public class ActionListener implements Listener {
             return;
         }
 
+        // update the BlockVector
+        this.vector.update(event.getBlock().getLocation());
+
+        // check for neighbours, if the module wants it
+        if (module.doNeighbourCheck()) {
+            if (module.onPlace(event, vector)) {
+                return;
+            }
+        }
+
         // only act, if the module is in autolockmode
         if (!module.isAutoLock()) {
             return;
         }
 
-        // check for neighbours, if the module wants it
-        if (module.doNeighbourCheck()) {
-            // TODO: implement onNeighbourPlace here
-        }
-
-        // update the BlockVector & the ProtectionInfo
-        this.vector.update(event.getBlock().getLocation());
+        // update the ProtectionInfo
         this.protectionInfo.update(this.vector);
 
         // create the vector
@@ -81,7 +85,6 @@ public class ActionListener implements Listener {
             PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
         }
     }
-
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         // event is already cancelled => return

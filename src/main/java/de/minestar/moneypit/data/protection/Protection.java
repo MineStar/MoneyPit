@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.bukkit.entity.Player;
+
+import com.bukkit.gemo.utils.UtilPermissions;
+
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 
@@ -199,6 +203,10 @@ public class Protection {
             return this.subProtections.containsKey(vector);
         }
         return false;
+    }
+
+    public boolean canEdit(Player player) {
+        return this.isOwner(player.getName()) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
     }
 
     public boolean equals(Protection protection) {
