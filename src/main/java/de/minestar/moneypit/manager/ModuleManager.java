@@ -10,8 +10,10 @@ import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
+import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_SignPost;
 import de.minestar.moneypit.modules.Module_WallSign;
+import de.minestar.moneypit.modules.Module_WoodenDoor;
 
 public class ModuleManager {
 
@@ -60,9 +62,11 @@ public class ModuleManager {
             // @formatter:off
             
             // INIT MODULES
-            new Module_Chest    (this, ymlFile);
-            new Module_SignPost (this, ymlFile);
-            new Module_WallSign (this, ymlFile);
+            new Module_Chest      (this, ymlFile);
+            new Module_SignPost   (this, ymlFile);
+            new Module_WallSign   (this, ymlFile);
+            new Module_WoodenDoor (this, ymlFile);
+            new Module_IronDoor   (this, ymlFile);
             
             // @formatter:on
 
@@ -84,9 +88,11 @@ public class ModuleManager {
             // @formatter:off
             
             // SAVE MODULES
-            new Module_Chest    (ymlFile);
-            new Module_SignPost (ymlFile);
-            new Module_WallSign (ymlFile);
+            new Module_Chest        (ymlFile);
+            new Module_SignPost     (ymlFile);
+            new Module_WallSign     (ymlFile);
+            new Module_WoodenDoor   (ymlFile);
+            new Module_IronDoor     (ymlFile);
             
             // @formatter:on
 
