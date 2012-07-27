@@ -2,11 +2,14 @@ package de.minestar.moneypit.listener;
 
 import java.util.Random;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -18,6 +21,8 @@ import de.minestar.moneypit.data.PlayerState;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.data.subprotection.SubProtection;
+import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -38,6 +43,50 @@ public class ActionListener implements Listener {
         this.protectionManager = Core.protectionManager;
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
+    }
+
+    public Block[] getNeighbours(Block block) {
+        Block[] blocks = new Block[6];
+        blocks[0] = block.getRelative(BlockFace.UP);
+        blocks[1] = blocks[0].getRelative(BlockFace.UP);
+        blocks[2] = block.getRelative(BlockFace.NORTH);
+        blocks[3] = block.getRelative(BlockFace.WEST);
+        blocks[4] = block.getRelative(BlockFace.EAST);
+        blocks[5] = block.getRelative(BlockFace.SOUTH);
+        return blocks;
+    }
+
+    @EventHandler
+    public void onBlockRedstoneChange(BlockRedstoneEvent event) {
+        // event is already cancelled => return
+        if (event.getNewCurrent() == event.getOldCurrent()) {
+            return;
+        }
+
+        Block[] blocks = this.getNeighbours(event.getBlock());
+        Module module;
+        for (Block block : blocks) {
+            // get the module
+            module = this.moduleManager.getRegisteredModule(block.getTypeId());
+            if (module == null) {
+                continue;
+            }
+
+            // check for redstone only, if the module wants it
+            if (!module.handleRedstone()) {
+                continue;
+            }
+
+            // update the BlockVector & the ProtectionInfo
+            this.vector.update(block.getLocation());
+            this.protectionInfo.update(this.vector);
+
+            // add protection, if it isn't protected yet
+            if (this.protectionInfo.hasAnyProtection()) {
+                event.setNewCurrent(event.getOldCurrent());
+                return;
+            }
+        }
     }
 
     @EventHandler
@@ -129,7 +178,7 @@ public class ActionListener implements Listener {
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
         } else {
             // we have a SubProtection => send error & cancel the event
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block has a subprotection and cannot be broken.");
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is a subprotection and cannot be broken.");
             event.setCancelled(true);
         }
     }
@@ -179,24 +228,29 @@ public class ActionListener implements Listener {
 
             // CHECK: SubProtection?
             if (this.protectionInfo.hasSubProtection()) {
-
-                // check permission
-                boolean isOwner = this.protectionInfo.getProtection().isOwner(event.getPlayer().getName());
+                SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
+                boolean isOwner;
                 boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
-
-                // is this protection private?
-                if (this.protectionInfo.getProtection().isPrivate()) {
-                    if (!isOwner && !isAdmin) {
-                        // cancel event
-                        event.setCancelled(true);
-
-                        // send info
-                        PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Block is a subprotection!");
-                        for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
-                            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "#" + (i + 1) + " : " + this.protectionInfo.getSubProtections().getProtections().get(i));
-                        }
+                for (SubProtection subProtection : holder.getProtections()) {
+                    // is this protection private?
+                    if (!subProtection.getParent().isPrivate()) {
+                        continue;
                     }
+
+                    // check permission
+                    isOwner = subProtection.isOwner(event.getPlayer().getName());
+
+                    // check the access
+                    if (isOwner || isAdmin) {
+                        continue;
+                    }
+
+                    // cancel event
+                    event.setCancelled(true);
+                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+                    return;
                 }
+                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
                 return;
             }
             return;
