@@ -10,10 +10,10 @@ public class DoorHelper {
     private final static BlockFace[] faceList = new BlockFace[]{BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH};
 
     public static BlockVector getSecondWoodDoor(BlockVector vector) {
-        Block chest = vector.getLocation().getBlock();
+        Block door = vector.getLocation().getBlock();
         Block dDoor;
         for (BlockFace face : faceList) {
-            dDoor = chest.getRelative(face);
+            dDoor = door.getRelative(face);
             if (dDoor.getTypeId() == Material.WOODEN_DOOR.getId()) {
                 return new BlockVector(dDoor.getLocation());
             }
@@ -22,10 +22,10 @@ public class DoorHelper {
     }
 
     public static BlockVector getSecondIronDoor(BlockVector vector) {
-        Block chest = vector.getLocation().getBlock();
+        Block door = vector.getLocation().getBlock();
         Block dDoor;
         for (BlockFace face : faceList) {
-            dDoor = chest.getRelative(face);
+            dDoor = door.getRelative(face);
             if (dDoor.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
                 return new BlockVector(dDoor.getLocation());
             }
