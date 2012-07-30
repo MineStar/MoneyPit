@@ -32,4 +32,25 @@ public class DoorHelper {
         }
         return null;
     }
+
+    public static BlockVector getTrapDoorAnchor(BlockVector vector, final byte subData) {
+        byte data = (byte) (subData | 0x4);
+        switch (data) {
+            case 4 : {
+                return vector.getRelative(0, 0, +1);
+            }
+            case 5 : {
+                return vector.getRelative(0, 0, -1);
+            }
+            case 6 : {
+                return vector.getRelative(+1, 0, 0);
+            }
+            case 7 : {
+                return vector.getRelative(-1, 0, 0);
+            }
+            default : {
+                return vector.getRelative(0, 0, 0);
+            }
+        }
+    }
 }

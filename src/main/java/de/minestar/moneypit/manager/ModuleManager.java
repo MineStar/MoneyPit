@@ -12,6 +12,7 @@ import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_SignPost;
+import de.minestar.moneypit.modules.Module_TrapDoor;
 import de.minestar.moneypit.modules.Module_WallSign;
 import de.minestar.moneypit.modules.Module_WoodenDoor;
 
@@ -67,6 +68,7 @@ public class ModuleManager {
             new Module_WallSign   (this, ymlFile);
             new Module_WoodenDoor (this, ymlFile);
             new Module_IronDoor   (this, ymlFile);
+            new Module_TrapDoor   (this, ymlFile);
             
             // @formatter:on
 
@@ -93,6 +95,7 @@ public class ModuleManager {
             new Module_WallSign     (ymlFile);
             new Module_WoodenDoor   (ymlFile);
             new Module_IronDoor     (ymlFile);
+            new Module_TrapDoor     (ymlFile);
             
             // @formatter:on
 

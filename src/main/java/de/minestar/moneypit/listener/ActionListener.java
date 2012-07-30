@@ -2,6 +2,7 @@ package de.minestar.moneypit.listener;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -27,6 +28,7 @@ import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.modules.Module;
+import de.minestar.moneypit.threads.AddProtectionThread;
 
 public class ActionListener implements Listener {
 
@@ -66,6 +68,14 @@ public class ActionListener implements Listener {
         Block[] blocks = this.getNeighbours(event.getBlock());
         Module module;
         for (Block block : blocks) {
+            // update the BlockVector & the ProtectionInfo
+            this.vector.update(block.getLocation());
+            this.protectionInfo.update(this.vector);
+            if (this.protectionInfo.hasAnyProtection()) {
+                event.setNewCurrent(event.getOldCurrent());
+                return;
+            }
+
             // get the module
             module = this.moduleManager.getRegisteredModule(block.getTypeId());
             if (module == null) {
@@ -77,10 +87,6 @@ public class ActionListener implements Listener {
                 continue;
             }
 
-            // update the BlockVector & the ProtectionInfo
-            this.vector.update(block.getLocation());
-            this.protectionInfo.update(this.vector);
-
             // add protection, if it isn't protected yet
             if (this.protectionInfo.hasAnyProtection()) {
                 event.setNewCurrent(event.getOldCurrent());
@@ -88,7 +94,6 @@ public class ActionListener implements Listener {
             }
         }
     }
-
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
@@ -120,13 +125,11 @@ public class ActionListener implements Listener {
 
         // add protection, if it isn't protected yet
         if (!this.protectionInfo.hasAnyProtection()) {
-
             // create the vector
-            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
-            // protect private
-            Random random = new Random();
-            module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getBlock().getData());
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
+            BlockVector tempVector = new BlockVector(event.getBlockPlaced().getLocation());
+            // create thread to add the protection and start it
+            AddProtectionThread thread = new AddProtectionThread(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, thread, 1L);
         } else {
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
             PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");

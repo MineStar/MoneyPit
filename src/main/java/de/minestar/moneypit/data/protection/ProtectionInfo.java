@@ -16,6 +16,19 @@ public class ProtectionInfo {
         this.protectionManager = Core.protectionManager;
     }
 
+    private ProtectionInfo(boolean hasProtection, boolean hasSubProtection, boolean hasAnyProtection, Protection protection, SubProtectionHolder subProtections) {
+        this.protectionManager = Core.protectionManager;
+        this.hasProtection = hasProtection;
+        this.hasSubProtection = hasSubProtection;
+        this.hasAnyProtection = hasAnyProtection;
+        this.protection = protection;
+        this.subProtections = subProtections;
+    }
+
+    public ProtectionInfo clone() {
+        return new ProtectionInfo(hasProtection, hasSubProtection, hasAnyProtection, protection, subProtections);
+    }
+
     public void update(BlockVector vector) {
         this.hasProtection = this.protectionManager.hasProtection(vector);
         this.hasSubProtection = this.protectionManager.hasSubProtectionHolder(vector);
