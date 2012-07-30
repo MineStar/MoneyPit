@@ -30,17 +30,11 @@ public class ProtectionInfo {
     }
 
     public void update(BlockVector vector) {
-        this.hasProtection = this.protectionManager.hasProtection(vector);
-        this.hasSubProtection = this.protectionManager.hasSubProtectionHolder(vector);
+        this.protection = this.protectionManager.getProtection(vector);
+        this.subProtections = this.protectionManager.getSubProtectionHolder(vector);
+        this.hasProtection = (this.protection != null);
+        this.hasSubProtection = (this.subProtections != null);
         this.hasAnyProtection = this.hasProtection || this.hasSubProtection;
-
-        if (this.hasProtection) {
-            this.protection = this.protectionManager.getProtection(vector);
-        }
-
-        if (this.hasSubProtection) {
-            this.subProtections = this.protectionManager.getSubProtectionHolder(vector);
-        }
     }
 
     /**

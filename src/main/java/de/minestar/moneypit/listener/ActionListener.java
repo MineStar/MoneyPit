@@ -72,6 +72,18 @@ public class ActionListener implements Listener {
             this.vector.update(block.getLocation());
             this.protectionInfo.update(this.vector);
             if (this.protectionInfo.hasAnyProtection()) {
+                Protection protection = this.protectionInfo.getProtection();
+                if (protection != null) {
+                    // get the module
+                    module = this.moduleManager.getRegisteredModule(block.getTypeId());
+                    if (module == null) {
+                        continue;
+                    }
+                    // check for redstone only, if the module wants it
+                    if (!module.handleRedstone()) {
+                        continue;
+                    }
+                }
                 event.setNewCurrent(event.getOldCurrent());
                 return;
             }
@@ -94,6 +106,7 @@ public class ActionListener implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
