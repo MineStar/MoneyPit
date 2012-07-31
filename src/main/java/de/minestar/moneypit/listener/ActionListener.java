@@ -89,6 +89,7 @@ public class ActionListener implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
@@ -126,6 +127,13 @@ public class ActionListener implements Listener {
             AddProtectionThread thread = new AddProtectionThread(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
             Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, thread, 1L);
         } else {
+            if (this.protectionInfo.hasSubProtection()) {
+                if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protected block!");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
             PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");
         }
