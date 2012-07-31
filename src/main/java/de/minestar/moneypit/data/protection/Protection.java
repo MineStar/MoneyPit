@@ -61,10 +61,20 @@ public class Protection {
         return owner;
     }
 
+    /**
+     * Is this protection public?
+     * 
+     * @return <b>true</b> if it is public, otherwise <b>false</b>
+     */
     public boolean isPublic() {
         return this.type == ProtectionType.PUBLIC;
     }
 
+    /**
+     * Is this protection private?
+     * 
+     * @return <b>true</b> if it is private, otherwise <b>false</b>
+     */
     public boolean isPrivate() {
         return this.type == ProtectionType.PRIVATE;
     }
@@ -208,8 +218,24 @@ public class Protection {
         return false;
     }
 
+    /**
+     * Check if the player can edit this protection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
     public boolean canEdit(Player player) {
         return this.isOwner(player.getName()) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
+    }
+
+    /**
+     * Check if the player can access this protection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
+    public boolean canAccess(Player player) {
+        return this.isPublic() || (this.canEdit(player) || this.isGuest(player.getName()));
     }
 
     public boolean equals(Protection protection) {
