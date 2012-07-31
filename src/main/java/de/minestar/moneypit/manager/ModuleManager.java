@@ -11,6 +11,7 @@ import de.minestar.moneypit.Core;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_IronDoor;
+import de.minestar.moneypit.modules.Module_Lever;
 import de.minestar.moneypit.modules.Module_SignPost;
 import de.minestar.moneypit.modules.Module_StoneButton;
 import de.minestar.moneypit.modules.Module_TrapDoor;
@@ -71,6 +72,8 @@ public class ModuleManager {
             new Module_IronDoor     (this, ymlFile);
             new Module_TrapDoor     (this, ymlFile);
             new Module_StoneButton  (this, ymlFile);
+            new Module_Lever        (this, ymlFile);
+            
             // @formatter:on
 
         } catch (Exception e) {
@@ -98,6 +101,7 @@ public class ModuleManager {
             new Module_IronDoor     (ymlFile);
             new Module_TrapDoor     (ymlFile);
             new Module_StoneButton  (ymlFile);
+            new Module_Lever        (ymlFile);
             
             // @formatter:on
 

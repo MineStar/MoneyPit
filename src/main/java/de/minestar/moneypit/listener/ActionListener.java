@@ -3,7 +3,6 @@ package de.minestar.moneypit.listener;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -85,23 +84,6 @@ public class ActionListener implements Listener {
                         continue;
                     }
                 }
-                event.setNewCurrent(event.getOldCurrent());
-                return;
-            }
-
-            // get the module
-            module = this.moduleManager.getRegisteredModule(block.getTypeId());
-            if (module == null) {
-                continue;
-            }
-
-            // check for redstone only, if the module wants it
-            if (!module.handleRedstone()) {
-                continue;
-            }
-
-            // add protection, if it isn't protected yet
-            if (this.protectionInfo.hasAnyProtection()) {
                 event.setNewCurrent(event.getOldCurrent());
                 return;
             }
