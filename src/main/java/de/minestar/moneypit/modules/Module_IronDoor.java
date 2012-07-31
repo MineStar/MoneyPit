@@ -24,8 +24,13 @@ public class Module_IronDoor extends Module {
     public Module_IronDoor(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.IRON_DOOR_BLOCK.getId(), NAME);
-        this.setHandleRedstone(true);
         this.setDoNeighbourCheck(true);
+        this.setHandleRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+    }
+
+    @Override
+    protected void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + NAME + ".handleRedstone", true);
     }
 
     @Override

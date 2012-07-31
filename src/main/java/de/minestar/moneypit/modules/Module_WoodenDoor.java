@@ -24,8 +24,13 @@ public class Module_WoodenDoor extends Module {
     public Module_WoodenDoor(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.WOODEN_DOOR.getId(), NAME);
-        this.setHandleRedstone(true);
         this.setDoNeighbourCheck(true);
+        this.setHandleRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+    }
+
+    @Override
+    protected void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + NAME + ".handleRedstone", true);
     }
 
     @Override

@@ -21,7 +21,12 @@ public class Module_TrapDoor extends Module {
     public Module_TrapDoor(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.TRAP_DOOR.getId(), NAME);
-        this.setHandleRedstone(true);
+        this.setHandleRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+    }
+
+    @Override
+    protected void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + NAME + ".handleRedstone", true);
     }
 
     @Override
