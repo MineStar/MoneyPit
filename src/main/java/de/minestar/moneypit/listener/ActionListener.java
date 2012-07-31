@@ -49,14 +49,13 @@ public class ActionListener implements Listener {
         this.protectionInfo = new ProtectionInfo();
     }
 
-    public Block[] getNeighbours(Block block) {
+    public void refreshRedstoneCheckBlocks(Block block) {
         redstoneCheckBlocks[0] = block.getRelative(BlockFace.UP);
         redstoneCheckBlocks[1] = redstoneCheckBlocks[0].getRelative(BlockFace.UP);
         redstoneCheckBlocks[2] = block.getRelative(BlockFace.NORTH);
         redstoneCheckBlocks[3] = block.getRelative(BlockFace.WEST);
         redstoneCheckBlocks[4] = block.getRelative(BlockFace.EAST);
         redstoneCheckBlocks[5] = block.getRelative(BlockFace.SOUTH);
-        return redstoneCheckBlocks;
     }
 
     @EventHandler
@@ -66,9 +65,9 @@ public class ActionListener implements Listener {
             return;
         }
 
-        Block[] blocks = this.getNeighbours(event.getBlock());
+        this.refreshRedstoneCheckBlocks(event.getBlock());
         Module module;
-        for (Block block : blocks) {
+        for (Block block : this.redstoneCheckBlocks) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(block.getLocation());
             this.protectionInfo.update(this.vector);
@@ -90,7 +89,6 @@ public class ActionListener implements Listener {
             }
         }
     }
-
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
