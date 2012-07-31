@@ -2,6 +2,8 @@ package de.minestar.moneypit.data.subprotection;
 
 import java.util.ArrayList;
 
+import org.bukkit.entity.Player;
+
 public class SubProtectionHolder {
     private ArrayList<SubProtection> protections = null;
 
@@ -63,7 +65,7 @@ public class SubProtectionHolder {
      * Check if we have the SubProtection
      * 
      * @param subProtection
-     * @return
+     * @return <b>true</b> if we have the SubProtection, otherwise <b>false</b>
      */
     public boolean hasProtection(SubProtection subProtection) {
         if (this.protections != null) {
@@ -74,5 +76,41 @@ public class SubProtectionHolder {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if a player can access all SubSrotections
+     * 
+     * @param player
+     * @return <b>true</b> if the player can access all SubSrotections,
+     *         otherwise <b>false</b>
+     */
+    public boolean canAccessAll(Player player) {
+        if (this.getSize() > 0) {
+            for (SubProtection subProtection : this.protections) {
+                if (!subProtection.canAccess(player)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a player can edit all SubSrotections
+     * 
+     * @param player
+     * @return <b>true</b> if the player can edit all SubSrotections, otherwise
+     *         <b>false</b>
+     */
+    public boolean canEditAll(Player player) {
+        if (this.getSize() > 0) {
+            for (SubProtection subProtection : this.protections) {
+                if (!subProtection.canEdit(player)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

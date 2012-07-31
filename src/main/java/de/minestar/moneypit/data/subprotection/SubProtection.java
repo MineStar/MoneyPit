@@ -85,10 +85,6 @@ public class SubProtection {
         return this.parent.isGuest(guest);
     }
 
-    public boolean canEdit(Player player) {
-        return this.parent.canEdit(player);
-    }
-
     /**
      * Get the ID of this protection
      * 
@@ -125,6 +121,26 @@ public class SubProtection {
      */
     public boolean equals(SubProtection subProtection) {
         return this.getID() == subProtection.getID() && this.vector.equals(subProtection.getVector());
+    }
+
+    /**
+     * Check if the player can edit this SubProtection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
+    public boolean canEdit(Player player) {
+        return this.parent.canEdit(player);
+    }
+
+    /**
+     * Check if the player can access this SubProtection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
+    public boolean canAccess(Player player) {
+        return this.parent.canAccess(player);
     }
 
     @Override
