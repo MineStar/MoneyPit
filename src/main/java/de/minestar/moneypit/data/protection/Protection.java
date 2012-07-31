@@ -164,10 +164,13 @@ public class Protection {
     /**
      * Add a SubProtection
      * 
-     * @param vector
      * @param subProtection
      */
     public void addSubProtection(SubProtection subProtection) {
+        if (subProtection.getVector().equals(this.vector)) {
+            return;
+        }
+
         if (this.subProtections == null) {
             this.subProtections = new HashMap<BlockVector, SubProtection>();
         }
