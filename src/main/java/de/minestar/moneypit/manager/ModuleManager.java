@@ -12,6 +12,7 @@ import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_SignPost;
+import de.minestar.moneypit.modules.Module_StoneButton;
 import de.minestar.moneypit.modules.Module_TrapDoor;
 import de.minestar.moneypit.modules.Module_WallSign;
 import de.minestar.moneypit.modules.Module_WoodenDoor;
@@ -63,13 +64,13 @@ public class ModuleManager {
             // @formatter:off
             
             // INIT MODULES
-            new Module_Chest      (this, ymlFile);
-            new Module_SignPost   (this, ymlFile);
-            new Module_WallSign   (this, ymlFile);
-            new Module_WoodenDoor (this, ymlFile);
-            new Module_IronDoor   (this, ymlFile);
-            new Module_TrapDoor   (this, ymlFile);
-            
+            new Module_Chest        (this, ymlFile);
+            new Module_SignPost     (this, ymlFile);
+            new Module_WallSign     (this, ymlFile);
+            new Module_WoodenDoor   (this, ymlFile);
+            new Module_IronDoor     (this, ymlFile);
+            new Module_TrapDoor     (this, ymlFile);
+            new Module_StoneButton  (this, ymlFile);
             // @formatter:on
 
         } catch (Exception e) {
@@ -96,6 +97,7 @@ public class ModuleManager {
             new Module_WoodenDoor   (ymlFile);
             new Module_IronDoor     (ymlFile);
             new Module_TrapDoor     (ymlFile);
+            new Module_StoneButton  (ymlFile);
             
             // @formatter:on
 
