@@ -39,6 +39,8 @@ public class ActionListener implements Listener {
     private BlockVector vector;
     private ProtectionInfo protectionInfo;
 
+    private Block[] redstoneCheckBlocks = new Block[6];
+
     public ActionListener() {
         this.moduleManager = Core.moduleManager;
         this.playerManager = Core.playerManager;
@@ -48,14 +50,13 @@ public class ActionListener implements Listener {
     }
 
     public Block[] getNeighbours(Block block) {
-        Block[] blocks = new Block[6];
-        blocks[0] = block.getRelative(BlockFace.UP);
-        blocks[1] = blocks[0].getRelative(BlockFace.UP);
-        blocks[2] = block.getRelative(BlockFace.NORTH);
-        blocks[3] = block.getRelative(BlockFace.WEST);
-        blocks[4] = block.getRelative(BlockFace.EAST);
-        blocks[5] = block.getRelative(BlockFace.SOUTH);
-        return blocks;
+        redstoneCheckBlocks[0] = block.getRelative(BlockFace.UP);
+        redstoneCheckBlocks[1] = redstoneCheckBlocks[0].getRelative(BlockFace.UP);
+        redstoneCheckBlocks[2] = block.getRelative(BlockFace.NORTH);
+        redstoneCheckBlocks[3] = block.getRelative(BlockFace.WEST);
+        redstoneCheckBlocks[4] = block.getRelative(BlockFace.EAST);
+        redstoneCheckBlocks[5] = block.getRelative(BlockFace.SOUTH);
+        return redstoneCheckBlocks;
     }
 
     @EventHandler
