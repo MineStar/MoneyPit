@@ -43,9 +43,10 @@ public class Module_SignPost extends Module {
             }
 
             // finally protect the blocks
+            tempVector = vector.getRelative(0, -1, 0);
             for (int i = 0; i < distance; i++) {
                 // protect the blocks
-                subProtection = new SubProtection(vector.getRelative(0, -2 - i, 0), protection);
+                subProtection = new SubProtection(vector.getRelative(0, -1 - i, 0), protection);
                 protection.addSubProtection(subProtection);
             }
         }

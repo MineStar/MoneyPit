@@ -36,7 +36,7 @@ public class Module_Lever extends Module {
         BlockVector tempVector = LeverHelper.getAnchor(vector, subData);
         if (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
             int distance = 1;
-            tempVector.getRelative(0, -1, 0);
+            tempVector = tempVector.getRelative(0, -1, 0);
             // search all needed blocks
             while (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
                 ++distance;
