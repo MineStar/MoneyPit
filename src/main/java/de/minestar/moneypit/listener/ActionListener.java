@@ -225,7 +225,6 @@ public class ActionListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-
                 PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
                 return;
             }
@@ -233,26 +232,19 @@ public class ActionListener implements Listener {
             // CHECK: SubProtection?
             if (this.protectionInfo.hasSubProtection()) {
                 SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
-                boolean isOwner;
-                boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
                 for (SubProtection subProtection : holder.getProtections()) {
                     // is this protection private?
                     if (!subProtection.getParent().isPrivate()) {
                         continue;
                     }
 
-                    // check permission
-                    isOwner = subProtection.isOwner(event.getPlayer().getName());
-
                     // check the access
-                    if (isOwner || isAdmin) {
-                        continue;
+                    if (!subProtection.canAccess(event.getPlayer())) {
+                        // cancel event
+                        event.setCancelled(true);
+                        PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+                        return;
                     }
-
-                    // cancel event
-                    event.setCancelled(true);
-                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
-                    return;
                 }
                 PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
                 return;
