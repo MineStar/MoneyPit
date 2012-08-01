@@ -19,7 +19,7 @@ public class Module_FenceGate extends Module {
     public Module_FenceGate(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.FENCE_GATE.getId(), NAME);
-        this.setHandleRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+        this.setBlockRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
     }
 
     @Override

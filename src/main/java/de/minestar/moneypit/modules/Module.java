@@ -16,7 +16,7 @@ public abstract class Module {
     private int registeredTypeID = -1;
     private boolean autoLock = false;
     private boolean doNeighbourCheck = false;
-    private boolean handleRedstone = false;
+    private boolean blockRedstone = false;
 
     protected Module() {
         this.protectionManager = Core.protectionManager;
@@ -26,16 +26,16 @@ public abstract class Module {
         return doNeighbourCheck;
     }
 
-    public boolean handleRedstone() {
-        return handleRedstone;
+    public boolean blockRedstone() {
+        return blockRedstone;
     }
 
     public void setDoNeighbourCheck(boolean doNeighbourCheck) {
         this.doNeighbourCheck = doNeighbourCheck;
     }
 
-    public void setHandleRedstone(boolean handleRedstone) {
-        this.handleRedstone = handleRedstone;
+    public void setBlockRedstone(boolean blockRedstone) {
+        this.blockRedstone = blockRedstone;
     }
 
     public int getRegisteredTypeID() {

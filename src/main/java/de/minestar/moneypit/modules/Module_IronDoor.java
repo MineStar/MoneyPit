@@ -25,7 +25,7 @@ public class Module_IronDoor extends Module {
         super();
         this.init(moduleManager, ymlFile, Material.IRON_DOOR_BLOCK.getId(), NAME);
         this.setDoNeighbourCheck(true);
-        this.setHandleRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+        this.setBlockRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
     }
 
     @Override

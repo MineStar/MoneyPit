@@ -81,7 +81,7 @@ public class ActionListener implements Listener {
                         continue;
                     }
                     // check for redstone only, if the module wants it
-                    if (!module.handleRedstone()) {
+                    if (!module.blockRedstone()) {
                         continue;
                     }
                     event.setNewCurrent(event.getOldCurrent());
@@ -99,7 +99,7 @@ public class ActionListener implements Listener {
                             continue;
                         }
                         // check for redstone only, if the module wants it
-                        if (!module.handleRedstone()) {
+                        if (!module.blockRedstone()) {
                             continue;
                         }
                         event.setNewCurrent(event.getOldCurrent());
