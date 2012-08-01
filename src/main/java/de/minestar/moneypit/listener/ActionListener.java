@@ -121,11 +121,15 @@ public class ActionListener implements Listener {
 
         // add protection, if it isn't protected yet
         if (!this.protectionInfo.hasAnyProtection()) {
-            // create the vector
-            BlockVector tempVector = new BlockVector(event.getBlockPlaced().getLocation());
-            // create thread to add the protection and start it
-            AddProtectionThread thread = new AddProtectionThread(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, thread, 1L);
+            // check the permission
+            boolean canProtect = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) || UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+            if (canProtect) {
+                // create the vector
+                BlockVector tempVector = new BlockVector(event.getBlockPlaced().getLocation());
+                // create thread to add the protection and start it
+                AddProtectionThread thread = new AddProtectionThread(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, thread, 1L);
+            }
         } else {
             if (this.protectionInfo.hasSubProtection()) {
                 if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
