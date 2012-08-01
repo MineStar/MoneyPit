@@ -74,6 +74,7 @@ public class ActionListener implements Listener {
             if (this.protectionInfo.hasAnyProtection()) {
                 Protection protection = this.protectionInfo.getProtection();
                 if (protection != null) {
+                    // normal protection
                     // get the module
                     module = this.moduleManager.getRegisteredModule(block.getTypeId());
                     if (module == null) {
@@ -85,6 +86,25 @@ public class ActionListener implements Listener {
                     }
                     event.setNewCurrent(event.getOldCurrent());
                     return;
+                } else {
+                    // SubProtection here
+                    // check all subprotections at this place and see if we
+                    // handle the redstone-event
+                    int moduleID = 0;
+                    SubProtectionHolder holder = this.protectionInfo.getSubProtections();
+                    for (SubProtection subProtection : holder.getProtections()) {
+                        moduleID = subProtection.getParent().getVector().getLocation().getBlock().getTypeId();
+                        module = this.moduleManager.getRegisteredModule(moduleID);
+                        if (module == null) {
+                            continue;
+                        }
+                        // check for redstone only, if the module wants it
+                        if (!module.handleRedstone()) {
+                            continue;
+                        }
+                        event.setNewCurrent(event.getOldCurrent());
+                        return;
+                    }
                 }
             }
         }
