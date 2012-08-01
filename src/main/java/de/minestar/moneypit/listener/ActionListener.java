@@ -49,7 +49,7 @@ public class ActionListener implements Listener {
         this.protectionInfo = new ProtectionInfo();
     }
 
-    public void refreshRedstoneCheckBlocks(Block block) {
+    private void refreshRedstoneCheckBlocks(Block block) {
         redstoneCheckBlocks[0] = block.getRelative(BlockFace.UP);
         redstoneCheckBlocks[1] = redstoneCheckBlocks[0].getRelative(BlockFace.UP);
         redstoneCheckBlocks[2] = block.getRelative(BlockFace.NORTH);
