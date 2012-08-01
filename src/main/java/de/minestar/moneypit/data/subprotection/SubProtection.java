@@ -40,6 +40,15 @@ public class SubProtection {
     }
 
     /**
+     * Get the ModuleID
+     * 
+     * @return the ModuleID of this Protection
+     */
+    public int getModuleID() {
+        return this.parent.getModuleID();
+    }
+
+    /**
      * Get the type of the parent protection
      * 
      * @return the type

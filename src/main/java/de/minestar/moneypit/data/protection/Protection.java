@@ -53,6 +53,15 @@ public class Protection {
     }
 
     /**
+     * Get the ModuleID
+     * 
+     * @return the ModuleID of this Protection
+     */
+    public int getModuleID() {
+        return this.vector.getLocation().getBlock().getTypeId();
+    }
+
+    /**
      * Get the owner of this protection
      * 
      * @return the owner;

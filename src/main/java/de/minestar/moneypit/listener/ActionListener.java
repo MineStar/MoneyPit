@@ -93,7 +93,7 @@ public class ActionListener implements Listener {
                     int moduleID = 0;
                     SubProtectionHolder holder = this.protectionInfo.getSubProtections();
                     for (SubProtection subProtection : holder.getProtections()) {
-                        moduleID = subProtection.getParent().getVector().getLocation().getBlock().getTypeId();
+                        moduleID = subProtection.getModuleID();
                         module = this.moduleManager.getRegisteredModule(moduleID);
                         if (module == null) {
                             continue;
