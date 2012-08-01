@@ -32,6 +32,26 @@ public class Module_Lever extends Module {
         SubProtection subProtection = new SubProtection(LeverHelper.getAnchor(vector, subData), protection);
         protection.addSubProtection(subProtection);
 
+        // FETCH SAND & GRAVEL
+        BlockVector tempVector = LeverHelper.getAnchor(vector, subData);
+        if (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+            int distance = 1;
+            tempVector.getRelative(0, -1, 0);
+            // search all needed blocks
+            while (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+                ++distance;
+                tempVector = tempVector.getRelative(0, -1, 0);
+            }
+
+            // finally protect the blocks
+            tempVector = LeverHelper.getAnchor(vector, subData);
+            for (int i = 0; i < distance; i++) {
+                // protect the blocks
+                subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);
+                protection.addSubProtection(subProtection);
+            }
+        }
+
         // register the protection
         getProtectionManager().addProtection(protection);
     }

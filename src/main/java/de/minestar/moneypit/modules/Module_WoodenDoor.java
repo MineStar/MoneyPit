@@ -46,6 +46,26 @@ public class Module_WoodenDoor extends Module {
         subProtection = new SubProtection(vector.getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
 
+        // FETCH SAND & GRAVEL
+        BlockVector tempVector = vector.getRelative(0, -1, 0);
+        if (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+            int distance = 1;
+            tempVector = vector.getRelative(0, -2, 0);
+            // search all needed blocks
+            while (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+                ++distance;
+                tempVector = tempVector.getRelative(0, -1, 0);
+            }
+
+            // finally protect the blocks
+            tempVector = vector.getRelative(0, -1, 0);
+            for (int i = 0; i < distance; i++) {
+                // protect the blocks
+                subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);
+                protection.addSubProtection(subProtection);
+            }
+        }
+
         // register the protection
         getProtectionManager().addProtection(protection);
     }
