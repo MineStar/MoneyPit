@@ -83,9 +83,9 @@ public class ActionListener implements Listener {
                     if (!module.handleRedstone()) {
                         continue;
                     }
+                    event.setNewCurrent(event.getOldCurrent());
+                    return;
                 }
-                event.setNewCurrent(event.getOldCurrent());
-                return;
             }
         }
     }
@@ -219,24 +219,19 @@ public class ActionListener implements Listener {
         if (state == PlayerState.NORMAL) {
             // CHECK: Protection?
             if (this.protectionInfo.hasProtection()) {
-                System.out.println("protection");
                 // is this protection private?
                 if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
-                    System.out.println("no access");
                     PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
                     event.setCancelled(true);
                     return;
                 }
                 event.setCancelled(false);
                 PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
-                System.out.println("jump out!");
                 return;
             }
 
-            System.out.println("-----");
             // CHECK: SubProtection?
             if (this.protectionInfo.hasSubProtection()) {
-                System.out.println("subprotection");
                 SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
                 for (SubProtection subProtection : holder.getProtections()) {
                     // is this protection private?
@@ -246,7 +241,6 @@ public class ActionListener implements Listener {
 
                     // check the access
                     if (!subProtection.canAccess(event.getPlayer())) {
-                        System.out.println("no access to sp");
                         // cancel event
                         event.setCancelled(true);
                         PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
