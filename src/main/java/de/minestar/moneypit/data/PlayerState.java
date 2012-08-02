@@ -7,5 +7,7 @@ public enum PlayerState {
 
     PROTECTION_ADD_PRIVATE,
 
+    PROTECTION_INFO,
+
     PROTECTION_REMOVE;
 }
