@@ -208,8 +208,17 @@ public class ActionListener implements Listener {
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
         } else {
             // we have a SubProtection => send error & cancel the event
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is a subprotection and cannot be broken.");
-            event.setCancelled(true);
+            if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this subprotection!");
+                event.setCancelled(true);
+                return;
+            }
+
+            for (SubProtection protection : this.protectionInfo.getSubProtections().getProtections()) {
+                this.protectionManager.removeProtection(protection.getParent().getVector());
+            }
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
+            return;
         }
     }
 
