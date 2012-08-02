@@ -7,3 +7,15 @@ commands:
   mp:
     description: MoneyPit-related commands
     usage: /tr <command>
+  cremove:
+    description: Remove a protection
+    usage: /cremove
+  cinfo:
+    description: Get some information about a protection
+    usage: /cinfo
+  cprivate:
+    description: Add a private protection
+    usage: /cprivate
+  cpublic:
+    description: Add a public protection
+    usage: /cpublic
