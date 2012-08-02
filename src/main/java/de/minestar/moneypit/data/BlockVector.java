@@ -66,7 +66,6 @@ public class BlockVector implements Comparable<BlockVector> {
     public void update(Location location) {
         this.update(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.location = location;
-        this.hashCode = Integer.MIN_VALUE;
     }
 
     /**
@@ -131,7 +130,6 @@ public class BlockVector implements Comparable<BlockVector> {
         if (obj instanceof BlockVector) {
             return this.equals((BlockVector) obj);
         }
-
         return false;
     }
 
@@ -161,7 +159,7 @@ public class BlockVector implements Comparable<BlockVector> {
     @Override
     public int hashCode() {
         if (this.hashCode == Integer.MIN_VALUE) {
-            this.hashCode = 7 * this.x + 3 * this.y + 17 * this.z * this.worldName.length();
+            this.hashCode = this.toString().hashCode();
         }
         return this.hashCode;
     }
