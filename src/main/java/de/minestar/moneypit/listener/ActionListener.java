@@ -3,8 +3,11 @@ package de.minestar.moneypit.listener;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -319,12 +322,53 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
+    private void showInformation(Player player) {
+        // we need a protection to show some information about it
+        if (!this.protectionInfo.hasAnyProtection()) {
+            return;
+        }
+
+        if (this.protectionInfo.hasProtection()) {
+            // handle mainprotections
+            String pType = " PRIVATE ";
+            if (this.protectionInfo.getProtection().isPublic()) {
+                pType = " PUBLIC ";
+            }
+
+            int moduleID = this.protectionInfo.getProtection().getModuleID();
+            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+            PlayerUtils.sendInfo(player, message);
+            return;
+        } else {
+            // handle subprotections
+            if (this.protectionInfo.getSubProtections().getSize() == 1) {
+                String pType = " PRIVATE ";
+                if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
+                    pType = " PUBLIC ";
+                }
+
+                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+                PlayerUtils.sendInfo(player, message);
+                return;
+            } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
+                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + "multiple protections" + ".";
+                PlayerUtils.sendInfo(player, message);
+                return;
+            }
+        }
+    }
+
     private void handleInfoInteract(PlayerInteractEvent event) {
         // cancel the event
         event.setCancelled(true);
 
         // return to normalmode
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+        // show information
+        this.showInformation(event.getPlayer());
     }
 
     private void handleRemoveInteract(PlayerInteractEvent event) {
@@ -406,7 +450,9 @@ public class ActionListener implements Listener {
             }
         } else {
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
-            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
+
+            // show information about the protection
+            this.showInformation(event.getPlayer());
         }
     }
 
@@ -415,12 +461,14 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // is this protection private?
             if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
+                // show information about the protection
+                this.showInformation(event.getPlayer());
+                // cancel the event
                 event.setCancelled(true);
                 return;
             }
-            event.setCancelled(false);
-            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
+            // show information about the protection
+            this.showInformation(event.getPlayer());
             return;
         }
 
@@ -437,11 +485,13 @@ public class ActionListener implements Listener {
                 if (!subProtection.canAccess(event.getPlayer())) {
                     // cancel event
                     event.setCancelled(true);
-                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+                    // show information about the protection
+                    this.showInformation(event.getPlayer());
                     return;
                 }
             }
-            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+            // show information about the protection
+            this.showInformation(event.getPlayer());
             return;
         }
     }
