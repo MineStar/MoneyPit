@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -419,6 +420,26 @@ public class ActionListener implements Listener {
 
         // update the BlockVector & the ProtectionInfo
         this.vector.update(event.getRetractLocation());
+        this.protectionInfo.update(this.vector);
+
+        // cancel the event, if the block is protected
+        if (this.protectionInfo.hasAnyProtection()) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockFromTo(BlockFromToEvent event) {
+        // /////////////////////////////////
+        // event cancelled => return
+        // /////////////////////////////////
+        if (event.isCancelled())
+            return;
+
+        final Block toBlock = event.getToBlock();
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(toBlock.getLocation());
         this.protectionInfo.update(this.vector);
 
         // cancel the event, if the block is protected
