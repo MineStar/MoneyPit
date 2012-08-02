@@ -217,7 +217,9 @@ public class ActionListener implements Listener {
             SubProtection protection;
             for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
                 protection = this.protectionInfo.getSubProtections().getProtection(i);
-                this.protectionManager.removeProtection(protection.getParent().getVector());
+                if (protection != null) {
+                    this.protectionManager.removeProtection(protection.getParent().getVector());
+                }
             }
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
             return;
