@@ -21,6 +21,11 @@ package de.minestar.moneypit;
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
+import de.minestar.minestarlibrary.commands.CommandList;
+import de.minestar.moneypit.commands.cmd_cinfo;
+import de.minestar.moneypit.commands.cmd_cprivate;
+import de.minestar.moneypit.commands.cmd_cpublic;
+import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
@@ -81,6 +86,14 @@ public class Core extends AbstractCore {
 
     @Override
     protected boolean createCommands() {
+        //@formatter:off;
+        this.cmdList = new CommandList(
+                new cmd_cinfo           ("/cinfo",      "",    "moneypit.commands.cinfo"),
+                new cmd_cprivate        ("/cprivate",   "",    "moneypit.commands.cprivate"),
+                new cmd_cpublic         ("/cpublic",    "",    "moneypit.commands.cpublic"),
+                new cmd_cremove         ("/cremove",    "",    "moneypit.commands.cremove")
+         );
+        // @formatter: on;
         return true;
     }
 }
