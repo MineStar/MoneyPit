@@ -113,4 +113,11 @@ public class SubProtectionHolder {
         }
         return true;
     }
+
+    public SubProtection getProtection(int index) {
+        if (this.getSize() > 0) {
+            return this.protections.get(index);
+        }
+        return null;
+    }
 }
