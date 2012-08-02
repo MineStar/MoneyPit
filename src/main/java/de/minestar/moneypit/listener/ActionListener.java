@@ -207,13 +207,14 @@ public class ActionListener implements Listener {
             // send info
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
         } else {
-            // we have a SubProtection => send error & cancel the event
+            // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this subprotection!");
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
                 event.setCancelled(true);
                 return;
             }
 
+            // Remove all SubProtections
             SubProtection protection;
             for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
                 protection = this.protectionInfo.getSubProtections().getProtection(i);
@@ -221,6 +222,8 @@ public class ActionListener implements Listener {
                     this.protectionManager.removeProtection(protection.getParent().getVector());
                 }
             }
+
+            // Send info
             PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
             return;
         }
@@ -294,6 +297,8 @@ public class ActionListener implements Listener {
         }
 
         if (inAddMode) {
+            // return to normalmode
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
             // cancel event
             event.setCancelled(true);
 
@@ -325,13 +330,16 @@ public class ActionListener implements Listener {
             }
             return;
         } else if (inRemoveMode) {
+            // return to normalmode
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
             // cancel event
             event.setCancelled(true);
 
             // try to remove the protection
-            if (!this.protectionInfo.hasProtection()) {
+            if (!this.protectionInfo.hasAnyProtection()) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected!");
-            } else {
+                return;
+            } else if (this.protectionInfo.hasProtection()) {
                 // get protection
                 Protection protection = this.protectionInfo.getProtection();
 
@@ -346,6 +354,25 @@ public class ActionListener implements Listener {
                 // print info
                 this.protectionManager.removeProtection(this.vector);
                 PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
+            } else {
+                // we have a SubProtection => check permissions and handle it
+                if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
+                    return;
+                }
+
+                // Remove all SubProtections
+                SubProtection protection;
+                for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
+                    protection = this.protectionInfo.getSubProtections().getProtection(i);
+                    if (protection != null) {
+                        this.protectionManager.removeProtection(protection.getParent().getVector());
+                    }
+                }
+
+                // Send info
+                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
+                return;
             }
         }
     }
