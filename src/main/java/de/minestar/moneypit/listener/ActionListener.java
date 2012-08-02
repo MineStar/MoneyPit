@@ -81,11 +81,18 @@ public class ActionListener implements Listener {
                 Protection protection = this.protectionInfo.getProtection();
                 if (protection != null) {
                     // normal protection
+
+                    // only private protections are blocked
+                    if (protection.isPublic()) {
+                        continue;
+                    }
+
                     // get the module
                     module = this.moduleManager.getRegisteredModule(block.getTypeId());
                     if (module == null) {
                         continue;
                     }
+
                     // check for redstone only, if the module wants it
                     if (!module.blockRedstone()) {
                         continue;
@@ -99,11 +106,18 @@ public class ActionListener implements Listener {
                     int moduleID = 0;
                     SubProtectionHolder holder = this.protectionInfo.getSubProtections();
                     for (SubProtection subProtection : holder.getProtections()) {
+                        // only private protections are blocked
+                        if (subProtection.getParent().isPublic()) {
+                            continue;
+                        }
+
+                        // get the module
                         moduleID = subProtection.getModuleID();
                         module = this.moduleManager.getRegisteredModule(moduleID);
                         if (module == null) {
                             continue;
                         }
+
                         // check for redstone only, if the module wants it
                         if (!module.blockRedstone()) {
                             continue;
