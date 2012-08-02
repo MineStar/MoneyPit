@@ -2,6 +2,7 @@ name: MoneyPit
 main: de.minestar.moneypit.Core
 version: ${pom.version}
 depend: [MineStarLibrary, MinestarCore]
+softdepend: [GreenMile]
 commands:
   mp:
     description: MoneyPit-related commands
