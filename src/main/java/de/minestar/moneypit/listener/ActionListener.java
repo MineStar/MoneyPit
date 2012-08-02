@@ -253,45 +253,11 @@ public class ActionListener implements Listener {
         this.protectionInfo.update(this.vector);
 
         // get PlayerState
-        PlayerState state = this.playerManager.getState(event.getPlayer().getName());
-        boolean inAddMode = (state == PlayerState.PROTECTION_ADD_PRIVATE || state == PlayerState.PROTECTION_ADD_PUBLIC);
-        boolean inRemoveMode = (state == PlayerState.PROTECTION_REMOVE);
+        final PlayerState state = this.playerManager.getState(event.getPlayer().getName());
 
         // no sneak => print info about protections & return
         if (state == PlayerState.NORMAL) {
-            // CHECK: Protection?
-            if (this.protectionInfo.hasProtection()) {
-                // is this protection private?
-                if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
-                    event.setCancelled(true);
-                    return;
-                }
-                event.setCancelled(false);
-                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
-                return;
-            }
-
-            // CHECK: SubProtection?
-            if (this.protectionInfo.hasSubProtection()) {
-                SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
-                for (SubProtection subProtection : holder.getProtections()) {
-                    // is this protection private?
-                    if (!subProtection.getParent().isPrivate()) {
-                        continue;
-                    }
-
-                    // check the access
-                    if (!subProtection.canAccess(event.getPlayer())) {
-                        // cancel event
-                        event.setCancelled(true);
-                        PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
-                        return;
-                    }
-                }
-                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
-                return;
-            }
+            this.handleNormalInteract(event);
             return;
         }
 
@@ -302,84 +268,152 @@ public class ActionListener implements Listener {
             return;
         }
 
-        if (inAddMode) {
-            // return to normalmode
-            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
-            // cancel event
-            event.setCancelled(true);
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
-            // check permissions
-            if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to protect this block!");
-                return;
+        // decide what to do
+        switch (state) {
+            case PROTECTION_INFO : {
+                this.handleInfoInteract(event);
+                break;
             }
-
-            // add protection, if it isn't protected yet
-            if (!this.protectionInfo.hasAnyProtection()) {
-                // create the vector
-                BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
-
-                if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
-                    // protect private
-                    Random random = new Random();
-                    module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
-                } else {
-                    // protect public
-                    Random random = new Random();
-                    module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PUBLIC, event.getClickedBlock().getData());
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Public protection created.");
-                }
-            } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
-                PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
+            case PROTECTION_REMOVE : {
+                this.handleRemoveInteract(event);
+                break;
             }
+            case PROTECTION_ADD_PRIVATE : {
+                this.handleAddInteract(event, module, state);
+                break;
+            }
+            case PROTECTION_ADD_PUBLIC : {
+                this.handleAddInteract(event, module, state);
+                break;
+            }
+            default : {
+                break;
+            }
+        }
+    }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
+    // FROM HERE ON: METHODS TO HANDLE THE PLAYERINTERACT
+    //
+    // //////////////////////////////////////////////////////////////////////
+
+    private void handleInfoInteract(PlayerInteractEvent event) {
+    }
+
+    private void handleRemoveInteract(PlayerInteractEvent event) {
+        // cancel event
+        event.setCancelled(true);
+
+        // try to remove the protection
+        if (!this.protectionInfo.hasAnyProtection()) {
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected!");
             return;
-        } else if (inRemoveMode) {
-            // return to normalmode
-            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
-            // cancel event
-            event.setCancelled(true);
+        } else if (this.protectionInfo.hasProtection()) {
+            // get protection
+            Protection protection = this.protectionInfo.getProtection();
 
-            // try to remove the protection
-            if (!this.protectionInfo.hasAnyProtection()) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected!");
-                return;
-            } else if (this.protectionInfo.hasProtection()) {
-                // get protection
-                Protection protection = this.protectionInfo.getProtection();
-
-                // check permission
-                boolean isOwner = protection.isOwner(event.getPlayer().getName());
-                boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
-                if (!isOwner && !isAdmin) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this protection!");
-                    return;
-                }
-
-                // print info
-                this.protectionManager.removeProtection(this.vector);
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
-            } else {
-                // we have a SubProtection => check permissions and handle it
-                if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
-                    return;
-                }
-
-                // Remove all SubProtections
-                SubProtection protection;
-                for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
-                    protection = this.protectionInfo.getSubProtections().getProtection(i);
-                    if (protection != null) {
-                        this.protectionManager.removeProtection(protection.getParent().getVector());
-                    }
-                }
-
-                // Send info
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
+            // check permission
+            boolean isOwner = protection.isOwner(event.getPlayer().getName());
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+            if (!isOwner && !isAdmin) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this protection!");
                 return;
             }
+
+            // print info
+            this.protectionManager.removeProtection(this.vector);
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
+        } else {
+            // we have a SubProtection => check permissions and handle it
+            if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
+                return;
+            }
+
+            // Remove all SubProtections
+            SubProtection protection;
+            for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
+                protection = this.protectionInfo.getSubProtections().getProtection(i);
+                if (protection != null) {
+                    this.protectionManager.removeProtection(protection.getParent().getVector());
+                }
+            }
+
+            // Send info
+            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
+            return;
+        }
+    }
+
+    private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state) {
+        // cancel event
+        event.setCancelled(true);
+
+        // check permissions
+        if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to protect this block!");
+            return;
+        }
+
+        // add protection, if it isn't protected yet
+        if (!this.protectionInfo.hasAnyProtection()) {
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
+
+            if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+                // protect private
+                Random random = new Random();
+                module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
+                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
+            } else {
+                // protect public
+                Random random = new Random();
+                module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PUBLIC, event.getClickedBlock().getData());
+                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Public protection created.");
+            }
+        } else {
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is already protected.");
+        }
+    }
+
+    private void handleNormalInteract(PlayerInteractEvent event) {
+        // CHECK: Protection?
+        if (this.protectionInfo.hasProtection()) {
+            // is this protection private?
+            if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
+                event.setCancelled(true);
+                return;
+            }
+            event.setCancelled(false);
+            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected by " + this.protectionInfo.getProtection().getOwner() + " ( " + this.protectionInfo.getProtection().getType() + " ).");
+            return;
+        }
+
+        // CHECK: SubProtection?
+        if (this.protectionInfo.hasSubProtection()) {
+            SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
+            for (SubProtection subProtection : holder.getProtections()) {
+                // is this protection private?
+                if (!subProtection.getParent().isPrivate()) {
+                    continue;
+                }
+
+                // check the access
+                if (!subProtection.canAccess(event.getPlayer())) {
+                    // cancel event
+                    event.setCancelled(true);
+                    PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+                    return;
+                }
+            }
+            PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "This block is protected.");
+            return;
         }
     }
 
