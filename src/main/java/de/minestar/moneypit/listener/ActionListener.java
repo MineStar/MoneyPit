@@ -255,41 +255,45 @@ public class ActionListener implements Listener {
         // get PlayerState
         final PlayerState state = this.playerManager.getState(event.getPlayer().getName());
 
-        // no sneak => print info about protections & return
-        if (state == PlayerState.NORMAL) {
-            this.handleNormalInteract(event);
-            return;
-        }
-
-        // the module must be registered
-        Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
-        if (module == null) {
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
-            return;
-        }
-
-        // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
-
         // decide what to do
         switch (state) {
             case PROTECTION_INFO : {
+                // handle info
                 this.handleInfoInteract(event);
                 break;
             }
             case PROTECTION_REMOVE : {
+                // handle remove
                 this.handleRemoveInteract(event);
                 break;
             }
             case PROTECTION_ADD_PRIVATE : {
+                // the module must be registered
+                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
+                if (module == null) {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                    return;
+                }
+
+                // handle add
                 this.handleAddInteract(event, module, state);
                 break;
             }
             case PROTECTION_ADD_PUBLIC : {
+                // the module must be registered
+                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
+                if (module == null) {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                    return;
+                }
+
+                // handle add
                 this.handleAddInteract(event, module, state);
                 break;
             }
             default : {
+                // handle normal interact
+                this.handleNormalInteract(event);
                 break;
             }
         }
@@ -302,11 +306,19 @@ public class ActionListener implements Listener {
     // //////////////////////////////////////////////////////////////////////
 
     private void handleInfoInteract(PlayerInteractEvent event) {
+        // cancel the event
+        event.setCancelled(true);
+
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
     }
 
     private void handleRemoveInteract(PlayerInteractEvent event) {
-        // cancel event
+        // cancel the event
         event.setCancelled(true);
+
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
         // try to remove the protection
         if (!this.protectionInfo.hasAnyProtection()) {
@@ -352,6 +364,9 @@ public class ActionListener implements Listener {
     private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state) {
         // cancel event
         event.setCancelled(true);
+
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
         // check permissions
         if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
