@@ -6,11 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -374,6 +377,47 @@ public class ActionListener implements Listener {
                 PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
                 return;
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockExplode(EntityExplodeEvent event) {
+        // /////////////////////////////////
+        // event cancelled => return
+        // /////////////////////////////////
+        if (event.isCancelled())
+            return;
+
+        for (Block block : event.blockList()) {
+            // update the BlockVector & the ProtectionInfo
+            this.vector.update(block.getLocation());
+            this.protectionInfo.update(this.vector);
+
+            // cancel the event, if the block is protected
+            if (this.protectionInfo.hasAnyProtection()) {
+                event.setCancelled(true);
+                event.setYield(0f);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        // /////////////////////////////////
+        // event cancelled => return
+        // /////////////////////////////////
+        if (event.isCancelled())
+            return;
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getBlock().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // cancel the event, if the block is protected
+        if (this.protectionInfo.hasAnyProtection()) {
+            event.setCancelled(true);
+            return;
         }
     }
 }

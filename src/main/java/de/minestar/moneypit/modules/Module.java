@@ -1,5 +1,9 @@
 package de.minestar.moneypit.modules;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -18,8 +22,14 @@ public abstract class Module {
     private boolean doNeighbourCheck = false;
     private boolean blockRedstone = false;
 
+    private static final Set<Integer> nonSolidStateBlocks = new HashSet<Integer>(Arrays.asList(6, 12, 13, 26, 27, 28, 31, 32, 34, 37, 38, 39, 40, 46, 50, 51, 55, 59, 63, 64, 65, 66, 68, 69, 70, 71, 72, 75, 76, 77, 78, 83, 93, 94, 96, 103, 104, 105, 106, 111, 115, 127, 131, 132));
+
     protected Module() {
         this.protectionManager = Core.protectionManager;
+    }
+
+    protected boolean isBlockNonSolid(int ID) {
+        return nonSolidStateBlocks.contains(ID);
     }
 
     public boolean doNeighbourCheck() {

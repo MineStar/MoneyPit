@@ -40,11 +40,11 @@ public class Module_TrapDoor extends Module {
 
         // FETCH SAND & GRAVEL
         BlockVector tempVector = DoorHelper.getTrapDoorAnchor(vector, subData);
-        if (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+        if (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
             int distance = 1;
             tempVector = tempVector.getRelative(0, -1, 0);
             // search all needed blocks
-            while (tempVector.getLocation().getBlock().getTypeId() == Material.SAND.getId() || tempVector.getLocation().getBlock().getTypeId() == Material.GRAVEL.getId()) {
+            while (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
                 ++distance;
                 tempVector = tempVector.getRelative(0, -1, 0);
             }
