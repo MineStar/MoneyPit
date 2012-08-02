@@ -161,7 +161,7 @@ public class BlockVector implements Comparable<BlockVector> {
     @Override
     public int hashCode() {
         if (this.hashCode == Integer.MIN_VALUE) {
-            this.hashCode = this.toString().hashCode();
+            this.hashCode = 7 * this.x + 3 * this.y + 17 * this.z * this.worldName.length();
         }
         return this.hashCode;
     }
