@@ -527,7 +527,7 @@ public class ActionListener implements Listener {
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
-                String message = "This" + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + "multiple protections" + ".";
+                String message = "This " + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
                 PlayerUtils.sendInfo(player, message);
                 return;
             }
