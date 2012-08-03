@@ -12,7 +12,8 @@ public class PlayerManager {
     private HashMap<String, HashSet<String>> guestMap;
 
     public PlayerManager() {
-        this.playerList = new HashMap<String, PlayerData>(128);
+        this.playerList = new HashMap<String, PlayerData>(64);
+        this.guestMap = new HashMap<String, HashSet<String>>(64);
     }
 
     public PlayerData getData(String playerName) {
