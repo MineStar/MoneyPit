@@ -82,8 +82,7 @@ public class SubProtectionHolder {
      * Check if a player can access all SubSrotections
      * 
      * @param player
-     * @return <b>true</b> if the player can access all SubSrotections,
-     *         otherwise <b>false</b>
+     * @return <b>true</b> if the player can access all SubSrotections, otherwise <b>false</b>
      */
     public boolean canAccessAll(Player player) {
         if (this.getSize() > 0) {
@@ -100,8 +99,7 @@ public class SubProtectionHolder {
      * Check if a player can edit all SubSrotections
      * 
      * @param player
-     * @return <b>true</b> if the player can edit all SubSrotections, otherwise
-     *         <b>false</b>
+     * @return <b>true</b> if the player can edit all SubSrotections, otherwise <b>false</b>
      */
     public boolean canEditAll(Player player) {
         if (this.getSize() > 0) {

@@ -58,15 +58,6 @@ public class SubProtection {
     }
 
     /**
-     * Set the type of the parent protection
-     * 
-     * @param type
-     */
-    public void setType(ProtectionType type) {
-        this.parent.setType(type);
-    }
-
-    /**
      * Add a guest to the guestlist
      * 
      * @param guest
@@ -120,6 +111,24 @@ public class SubProtection {
      */
     public boolean isOwner(String otherName) {
         return this.getOwner().equalsIgnoreCase(otherName);
+    }
+
+    /**
+     * Is this protection public?
+     * 
+     * @return <b>true</b> if it is public, otherwise <b>false</b>
+     */
+    public boolean isPublic() {
+        return this.parent.isPublic();
+    }
+
+    /**
+     * Is this protection private?
+     * 
+     * @return <b>true</b> if it is private, otherwise <b>false</b>
+     */
+    public boolean isPrivate() {
+        return this.parent.isPrivate();
     }
 
     /**
