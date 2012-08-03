@@ -1,5 +1,7 @@
 package de.minestar.moneypit.listener;
 
+import java.util.HashSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -352,7 +354,9 @@ public class ActionListener implements Listener {
                 // add people to guestlist
                 for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
                     if (add) {
-                        this.protectionInfo.getProtection().addGuest(guest);
+                        if (!this.protectionInfo.getProtection().isOwner(guest)) {
+                            this.protectionInfo.getProtection().addGuest(guest);
+                        }
                     } else {
                         this.protectionInfo.getProtection().removeGuest(guest);
                     }
@@ -372,7 +376,9 @@ public class ActionListener implements Listener {
                         // add people to guestlist
                         for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
                             if (add) {
-                                subProtection.addGuest(guest);
+                                if (!subProtection.isOwner(guest)) {
+                                    subProtection.addGuest(guest);
+                                }
                             } else {
                                 subProtection.removeGuest(guest);
                             }
@@ -393,6 +399,7 @@ public class ActionListener implements Listener {
         this.playerManager.clearGuestList(event.getPlayer().getName());
 
     }
+
     private void showInformation(Player player) {
         this.showInformation(player, false);
     }
@@ -438,6 +445,70 @@ public class ActionListener implements Listener {
         }
     }
 
+    private void displayGuestList(Player player, HashSet<String> guestList) {
+        PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
+        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
+        for (String name : guestList) {
+            PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + name);
+        }
+        PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
+    }
+
+    private void showExtendedInformation(Player player) {
+        // we need a protection to show some information about it
+        if (!this.protectionInfo.hasAnyProtection()) {
+            PlayerUtils.sendError(player, Core.NAME, "This block is not protected.");
+            return;
+        }
+
+        if (this.protectionInfo.hasProtection()) {
+            // handle mainprotections
+            String pType = " PRIVATE ";
+            if (this.protectionInfo.getProtection().isPublic()) {
+                pType = " PUBLIC ";
+            }
+
+            int moduleID = this.protectionInfo.getProtection().getModuleID();
+            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+
+            if (this.protectionInfo.getProtection().canAccess(player)) {
+                HashSet<String> guestList = this.protectionInfo.getProtection().getGuestList();
+                if (guestList != null) {
+                    this.displayGuestList(player, guestList);
+                }
+            }
+
+            PlayerUtils.sendInfo(player, message);
+            return;
+        } else {
+            // handle subprotections
+            if (this.protectionInfo.getSubProtections().getSize() == 1) {
+                String pType = " PRIVATE ";
+                if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
+                    pType = " PUBLIC ";
+                }
+
+                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+                PlayerUtils.sendInfo(player, message);
+
+                if (this.protectionInfo.getSubProtections().getProtection(0).canAccess(player)) {
+                    HashSet<String> guestList = this.protectionInfo.getSubProtections().getProtection(0).getParent().getGuestList();
+                    if (guestList != null) {
+                        this.displayGuestList(player, guestList);
+                    }
+                }
+
+                return;
+            } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
+                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + "multiple protections" + ".";
+                PlayerUtils.sendInfo(player, message);
+                return;
+            }
+        }
+    }
+
     private void handleInfoInteract(PlayerInteractEvent event) {
         // cancel the event
         event.setCancelled(true);
@@ -446,7 +517,7 @@ public class ActionListener implements Listener {
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
         // show information
-        this.showInformation(event.getPlayer(), true);
+        this.showExtendedInformation(event.getPlayer());
     }
 
     private void handleRemoveInteract(PlayerInteractEvent event) {

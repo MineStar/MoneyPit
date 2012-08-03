@@ -133,6 +133,15 @@ public class Protection {
     }
 
     /**
+     * Get the complete guestlist for this protection
+     * 
+     * @return the complett guestlist
+     */
+    public HashSet<String> getGuestList() {
+        return this.guests;
+    }
+
+    /**
      * Check if someone is on the guestlist
      * 
      * @param guest

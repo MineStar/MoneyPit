@@ -25,7 +25,7 @@ public class cmd_cinvite extends AbstractExtendedCommand {
             if (correctName == null) {
                 correctName = name;
             }
-            guestList.add(name);
+            guestList.add(correctName);
         }
         return guestList;
     }
