@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -714,7 +715,6 @@ public class ActionListener implements Listener {
     }
 
     private void handleNormalInteract(PlayerInteractEvent event) {
-
         // CHECK: Protection?
         if (this.protectionInfo.hasProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
@@ -783,6 +783,7 @@ public class ActionListener implements Listener {
         }
         return list;
     }
+
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
         // /////////////////////////////////
@@ -868,6 +869,25 @@ public class ActionListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        // /////////////////////////////////
+        // event cancelled => return
+        // /////////////////////////////////
+        if (event.isCancelled())
+            return;
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getBlock().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // cancel the event, if the block is protected
+        if (this.protectionInfo.hasAnyProtection()) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityBreakDoor(EntityBreakDoorEvent event) {
         // /////////////////////////////////
         // event cancelled => return
         // /////////////////////////////////
