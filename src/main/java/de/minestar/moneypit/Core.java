@@ -92,6 +92,9 @@ public class Core extends AbstractCore {
 
     @Override
     protected boolean commonDisable() {
+        if (databaseManager.hasConnection()) {
+            databaseManager.closeConnection();
+        }
         return true;
     }
 
@@ -114,7 +117,7 @@ public class Core extends AbstractCore {
                 new cmd_cuninvite       ("/cuninvite",      "<Player> [ ... Player n]", "moneypit.commands.cuninvite"),
                 new cmd_cuninviteall    ("/cuninviteall",   "",                         "moneypit.commands.cuninvite")
          );
-        // @formatter: on;
+        //@formatter:on;
         return true;
     }
 }

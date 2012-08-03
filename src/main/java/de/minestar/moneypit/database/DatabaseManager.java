@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.bukkit.Location;
+
 import de.minestar.minestarlibrary.config.MinestarConfig;
 import de.minestar.minestarlibrary.database.AbstractDatabaseHandler;
 import de.minestar.minestarlibrary.database.DatabaseConnection;
@@ -15,11 +17,13 @@ import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.modules.Module;
+import de.minestar.moneypit.utils.ListHelper;
 
 public class DatabaseManager extends AbstractDatabaseHandler {
 
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition;
-    // private PreparedStatement loadAllProtections;
+    private PreparedStatement loadAllProtections;
 
     public DatabaseManager(String pluginName, File dataFolder) {
         super(pluginName, dataFolder);
@@ -88,10 +92,13 @@ public class DatabaseManager extends AbstractDatabaseHandler {
 
     @Override
     protected void createStatements(String pluginName, Connection con) throws Exception {
-        this.addProtection = con.prepareStatement("INSERT INTO `tbl_protections` (owner, protectionType, blockWorld, blockX, blockY, blockZ, guestList) VALUES (?, ?, ?, ?, ?, ?, ?);");
-        this.removeProtection = con.prepareStatement("DELETE FROM `tbl_protections` WHERE ID=?;");
-        this.updateGuestList = con.prepareStatement("UPDATE `tbl_protections` SET guestList=? WHERE ID=?;");
-        this.getProtectionAtPosition = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
+        //@formatter:off;
+        this.addProtection              = con.prepareStatement("INSERT INTO `tbl_protections` (owner, protectionType, blockWorld, blockX, blockY, blockZ, guestList) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        this.removeProtection           = con.prepareStatement("DELETE FROM `tbl_protections` WHERE ID=?;");
+        this.updateGuestList            = con.prepareStatement("UPDATE `tbl_protections` SET guestList=? WHERE ID=?;");
+        this.getProtectionAtPosition    = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
+        this.loadAllProtections         = con.prepareStatement("SELECT * FROM `tbl_protections` ORDER BY ID ASC");
+        //@formatter:on;
     }
 
     /**
@@ -184,7 +191,35 @@ public class DatabaseManager extends AbstractDatabaseHandler {
     }
 
     public void init() {
-
+        this.loadAllProtections();
     }
 
+    private void loadAllProtections() {
+        try {
+            ResultSet results = this.loadAllProtections.executeQuery();
+            int count = 0;
+            while (results.next()) {
+                BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
+                try {
+                    Location location = vector.getLocation();
+                    if (location == null) {
+                        continue;
+                    }
+                    Module module = Core.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
+                    if (module == null) {
+                        continue;
+                    }
+                    Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
+                    protection.setGuestList(ListHelper.toList(results.getString("guestList")));
+                    module.addProtection(protection, location.getBlock().getData());
+                    ++count;
+                } catch (Exception error) {
+                    ConsoleUtils.printWarning(Core.NAME, "Can't load protection: " + vector.toString());
+                }
+            }
+            ConsoleUtils.printInfo(Core.NAME, count + " protections loaded!");
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, Core.NAME, "Can't load protections!");
+        }
+    }
 }

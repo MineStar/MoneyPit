@@ -16,7 +16,7 @@ public class Protection {
     private final BlockVector vector;
     private final String owner;
     private ProtectionType type;
-    private HashSet<String> guests;
+    private HashSet<String> guestList;
     private HashMap<BlockVector, SubProtection> subProtections;
 
     /**
@@ -30,7 +30,7 @@ public class Protection {
         this.vector = vector;
         this.owner = owner;
         this.type = type;
-        this.guests = null;
+        this.guestList = null;
         this.subProtections = null;
     }
 
@@ -103,10 +103,10 @@ public class Protection {
      * @param guest
      */
     public void addGuest(String guest) {
-        if (this.guests == null) {
-            this.guests = new HashSet<String>();
+        if (this.guestList == null) {
+            this.guestList = new HashSet<String>();
         }
-        this.guests.add(guest.toLowerCase());
+        this.guestList.add(guest.toLowerCase());
     }
 
     /**
@@ -115,11 +115,11 @@ public class Protection {
      * @param guest
      */
     public void removeGuest(String guest) {
-        if (this.guests != null) {
-            this.guests.remove(guest.toLowerCase());
+        if (this.guestList != null) {
+            this.guestList.remove(guest.toLowerCase());
         }
-        if (this.guests.size() < 1) {
-            this.guests = null;
+        if (this.guestList.size() < 1) {
+            this.guestList = null;
         }
     }
 
@@ -129,16 +129,24 @@ public class Protection {
      * @return the complett guestlist
      */
     public HashSet<String> getGuestList() {
-        return this.guests;
+        return this.guestList;
+    }
+
+    /**
+     * Set the complete guestlist for this protection
+     * 
+     */
+    public void setGuestList(HashSet<String> guestList) {
+        this.guestList = guestList;
     }
 
     /**
      * Clear the complete guestlist
      */
     public void clearGuestList() {
-        if (this.guests != null) {
-            this.guests.clear();
-            this.guests = null;
+        if (this.guestList != null) {
+            this.guestList.clear();
+            this.guestList = null;
         }
     }
 
@@ -149,8 +157,8 @@ public class Protection {
      * @return <b>true</b> if the name is found, otherwise <b>false</b>
      */
     public boolean isGuest(String guest) {
-        if (this.guests != null) {
-            return this.guests.contains(guest.toLowerCase());
+        if (this.guestList != null) {
+            return this.guestList.contains(guest.toLowerCase());
         }
         return false;
     }
