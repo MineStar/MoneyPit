@@ -134,7 +134,7 @@ public class DatabaseManager extends AbstractDatabaseHandler {
             this.addProtection.setInt(5, vector.getY());
             this.addProtection.setInt(6, vector.getZ());
             this.addProtection.setString(7, "");
-            this.addProtection.executeQuery();
+            this.addProtection.executeUpdate();
             return this.getProtectionAtPosition(vector);
         } catch (Exception e) {
             ConsoleUtils.printException(e, Core.NAME, "Can't create protection!");
