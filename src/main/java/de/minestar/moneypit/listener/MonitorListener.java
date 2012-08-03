@@ -8,6 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.manager.QueueManager;
@@ -71,7 +72,14 @@ public class MonitorListener implements Listener {
         if (this.interactQueue != null) {
             // execute the queue, if the event was not cancelled
             if (!event.isCancelled()) {
+                // execute the event
                 this.interactQueue.execute();
+
+                // cancel the event
+                event.setCancelled(true);
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Could not complete your interact request!");
+                PlayerUtils.sendInfo(event.getPlayer(), "The event was cancelled by another plugin.");
             }
         }
     }

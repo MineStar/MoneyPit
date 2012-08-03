@@ -324,8 +324,15 @@ public class ActionListener implements Listener {
     // //////////////////////////////////////////////////////////////////////
 
     private void showInformation(Player player) {
+        this.showInformation(player, false);
+    }
+
+    private void showInformation(Player player, boolean showErrorMessage) {
         // we need a protection to show some information about it
         if (!this.protectionInfo.hasAnyProtection()) {
+            if (showErrorMessage) {
+                PlayerUtils.sendError(player, Core.NAME, "This block is not protected.");
+            }
             return;
         }
 
@@ -369,13 +376,10 @@ public class ActionListener implements Listener {
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
         // show information
-        this.showInformation(event.getPlayer());
+        this.showInformation(event.getPlayer(), true);
     }
 
     private void handleRemoveInteract(PlayerInteractEvent event) {
-        // cancel the event
-        event.setCancelled(true);
-
         // return to normalmode
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
@@ -418,9 +422,6 @@ public class ActionListener implements Listener {
     }
 
     private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state) {
-        // cancel event
-        event.setCancelled(true);
-
         // return to normalmode
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
