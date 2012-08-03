@@ -15,6 +15,7 @@ import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_Lever;
 import de.minestar.moneypit.modules.Module_SignPost;
 import de.minestar.moneypit.modules.Module_StoneButton;
+import de.minestar.moneypit.modules.Module_StonePlate;
 import de.minestar.moneypit.modules.Module_TrapDoor;
 import de.minestar.moneypit.modules.Module_WallSign;
 import de.minestar.moneypit.modules.Module_WoodenDoor;
@@ -75,6 +76,7 @@ public class ModuleManager {
             new Module_StoneButton  (this, ymlFile);
             new Module_Lever        (this, ymlFile);
             new Module_FenceGate    (this, ymlFile);
+            new Module_StonePlate   (this, ymlFile);
             
             // @formatter:on
 
@@ -104,7 +106,8 @@ public class ModuleManager {
             new Module_TrapDoor     (ymlFile);
             new Module_StoneButton  (ymlFile);
             new Module_Lever        (ymlFile);
-            new Module_FenceGate    (ymlFile);
+            new Module_FenceGate    (ymlFile);            
+            new Module_StonePlate   (ymlFile);
             
             // @formatter:on
 

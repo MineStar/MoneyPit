@@ -265,7 +265,7 @@ public class ActionListener implements Listener {
 
         // Only handle Left- & Right-Click on a block
         Action action = event.getAction();
-        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK) {
+        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
             return;
         }
 
