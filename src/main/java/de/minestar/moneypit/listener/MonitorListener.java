@@ -77,7 +77,9 @@ public class MonitorListener implements Listener {
             // execute the queue, if the event was not cancelled
             if (!event.isCancelled()) {
                 // execute the event
-                this.interactQueue.execute();
+                if (!this.interactQueue.execute()) {
+                    event.setCancelled(true);
+                }
 
                 // cancel the event
                 event.setCancelled(true);

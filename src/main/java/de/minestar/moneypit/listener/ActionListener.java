@@ -622,10 +622,9 @@ public class ActionListener implements Listener {
             Protection protection = this.protectionInfo.getProtection();
 
             // check permission
-            boolean isOwner = protection.isOwner(event.getPlayer().getName());
-            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
-            if (!isOwner && !isAdmin) {
+            if (!protection.canEdit(event.getPlayer())) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this protection!");
+                event.setCancelled(true);
                 return;
             }
 
@@ -639,6 +638,7 @@ public class ActionListener implements Listener {
             // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
+                event.setCancelled(true);
                 return;
             }
 
@@ -682,6 +682,7 @@ public class ActionListener implements Listener {
         } else {
             // Send errormessage
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+            event.setCancelled(true);
 
             // show information about the protection
             this.showInformation(event.getPlayer());
