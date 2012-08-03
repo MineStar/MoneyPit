@@ -17,12 +17,20 @@ public class RemoveProtectionQueue implements Queue {
     }
 
     @Override
-    public void execute() {
-        // remove protection
-        Core.protectionManager.removeProtection(this.vector);
+    public boolean execute() {
+        // try to delete the protection in the database
+        if (Core.databaseManager.deleteProtection(this.vector)) {
+            // remove protection from ingamehandler
+            Core.protectionManager.removeProtection(this.vector);
 
-        // send info
-        PlayerUtils.sendSuccess(this.player, Core.NAME, "Protection removed.");
+            // send info
+            PlayerUtils.sendSuccess(this.player, Core.NAME, "Protection removed.");
+            return true;
+        } else {
+            PlayerUtils.sendError(player, Core.NAME, "Could not delete protection!");
+            PlayerUtils.sendInfo(player, "Please contact an admin.");
+            return false;
+        }
     }
 
     @Override

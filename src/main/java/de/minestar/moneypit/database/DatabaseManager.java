@@ -19,7 +19,7 @@ import de.minestar.moneypit.data.protection.ProtectionType;
 public class DatabaseManager extends AbstractDatabaseHandler {
 
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition;
-    private PreparedStatement loadAllProtections;
+    // private PreparedStatement loadAllProtections;
 
     public DatabaseManager(String pluginName, File dataFolder) {
         super(pluginName, dataFolder);
@@ -108,7 +108,7 @@ public class DatabaseManager extends AbstractDatabaseHandler {
             this.getProtectionAtPosition.setInt(4, vector.getZ());
             ResultSet results = this.getProtectionAtPosition.executeQuery();
             while (results.next()) {
-                return new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
+                return new Protection(results.getInt("ID"), vector.getRelative(0, 0, 0), results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
             }
             return null;
         } catch (Exception e) {
@@ -167,13 +167,18 @@ public class DatabaseManager extends AbstractDatabaseHandler {
      * @param protection
      * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
      */
-    public boolean deleteProtection(Protection protection) {
+    public boolean deleteProtection(BlockVector vector) {
         try {
-            this.removeProtection.setInt(1, protection.getID());
-            this.removeProtection.executeUpdate();
-            return true;
+            Protection protection = this.getProtectionAtPosition(vector);
+            if (protection != null) {
+                this.removeProtection.setInt(1, protection.getID());
+                this.removeProtection.executeUpdate();
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't delete protection from database! ID=" + protection.getID());
+            ConsoleUtils.printException(e, Core.NAME, "Can't delete protection from database @ " + vector.toString());
             return false;
         }
     }

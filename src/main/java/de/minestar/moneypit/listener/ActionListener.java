@@ -40,6 +40,7 @@ import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.queues.AddProtectionQueue;
 import de.minestar.moneypit.queues.RemoveProtectionQueue;
 import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
+import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
 
@@ -357,8 +358,14 @@ public class ActionListener implements Listener {
             if (canEdit) {
                 // clear guestlist
                 this.protectionInfo.getProtection().clearGuestList();
-                // send info
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+
+                if (Core.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                    // send info
+                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+                } else {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
+                }
             } else {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -367,14 +374,24 @@ public class ActionListener implements Listener {
             boolean canEdit = this.protectionInfo.getSubProtections().canEditAll(event.getPlayer());
             if (canEdit) {
                 // for each SubProtection...
+                boolean result = true;
                 for (SubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
                     if (subProtection.getParent().isPrivate()) {
                         // clear guestlist
                         subProtection.getParent().clearGuestList();
                     }
+                    if (!Core.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                        result = false;
+                    }
                 }
+
                 // send info
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+                if (result) {
+                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+                } else {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
+                }
             } else {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -413,11 +430,16 @@ public class ActionListener implements Listener {
                     }
                 }
                 // send info
-                if (add)
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
-                else
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
 
+                if (Core.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                    if (add)
+                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
+                    else
+                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+                } else {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
+                }
             } else {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -426,6 +448,7 @@ public class ActionListener implements Listener {
             boolean canEdit = this.protectionInfo.getSubProtections().canEditAll(event.getPlayer());
             if (canEdit) {
                 // for each SubProtection...
+                boolean result = true;
                 for (SubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
                     if (subProtection.getParent().isPrivate()) {
                         // add people to guestlist
@@ -439,12 +462,21 @@ public class ActionListener implements Listener {
                             }
                         }
                     }
+
+                    if (!Core.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                        result = false;
+                    }
                 }
                 // send info
-                if (add)
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
-                else
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+                if (result) {
+                    if (add)
+                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
+                    else
+                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+                } else {
+                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
+                }
             } else {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -456,6 +488,7 @@ public class ActionListener implements Listener {
         // clear guestlist
         this.playerManager.clearGuestList(event.getPlayer().getName());
     }
+
     private void showInformation(Player player) {
         this.showInformation(player, false);
     }

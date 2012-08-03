@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.protection.ProtectionType;
+import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 
@@ -98,5 +98,5 @@ public abstract class Module {
         return false;
     }
 
-    public abstract void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData);
+    public abstract void addProtection(Protection protection, byte subData);
 }

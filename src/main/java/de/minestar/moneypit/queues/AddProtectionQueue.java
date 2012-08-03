@@ -1,13 +1,12 @@
 package de.minestar.moneypit.queues;
 
-import java.util.Random;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.modules.Module;
 
@@ -26,18 +25,25 @@ public class AddProtectionQueue implements Queue {
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
         Block block = vector.getLocation().getBlock();
         if (player.isOnline()) {
-            // protect private
-            Random random = new Random();
-            module.addProtection(random.nextInt(1000000), vector, player.getName(), this.protectionType, block.getData());
+            // create protection
+            Protection protection = Core.databaseManager.createProtection(vector, player.getName(), this.protectionType);
+            if (protection == null) {
+                PlayerUtils.sendError(player, Core.NAME, "Could not save new protection!");
+                PlayerUtils.sendInfo(player, "Please contact an admin.");
+                return false;
+            }
+            module.addProtection(protection, block.getData());
             if (this.protectionType == ProtectionType.PRIVATE) {
                 PlayerUtils.sendSuccess(player, Core.NAME, "Private protection created.");
             } else {
                 PlayerUtils.sendSuccess(player, Core.NAME, "Public protection created.");
             }
+            return true;
         }
+        return false;
     }
 
     @Override

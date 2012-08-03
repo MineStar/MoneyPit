@@ -3,9 +3,7 @@ package de.minestar.moneypit.modules;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_FenceGate extends Module {
@@ -28,10 +26,7 @@ public class Module_FenceGate extends Module {
     }
 
     @Override
-    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
-        // create the protection
-        Protection protection = new Protection(ID, vector, owner, type);
-
+    public void addProtection(Protection protection, byte subData) {
         // register the protection
         getProtectionManager().addProtection(protection);
     }

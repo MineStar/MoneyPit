@@ -8,7 +8,6 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
@@ -34,20 +33,17 @@ public class Module_WoodenDoor extends Module {
     }
 
     @Override
-    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
-        // create the protection
-        Protection protection = new Protection(ID, vector, owner, type);
-
+    public void addProtection(Protection protection, byte subData) {
         // protect the block below
-        SubProtection subProtection = new SubProtection(vector.getRelative(0, -1, 0), protection);
+        SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
         protection.addSubProtection(subProtection);
 
         // protect the block above
-        subProtection = new SubProtection(vector.getRelative(0, 1, 0), protection);
+        subProtection = new SubProtection(protection.getVector().getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
 
         // FETCH SAND & GRAVEL
-        BlockVector tempVector = vector.getRelative(0, -1, 0);
+        BlockVector tempVector = protection.getVector().getRelative(0, -1, 0);
         if (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
             int distance = 1;
             tempVector = tempVector.getRelative(0, -1, 0);
@@ -58,7 +54,7 @@ public class Module_WoodenDoor extends Module {
             }
 
             // finally protect the blocks
-            tempVector = vector.getRelative(0, -1, 0);
+            tempVector = protection.getVector().getRelative(0, -1, 0);
             for (int i = 0; i < distance; i++) {
                 // protect the blocks
                 subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);

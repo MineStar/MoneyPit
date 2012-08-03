@@ -35,7 +35,9 @@ public class MonitorListener implements Listener {
         if (this.addQueue != null) {
             // execute the queue, if the event was not cancelled
             if (!event.isCancelled()) {
-                this.addQueue.execute();
+                if (!this.addQueue.execute()) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -50,7 +52,9 @@ public class MonitorListener implements Listener {
         if (this.removeQueue != null) {
             // execute the queue, if the event was not cancelled
             if (!event.isCancelled()) {
-                this.removeQueue.execute();
+                if (!this.removeQueue.execute()) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

@@ -4,7 +4,7 @@ import de.minestar.moneypit.data.BlockVector;
 
 public interface Queue {
 
-    public void execute();
+    public boolean execute();
 
     public BlockVector getVector();
 }

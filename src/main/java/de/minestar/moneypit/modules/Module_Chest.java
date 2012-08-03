@@ -11,7 +11,6 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.ChestHelper;
@@ -31,12 +30,9 @@ public class Module_Chest extends Module {
     }
 
     @Override
-    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
-        // create the protection
-        Protection protection = new Protection(ID, vector, owner, type);
-
+    public void addProtection(Protection protection, byte subData) {
         // search a second chest and add the subprotection, if found
-        Chest secondChest = BlockUtils.isDoubleChest(vector.getLocation().getBlock());
+        Chest secondChest = BlockUtils.isDoubleChest(protection.getVector().getLocation().getBlock());
         if (secondChest != null) {
             SubProtection subProtection = new SubProtection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);

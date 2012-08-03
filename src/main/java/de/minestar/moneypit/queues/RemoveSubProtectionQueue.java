@@ -21,19 +21,29 @@ public class RemoveSubProtectionQueue implements Queue {
     }
 
     @Override
-    public void execute() {
-        // Remove all SubProtections
+    public boolean execute() {
+        boolean result = true;
+        // try to remove all SubProtections
         SubProtection protection;
         for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
             protection = this.protectionInfo.getSubProtections().getProtection(i);
             if (protection != null) {
-                Core.protectionManager.removeProtection(protection.getParent().getVector());
+                if (Core.databaseManager.deleteProtection(protection.getParent().getVector())) {
+                    Core.protectionManager.removeProtection(protection.getParent().getVector());
+                } else {
+                    result = false;
+                }
             }
         }
 
         // Send info
-        PlayerUtils.sendSuccess(this.player, Core.NAME, "Protection removed!");
-        return;
+        if (result) {
+            PlayerUtils.sendSuccess(this.player, Core.NAME, "Protection removed!");
+        } else {
+            PlayerUtils.sendError(player, Core.NAME, "Could not delete all subprotections!");
+            PlayerUtils.sendInfo(player, "Please contact an admin.");
+        }
+        return result;
     }
 
     @Override

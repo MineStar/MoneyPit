@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
@@ -30,16 +29,13 @@ public class Module_TrapDoor extends Module {
     }
 
     @Override
-    public void addProtection(int ID, BlockVector vector, String owner, ProtectionType type, byte subData) {
-        // create the protection
-        Protection protection = new Protection(ID, vector, owner, type);
-
+    public void addProtection(Protection protection, byte subData) {
         // protect the block below
-        SubProtection subProtection = new SubProtection(DoorHelper.getTrapDoorAnchor(vector, subData), protection);
+        SubProtection subProtection = new SubProtection(DoorHelper.getTrapDoorAnchor(protection.getVector(), subData), protection);
         protection.addSubProtection(subProtection);
 
         // FETCH SAND & GRAVEL
-        BlockVector tempVector = DoorHelper.getTrapDoorAnchor(vector, subData);
+        BlockVector tempVector = DoorHelper.getTrapDoorAnchor(protection.getVector(), subData);
         if (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
             int distance = 1;
             tempVector = tempVector.getRelative(0, -1, 0);
@@ -50,7 +46,7 @@ public class Module_TrapDoor extends Module {
             }
 
             // finally protect the blocks
-            tempVector = DoorHelper.getTrapDoorAnchor(vector, subData);
+            tempVector = DoorHelper.getTrapDoorAnchor(protection.getVector(), subData);
             for (int i = 0; i < distance; i++) {
                 // protect the blocks
                 subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);
