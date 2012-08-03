@@ -1,5 +1,6 @@
 package de.minestar.moneypit.listener;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.bukkit.ChatColor;
@@ -754,6 +755,16 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
+    private ArrayList<Block> getPistonChangeBlocks(Block pistonBlock, BlockFace direction) {
+        ArrayList<Block> list = new ArrayList<Block>();
+        Block temp = pistonBlock;
+        for (int count = 0; count < 13; count++) {
+            temp = temp.getRelative(direction);
+            list.add(temp);
+        }
+        return list;
+    }
+
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
         // /////////////////////////////////
@@ -762,8 +773,8 @@ public class ActionListener implements Listener {
         if (event.isCancelled())
             return;
 
-        for (Block block : event.getBlocks()) {
-            System.out.println("Type: " + block.getType().name());
+        ArrayList<Block> changedBlocks = this.getPistonChangeBlocks(event.getBlock(), event.getDirection());
+        for (Block block : changedBlocks) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(block.getLocation());
             this.protectionInfo.update(this.vector);
@@ -781,7 +792,7 @@ public class ActionListener implements Listener {
         // /////////////////////////////////
         // event cancelled or normal piston => return
         // /////////////////////////////////
-        if (event.isCancelled())
+        if (event.isCancelled() || event.isSticky())
             return;
 
         // update the BlockVector & the ProtectionInfo
