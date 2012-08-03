@@ -1,7 +1,5 @@
 package de.minestar.moneypit.listener;
 
-import java.util.Random;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -37,7 +35,9 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.modules.Module;
-import de.minestar.moneypit.queues.AddQueue;
+import de.minestar.moneypit.queues.AddProtectionQueue;
+import de.minestar.moneypit.queues.RemoveProtectionQueue;
+import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 
 public class ActionListener implements Listener {
 
@@ -173,8 +173,8 @@ public class ActionListener implements Listener {
                 BlockVector tempVector = new BlockVector(event.getBlockPlaced().getLocation());
 
                 // queue the event for later use in MonitorListener
-                AddQueue addQueue = new AddQueue(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
-                this.queueManager.addBlockPlace(addQueue);
+                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE);
+                this.queueManager.addQueue(queue);
             } else {
                 PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You don't have permissions to protect this block.");
                 return;
@@ -191,6 +191,7 @@ public class ActionListener implements Listener {
             PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");
         }
     }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         // event is already cancelled => return
@@ -229,11 +230,12 @@ public class ActionListener implements Listener {
                 return;
             }
 
-            // remove protection
-            this.protectionManager.removeProtection(this.vector);
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
 
-            // send info
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
+            // queue the event for later use in MonitorListener
+            RemoveProtectionQueue queue = new RemoveProtectionQueue(event.getPlayer(), tempVector);
+            this.queueManager.addQueue(queue);
         } else {
             // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
@@ -242,18 +244,12 @@ public class ActionListener implements Listener {
                 return;
             }
 
-            // Remove all SubProtections
-            SubProtection protection;
-            for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
-                protection = this.protectionInfo.getSubProtections().getProtection(i);
-                if (protection != null) {
-                    this.protectionManager.removeProtection(protection.getParent().getVector());
-                }
-            }
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getBlock().getLocation());
 
-            // Send info
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
-            return;
+            // queue the event for later use in MonitorListener
+            RemoveSubProtectionQueue queue = new RemoveSubProtectionQueue(event.getPlayer(), tempVector, this.protectionInfo.clone());
+            this.queueManager.addQueue(queue);
         }
     }
 
@@ -399,9 +395,12 @@ public class ActionListener implements Listener {
                 return;
             }
 
-            // print info
-            this.protectionManager.removeProtection(this.vector);
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed.");
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
+
+            // queue the event for later use in MonitorListener
+            RemoveProtectionQueue queue = new RemoveProtectionQueue(event.getPlayer(), tempVector);
+            this.queueManager.addQueue(queue);
         } else {
             // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
@@ -409,18 +408,12 @@ public class ActionListener implements Listener {
                 return;
             }
 
-            // Remove all SubProtections
-            SubProtection protection;
-            for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
-                protection = this.protectionInfo.getSubProtections().getProtection(i);
-                if (protection != null) {
-                    this.protectionManager.removeProtection(protection.getParent().getVector());
-                }
-            }
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
 
-            // Send info
-            PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Protection removed!");
-            return;
+            // queue the event for later use in MonitorListener
+            RemoveSubProtectionQueue queue = new RemoveSubProtectionQueue(event.getPlayer(), tempVector, this.protectionInfo.clone());
+            this.queueManager.addQueue(queue);
         }
     }
 
@@ -443,17 +436,20 @@ public class ActionListener implements Listener {
             BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
 
             if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
-                // protect private
-                Random random = new Random();
-                module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PRIVATE, event.getClickedBlock().getData());
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Private protection created.");
+                // create a privatge protection
+
+                // queue the event for later use in MonitorListener
+                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE);
+                this.queueManager.addQueue(queue);
             } else {
-                // protect public
-                Random random = new Random();
-                module.addProtection(random.nextInt(1000000), tempVector, event.getPlayer().getName(), ProtectionType.PUBLIC, event.getClickedBlock().getData());
-                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Public protection created.");
+                // create a public protection
+
+                // queue the event for later use in MonitorListener
+                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PUBLIC);
+                this.queueManager.addQueue(queue);
             }
         } else {
+            // Send errormessage
             PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
 
             // show information about the protection

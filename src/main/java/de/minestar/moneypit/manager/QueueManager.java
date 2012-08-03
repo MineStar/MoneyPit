@@ -3,19 +3,19 @@ package de.minestar.moneypit.manager;
 import java.util.HashMap;
 
 import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.queues.AddQueue;
+import de.minestar.moneypit.queues.Queue;
 
 public class QueueManager {
 
-    private HashMap<BlockVector, AddQueue> placeEvents = new HashMap<BlockVector, AddQueue>();
+    private HashMap<BlockVector, Queue> events = new HashMap<BlockVector, Queue>();
 
-    public void addBlockPlace(AddQueue addQueue) {
-        this.placeEvents.put(addQueue.getVector(), addQueue);
+    public void addQueue(Queue queue) {
+        this.events.put(queue.getVector(), queue);
     }
 
-    public AddQueue getAndRemoveAddQueue(BlockVector vector) {
-        AddQueue queue = this.placeEvents.get(vector);
-        this.placeEvents.remove(vector);
+    public Queue getAndRemoveQueue(BlockVector vector) {
+        Queue queue = this.events.get(vector);
+        this.events.remove(vector);
         return queue;
     }
 
