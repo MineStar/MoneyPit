@@ -115,7 +115,7 @@ public class Protection {
         if (this.guests == null) {
             this.guests = new HashSet<String>();
         }
-        this.guests.add(guest);
+        this.guests.add(guest.toLowerCase());
     }
 
     /**
@@ -125,7 +125,7 @@ public class Protection {
      */
     public void removeGuest(String guest) {
         if (this.guests != null) {
-            this.guests.remove(guest);
+            this.guests.remove(guest.toLowerCase());
         }
         if (this.guests.size() < 1) {
             this.guests = null;
@@ -140,7 +140,7 @@ public class Protection {
      */
     public boolean isGuest(String guest) {
         if (this.guests != null) {
-            return this.guests.contains(guest);
+            return this.guests.contains(guest.toLowerCase());
         }
         return false;
     }

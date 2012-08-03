@@ -309,6 +309,14 @@ public class ActionListener implements Listener {
                 this.handleAddInteract(event, module, state);
                 break;
             }
+            case PROTECTION_INVITE : {
+                this.handleInviteInteract(event, true);
+                break;
+            }
+            case PROTECTION_UNINVITE : {
+                this.handleInviteInteract(event, false);
+                break;
+            }
             default : {
                 // handle normal interact
                 this.handleNormalInteract(event);
@@ -323,6 +331,68 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
+    private void handleInviteInteract(PlayerInteractEvent event, boolean add) {
+        // cancel the event
+        event.setCancelled(true);
+
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+        if (this.protectionInfo.hasProtection()) {
+            // MainProtection
+
+            if (this.protectionInfo.getProtection().isPublic()) {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You must click on a private protection.");
+                this.showInformation(event.getPlayer());
+                return;
+            }
+
+            boolean canEdit = this.protectionInfo.getProtection().canEdit(event.getPlayer());
+            if (canEdit) {
+                // add people to guestlist
+                for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                    if (add) {
+                        this.protectionInfo.getProtection().addGuest(guest);
+                    } else {
+                        this.protectionInfo.getProtection().removeGuest(guest);
+                    }
+                }
+                // send info
+                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                this.showInformation(event.getPlayer());
+            }
+        } else if (this.protectionInfo.hasSubProtection()) {
+            boolean canEdit = this.protectionInfo.getSubProtections().canEditAll(event.getPlayer());
+            if (canEdit) {
+                // for each SubProtection...
+                for (SubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
+                    if (subProtection.getParent().isPrivate()) {
+                        // add people to guestlist
+                        for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                            if (add) {
+                                subProtection.addGuest(guest);
+                            } else {
+                                subProtection.removeGuest(guest);
+                            }
+                        }
+                    }
+                }
+                // send info
+                PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                this.showInformation(event.getPlayer());
+            }
+        } else {
+            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected.");
+        }
+
+        // clear guestlist
+        this.playerManager.clearGuestList(event.getPlayer().getName());
+
+    }
     private void showInformation(Player player) {
         this.showInformation(player, false);
     }

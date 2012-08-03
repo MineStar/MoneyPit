@@ -4,9 +4,6 @@ version: ${pom.version}
 depend: [MineStarLibrary, MinestarCore]
 softdepend: [GreenMile]
 commands:
-  mp:
-    description: MoneyPit-related commands
-    usage: /tr <command>
   cremove:
     description: Remove a protection
     usage: /cremove
@@ -19,3 +16,9 @@ commands:
   cpublic:
     description: Add a public protection
     usage: /cpublic
+  cinvite:
+    description: Invite players to a private protection
+    usage: /cinvite <Player> [... Player n]
+  cuninvite:
+    description: Uninvite players from a private protection
+    usage: /cuninvite <Player> [... Player n]

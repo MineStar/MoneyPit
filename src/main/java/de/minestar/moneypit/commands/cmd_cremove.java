@@ -1,5 +1,6 @@
 package de.minestar.moneypit.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.commands.AbstractCommand;
@@ -16,6 +17,6 @@ public class cmd_cremove extends AbstractCommand {
 
     public void execute(String[] args, Player player) {
         Core.playerManager.setState(player.getName(), PlayerState.PROTECTION_REMOVE);
-        PlayerUtils.sendSuccess(player, Core.NAME, "Click on a block to remove the protection!");
+        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, Core.NAME, "Click on a block to remove the protection!");
     }
 }

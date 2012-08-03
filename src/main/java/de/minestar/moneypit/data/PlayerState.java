@@ -9,5 +9,9 @@ public enum PlayerState {
 
     PROTECTION_INFO,
 
+    PROTECTION_INVITE,
+
+    PROTECTION_UNINVITE,
+
     PROTECTION_REMOVE;
 }
