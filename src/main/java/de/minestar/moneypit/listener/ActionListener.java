@@ -792,7 +792,7 @@ public class ActionListener implements Listener {
         // /////////////////////////////////
         // event cancelled or normal piston => return
         // /////////////////////////////////
-        if (event.isCancelled() || event.isSticky())
+        if (event.isCancelled() || !event.isSticky())
             return;
 
         // update the BlockVector & the ProtectionInfo
