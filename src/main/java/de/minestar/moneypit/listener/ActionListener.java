@@ -2,7 +2,6 @@ package de.minestar.moneypit.listener;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -36,14 +35,16 @@ import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
+import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.modules.Module;
-import de.minestar.moneypit.threads.AddProtectionThread;
+import de.minestar.moneypit.queues.AddQueue;
 
 public class ActionListener implements Listener {
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
     private ProtectionManager protectionManager;
+    private QueueManager queueManager;
 
     private BlockVector vector;
     private ProtectionInfo protectionInfo;
@@ -54,6 +55,7 @@ public class ActionListener implements Listener {
         this.moduleManager = Core.moduleManager;
         this.playerManager = Core.playerManager;
         this.protectionManager = Core.protectionManager;
+        this.queueManager = Core.queueManager;
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
     }
@@ -169,9 +171,13 @@ public class ActionListener implements Listener {
             if (canProtect) {
                 // create the vector
                 BlockVector tempVector = new BlockVector(event.getBlockPlaced().getLocation());
-                // create thread to add the protection and start it
-                AddProtectionThread thread = new AddProtectionThread(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, thread, 1L);
+
+                // queue the event for later use in MonitorListener
+                AddQueue addQueue = new AddQueue(event.getPlayer(), module, tempVector, event.getBlockPlaced().getTypeId(), this.protectionInfo.clone());
+                this.queueManager.addBlockPlace(addQueue);
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You don't have permissions to protect this block.");
+                return;
             }
         } else {
             if (this.protectionInfo.hasSubProtection()) {
@@ -185,7 +191,6 @@ public class ActionListener implements Listener {
             PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");
         }
     }
-
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         // event is already cancelled => return

@@ -27,9 +27,11 @@ import de.minestar.moneypit.commands.cmd_cprivate;
 import de.minestar.moneypit.commands.cmd_cpublic;
 import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.listener.ActionListener;
+import de.minestar.moneypit.listener.MonitorListener;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
+import de.minestar.moneypit.manager.QueueManager;
 
 public class Core extends AbstractCore {
 
@@ -39,11 +41,13 @@ public class Core extends AbstractCore {
 
     /** LISTENER */
     public static ActionListener actionListener;
+    public static MonitorListener monitorListener;
 
     /** MANAGER */
     public static ModuleManager moduleManager;
     public static ProtectionManager protectionManager;
     public static PlayerManager playerManager;
+    public static QueueManager queueManager;
 
     /** CONSTRUCTOR */
     public Core() {
@@ -58,18 +62,18 @@ public class Core extends AbstractCore {
         moduleManager = new ModuleManager();
         playerManager = new PlayerManager();
         protectionManager = new ProtectionManager();
+        queueManager = new QueueManager();
 
         // init
         moduleManager.init();
-        playerManager.init();
         protectionManager.init();
 
         return true;
     }
-
     @Override
     protected boolean createListener() {
         actionListener = new ActionListener();
+        monitorListener = new MonitorListener();
         return true;
     }
 
@@ -81,6 +85,7 @@ public class Core extends AbstractCore {
     @Override
     protected boolean registerEvents(PluginManager pm) {
         pm.registerEvents(actionListener, this);
+        pm.registerEvents(monitorListener, this);
         return true;
     }
 

@@ -1,4 +1,4 @@
-package de.minestar.moneypit.threads;
+package de.minestar.moneypit.queues;
 
 import java.util.Random;
 
@@ -12,7 +12,7 @@ import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.modules.Module;
 
-public class AddProtectionThread implements Runnable {
+public class AddQueue {
 
     private final Player player;
     private final Module module;
@@ -20,7 +20,7 @@ public class AddProtectionThread implements Runnable {
     private final int wantedTypeID;
     private final ProtectionInfo protectionInfo;
 
-    public AddProtectionThread(Player player, Module module, BlockVector vector, int wantedTypeID, ProtectionInfo protectionInfo) {
+    public AddQueue(Player player, Module module, BlockVector vector, int wantedTypeID, ProtectionInfo protectionInfo) {
         this.player = player;
         this.module = module;
         this.vector = vector;
@@ -28,8 +28,7 @@ public class AddProtectionThread implements Runnable {
         this.protectionInfo = protectionInfo;
     }
 
-    @Override
-    public void run() {
+    public void execute() {
         Block block = vector.getLocation().getBlock();
         if (wantedTypeID == block.getTypeId() && player.isOnline()) {
             // add protection, if it isn't protected yet
@@ -45,4 +44,7 @@ public class AddProtectionThread implements Runnable {
         }
     }
 
+    public BlockVector getVector() {
+        return this.vector;
+    }
 }
