@@ -98,15 +98,6 @@ public class Protection {
     }
 
     /**
-     * Set the type of this protection
-     * 
-     * @param type
-     */
-    public void setType(ProtectionType type) {
-        this.type = type;
-    }
-
-    /**
      * Add a guest to the guestlist
      * 
      * @param guest
@@ -189,8 +180,7 @@ public class Protection {
     /**
      * Check if this Protection has any SubProtections
      * 
-     * @return <b>true</b> if we have at least one SubProtection, otherwise
-     *         <b>false</b>
+     * @return <b>true</b> if we have at least one SubProtection, otherwise <b>false</b>
      */
     public boolean hasAnySubProtection() {
         if (this.subProtections != null) {
