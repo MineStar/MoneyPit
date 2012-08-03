@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -253,6 +254,24 @@ public class ActionListener implements Listener {
             // queue the event for later use in MonitorListener
             RemoveSubProtectionQueue queue = new RemoveSubProtectionQueue(event.getPlayer(), tempVector, this.protectionInfo.clone());
             this.queueManager.addQueue(queue);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        // event is already cancelled => return
+        if (event.isCancelled()) {
+            return;
+        }
+
+        if (event.getChangedTypeId() == Material.TNT.getId()) {
+            // update the BlockVector & the ProtectionInfo
+            this.vector.update(event.getBlock().getLocation());
+            this.protectionInfo.update(this.vector);
+
+            if (this.protectionInfo.hasAnyProtection()) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -510,7 +529,7 @@ public class ActionListener implements Listener {
             }
 
             int moduleID = this.protectionInfo.getProtection().getModuleID();
-            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
             PlayerUtils.sendInfo(player, message);
             return;
         } else {
@@ -522,7 +541,7 @@ public class ActionListener implements Listener {
                 }
 
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
@@ -558,7 +577,7 @@ public class ActionListener implements Listener {
             }
 
             int moduleID = this.protectionInfo.getProtection().getModuleID();
-            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
 
             if (this.protectionInfo.getProtection().canAccess(player)) {
                 HashSet<String> guestList = this.protectionInfo.getProtection().getGuestList();
@@ -578,7 +597,7 @@ public class ActionListener implements Listener {
                 }
 
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + player.getName() + ".";
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
 
                 if (this.protectionInfo.getSubProtections().getProtection(0).canAccess(player)) {
@@ -735,7 +754,7 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
         // /////////////////////////////////
         // event cancelled => return
@@ -744,6 +763,7 @@ public class ActionListener implements Listener {
             return;
 
         for (Block block : event.getBlocks()) {
+            System.out.println("Type: " + block.getType().name());
             // update the BlockVector & the ProtectionInfo
             this.vector.update(block.getLocation());
             this.protectionInfo.update(this.vector);
@@ -756,12 +776,12 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent event) {
         // /////////////////////////////////
         // event cancelled or normal piston => return
         // /////////////////////////////////
-        if (event.isCancelled() || !event.isSticky())
+        if (event.isCancelled())
             return;
 
         // update the BlockVector & the ProtectionInfo
@@ -775,7 +795,7 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
         // /////////////////////////////////
         // event cancelled => return
