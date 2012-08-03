@@ -1,7 +1,9 @@
 package de.minestar.moneypit.listener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -45,6 +47,8 @@ import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
+
+    private static final Set<Integer> nonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132));
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -761,10 +765,12 @@ public class ActionListener implements Listener {
         for (int count = 0; count < 13; count++) {
             temp = temp.getRelative(direction);
             list.add(temp);
+            if (nonPushableBlocks.contains(temp.getTypeId())) {
+                return list;
+            }
         }
         return list;
     }
-
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
         // /////////////////////////////////
