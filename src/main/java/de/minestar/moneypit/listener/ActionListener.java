@@ -714,23 +714,30 @@ public class ActionListener implements Listener {
     }
 
     private void handleNormalInteract(PlayerInteractEvent event) {
+
         // CHECK: Protection?
         if (this.protectionInfo.hasProtection()) {
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             // is this protection private?
             if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
-                // show information about the protection
-                this.showInformation(event.getPlayer());
+                if (event.getAction() != Action.PHYSICAL && isAdmin) {
+                    // show information about the protection
+                    this.showInformation(event.getPlayer());
+                }
                 // cancel the event
                 event.setCancelled(true);
                 return;
             }
-            // show information about the protection
-            this.showInformation(event.getPlayer());
+            if (event.getAction() != Action.PHYSICAL && isAdmin) {
+                // show information about the protection
+                this.showInformation(event.getPlayer());
+            }
             return;
         }
 
         // CHECK: SubProtection?
         if (this.protectionInfo.hasSubProtection()) {
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
             for (SubProtection subProtection : holder.getProtections()) {
                 // is this protection private?
@@ -742,13 +749,18 @@ public class ActionListener implements Listener {
                 if (!subProtection.canAccess(event.getPlayer())) {
                     // cancel event
                     event.setCancelled(true);
-                    // show information about the protection
-                    this.showInformation(event.getPlayer());
+                    if (event.getAction() != Action.PHYSICAL && isAdmin) {
+                        // show information about the protection
+                        this.showInformation(event.getPlayer());
+                    }
                     return;
                 }
             }
+
             // show information about the protection
-            this.showInformation(event.getPlayer());
+            if (event.getAction() != Action.PHYSICAL && isAdmin) {
+                this.showInformation(event.getPlayer());
+            }
             return;
         }
     }
