@@ -29,6 +29,7 @@ import de.minestar.moneypit.commands.cmd_cpublic;
 import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
+import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.listener.MonitorListener;
 import de.minestar.moneypit.manager.ModuleManager;
@@ -52,6 +53,9 @@ public class Core extends AbstractCore {
     public static PlayerManager playerManager;
     public static QueueManager queueManager;
 
+    /** DATABASE */
+    public static DatabaseManager databaseManager;
+
     /** CONSTRUCTOR */
     public Core() {
         super(NAME);
@@ -67,9 +71,15 @@ public class Core extends AbstractCore {
         protectionManager = new ProtectionManager();
         queueManager = new QueueManager();
 
+        // database
+        databaseManager = new DatabaseManager(Core.NAME, getDataFolder());
+
         // init
         moduleManager.init();
         protectionManager.init();
+
+        // load data
+        databaseManager.init();
 
         return true;
     }

@@ -134,8 +134,7 @@ public class BlockVector implements Comparable<BlockVector> {
     }
 
     /**
-     * Returns a new BlockVector that is relative to this BlockVector with the
-     * given positions
+     * Returns a new BlockVector that is relative to this BlockVector with the given positions
      * 
      * @param x
      * @param y

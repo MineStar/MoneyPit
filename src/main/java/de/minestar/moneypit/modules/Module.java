@@ -92,8 +92,7 @@ public abstract class Module {
      * 
      * @param event
      * @param vector
-     * @return <b>true</b> if the blockplace-event should abort after the check,
-     *         <b>false</b> if it should continue
+     * @return <b>true</b> if the blockplace-event should abort after the check, <b>false</b> if it should continue
      */
     public boolean onPlace(BlockPlaceEvent event, BlockVector vector) {
         return false;
