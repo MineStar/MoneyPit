@@ -41,8 +41,6 @@ public class AddProtectionQueue implements Queue {
             } else {
                 PlayerUtils.sendSuccess(player, Core.NAME, "Public protection created.");
             }
-
-            // cancel event
             return true;
         }
         return false;
