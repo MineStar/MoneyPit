@@ -22,3 +22,6 @@ commands:
   cuninvite:
     description: Uninvite players from a private protection
     usage: /cuninvite <Player> [... Player n]
+  cuninviteall:
+    description: Uninvite all players from a private protection
+    usage: /cuninviteall

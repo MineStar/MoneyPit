@@ -13,5 +13,7 @@ public enum PlayerState {
 
     PROTECTION_UNINVITE,
 
+    PROTECTION_UNINVITEALL,
+
     PROTECTION_REMOVE;
 }

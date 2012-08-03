@@ -142,6 +142,16 @@ public class Protection {
     }
 
     /**
+     * Clear the complete guestlist
+     */
+    public void clearGuestList() {
+        if (this.guests != null) {
+            this.guests.clear();
+            this.guests = null;
+        }
+    }
+
+    /**
      * Check if someone is on the guestlist
      * 
      * @param guest
