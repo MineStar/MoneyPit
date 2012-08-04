@@ -33,8 +33,8 @@ public class BlockVector implements Comparable<BlockVector> {
      * @param the
      *            location
      */
-    public BlockVector(Location location2) {
-        this.update(location2);
+    public BlockVector(Location location) {
+        this.update(location);
     }
 
     /**

@@ -878,11 +878,6 @@ public class ActionListener implements Listener {
         if (event.getAction() != Action.PHYSICAL) {
             if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
                 DoorHelper.toggleSecondDoor(event.getClickedBlock());
-                // if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
-                // DoorHelper.openSecondDoor(event.getClickedBlock());
-                // } else {
-                // DoorHelper.closeSecondDoor(event.getClickedBlock());
-                // }
             }
         }
     }
