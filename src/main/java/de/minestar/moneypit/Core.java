@@ -83,6 +83,7 @@ public class Core extends AbstractCore {
 
         return true;
     }
+    
     @Override
     protected boolean createListener() {
         actionListener = new ActionListener();
