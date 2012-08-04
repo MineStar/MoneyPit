@@ -1,6 +1,9 @@
 package de.minestar.moneypit.modules;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -12,6 +15,7 @@ import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
+import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_WoodenDoor extends Module {
 
@@ -35,31 +39,36 @@ public class Module_WoodenDoor extends Module {
 
     @Override
     public void addProtection(Protection protection, byte subData) {
-        // protect the block below
-        SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
-        protection.addSubProtection(subProtection);
-
         // protect the block above
-        subProtection = new SubProtection(protection.getVector().getRelative(0, 1, 0), protection);
+        SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
 
-        // FETCH SAND & GRAVEL
-        BlockVector tempVector = protection.getVector().getRelative(0, -1, 0);
-        if (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
-            int distance = 1;
-            tempVector = tempVector.getRelative(0, -1, 0);
-            // search all needed blocks
-            while (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
-                ++distance;
-                tempVector = tempVector.getRelative(0, -1, 0);
-            }
+        // protect the block below
+        subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
+        protection.addSubProtection(subProtection);
 
-            // finally protect the blocks
-            tempVector = protection.getVector().getRelative(0, -1, 0);
-            for (int i = 0; i < distance; i++) {
-                // protect the blocks
-                subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);
+        // fetch non-solid-blocks
+        PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
+
+        // protect the second door
+        Block[] secondDoor = DoorHelper.getOppositeDoorBlocks(protection.getVector().getLocation().getBlock());
+        if (secondDoor[0] != null && secondDoor[1] != null) {
+            Block[] firstDoor = DoorHelper.getDoorBlocks(protection.getVector().getLocation().getBlock());
+            if (DoorHelper.validateDoorBlocks(firstDoor, secondDoor)) {
+                // protect the upper block of the second door
+                subProtection = new SubProtection(new BlockVector(secondDoor[1].getLocation()), protection);
                 protection.addSubProtection(subProtection);
+
+                // protect the lower block of the second door
+                subProtection = new SubProtection(new BlockVector(secondDoor[0].getLocation()), protection);
+                protection.addSubProtection(subProtection);
+
+                // protect the block below
+                subProtection = new SubProtection(subProtection.getVector().getRelative(0, -1, 0), protection);
+                protection.addSubProtection(subProtection);
+
+                // fetch non-solid-blocks
+                PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
             }
         }
 
@@ -88,8 +97,33 @@ public class Module_WoodenDoor extends Module {
             return new EventResult(true, true, protection);
         }
 
-        // send info
-        PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
+        // protect the second door
+        Block[] secondDoor = DoorHelper.getDoorBlocks(vector.getLocation().getBlock());
+        if (secondDoor[0] != null && secondDoor[1] != null) {
+            // protect the upper block of the second door
+            SubProtection subProtection = new SubProtection(new BlockVector(secondDoor[1].getLocation()), protection);
+            protection.addSubProtection(subProtection);
+            Core.protectionManager.addSubProtection(subProtection);
+
+            // protect the lower block of the second door
+            subProtection = new SubProtection(new BlockVector(secondDoor[0].getLocation()), protection);
+            protection.addSubProtection(subProtection);
+            Core.protectionManager.addSubProtection(subProtection);
+
+            // protect the block below
+            subProtection = new SubProtection(subProtection.getVector().getRelative(0, -1, 0), protection);
+            protection.addSubProtection(subProtection);
+            Core.protectionManager.addSubProtection(subProtection);
+
+            // fetch non-solid-blocks
+            ArrayList<SubProtection> list = PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
+            for (SubProtection sub : list) {
+                Core.protectionManager.addSubProtection(sub);
+            }
+
+            // send info
+            PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
+        }
 
         // return true to abort the event
         return new EventResult(false, true, protection);

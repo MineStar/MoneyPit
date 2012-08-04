@@ -7,6 +7,7 @@ import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.utils.PhysicsHelper;
 import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
@@ -24,29 +25,15 @@ public class Module_WallSign extends Module {
 
     @Override
     public void addProtection(Protection protection, byte subData) {
+        // get the anchor
+        BlockVector anchor = SignHelper.getAnchor(protection.getVector(), subData);
+
         // protect the block below
-        SubProtection subProtection = new SubProtection(SignHelper.getAnchor(protection.getVector(), subData), protection);
+        SubProtection subProtection = new SubProtection(anchor, protection);
         protection.addSubProtection(subProtection);
 
-        // FETCH SAND & GRAVEL
-        BlockVector tempVector = SignHelper.getAnchor(protection.getVector(), subData);
-        if (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
-            int distance = 1;
-            tempVector = tempVector.getRelative(0, -1, 0);
-            // search all needed blocks
-            while (this.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
-                ++distance;
-                tempVector = tempVector.getRelative(0, -1, 0);
-            }
-
-            // finally protect the blocks
-            tempVector = SignHelper.getAnchor(protection.getVector(), subData);
-            for (int i = 0; i < distance; i++) {
-                // protect the blocks
-                subProtection = new SubProtection(tempVector.getRelative(0, -1 - i, 0), protection);
-                protection.addSubProtection(subProtection);
-            }
-        }
+        // fetch non-solid-blocks
+        PhysicsHelper.protectNonSolidBlocks(protection, anchor);
 
         // register the protection
         getProtectionManager().addProtection(protection);

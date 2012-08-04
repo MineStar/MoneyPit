@@ -55,7 +55,7 @@ public class DoorHelper {
     }
 
     public static boolean validateDoorBlocks(Block[] firstDoor, Block[] secondDoor) {
-        if (firstDoor[0].getData() == secondDoor[0].getData() && (firstDoor[1].getData() == secondDoor[1].getData() + 1 || firstDoor[1].getData() == secondDoor[1].getData() - 1))
+        if ((firstDoor[0].getData() == secondDoor[0].getData() - 4 || firstDoor[0].getData() == secondDoor[0].getData() + 4 || firstDoor[0].getData() == secondDoor[0].getData()) && (firstDoor[1].getData() == secondDoor[1].getData() + 1 || firstDoor[1].getData() == secondDoor[1].getData() - 1))
             return true;
         return false;
     }
@@ -76,9 +76,33 @@ public class DoorHelper {
         }
     }
 
+    public static void toggleDoor(Block block) {
+        Block lower = DoorHelper.getLowerDoorPart(block);
+        if (lower.getData() < 4) {
+            DoorHelper.openDoor(lower);
+        } else {
+            DoorHelper.closeDoor(lower);
+        }
+    }
+
+    public static void openDoor(Block block) {
+        Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
+        if (doorBlocks[0] != null && doorBlocks[1] != null) {
+            doorBlocks[0].setData((byte) (doorBlocks[0].getData() + 4), false);
+            doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+        }
+    }
+
+    public static void closeDoor(Block block) {
+        Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
+        if (doorBlocks[0] != null && doorBlocks[1] != null) {
+            doorBlocks[0].setData((byte) (doorBlocks[0].getData() - 4), false);
+            doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+        }
+    }
+
     public static void toggleSecondDoor(Block block) {
         Block lower = DoorHelper.getLowerDoorPart(block);
-
         if (lower.getData() < 4) {
             DoorHelper.openSecondDoor(lower);
         } else {

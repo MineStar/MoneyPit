@@ -67,6 +67,7 @@ public class Module_Chest extends Module {
         // add the SubProtection to the Protection
         SubProtection subProtection = new SubProtection(vector, protection);
         protection.addSubProtection(subProtection);
+
         // add the SubProtection to the ProtectionManager
         Core.protectionManager.addSubProtection(subProtection);
 

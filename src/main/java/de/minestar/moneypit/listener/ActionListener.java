@@ -51,6 +51,7 @@ import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.queues.AddProtectionQueue;
 import de.minestar.moneypit.queues.RemoveProtectionQueue;
 import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
+import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
@@ -732,7 +733,6 @@ public class ActionListener implements Listener {
     }
 
     private void handleNormalInteract(PlayerInteractEvent event) {
-
         // ---------> WORKAROUND FOR CHESTS BEING ROTATED
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == Material.CHEST.getId()) {
             Module module = this.moduleManager.getRegisteredModule(Material.CHEST.getId());
@@ -768,9 +768,19 @@ public class ActionListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
+
             if (event.getAction() != Action.PHYSICAL && isAdmin) {
                 // show information about the protection
                 this.showInformation(event.getPlayer());
+            }
+
+            // toggle both doors
+            if (event.getAction() != Action.PHYSICAL) {
+                if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
+                    DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                    DoorHelper.toggleDoor(event.getClickedBlock());
+                }
             }
             return;
         }
@@ -801,7 +811,23 @@ public class ActionListener implements Listener {
             if (event.getAction() != Action.PHYSICAL && isAdmin) {
                 this.showInformation(event.getPlayer());
             }
+
+            // toggle both doors
+            if (event.getAction() != Action.PHYSICAL) {
+                if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
+                    DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                    DoorHelper.toggleDoor(event.getClickedBlock());
+                }
+            }
             return;
+        }
+
+        // toggle both doors
+        if (event.getAction() != Action.PHYSICAL) {
+            if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
+                DoorHelper.toggleSecondDoor(event.getClickedBlock());
+            }
         }
     }
 
