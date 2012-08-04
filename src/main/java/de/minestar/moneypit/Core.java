@@ -18,6 +18,8 @@
 
 package de.minestar.moneypit;
 
+import java.io.File;
+
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
@@ -72,7 +74,7 @@ public class Core extends AbstractCore {
         queueManager = new QueueManager();
 
         // database
-        databaseManager = new DatabaseManager(Core.NAME, getDataFolder());
+        databaseManager = new DatabaseManager(Core.NAME, new File(getDataFolder(), "sqlconfig.yml"));
 
         // init
         moduleManager.init();
@@ -83,7 +85,7 @@ public class Core extends AbstractCore {
 
         return true;
     }
-    
+
     @Override
     protected boolean createListener() {
         actionListener = new ActionListener();

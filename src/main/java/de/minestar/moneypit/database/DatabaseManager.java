@@ -7,11 +7,7 @@ import java.sql.ResultSet;
 
 import org.bukkit.Location;
 
-import de.minestar.minestarlibrary.config.MinestarConfig;
-import de.minestar.minestarlibrary.database.AbstractDatabaseHandler;
-import de.minestar.minestarlibrary.database.DatabaseConnection;
-import de.minestar.minestarlibrary.database.DatabaseType;
-import de.minestar.minestarlibrary.database.DatabaseUtils;
+import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
@@ -20,24 +16,13 @@ import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.utils.ListHelper;
 
-public class DatabaseManager extends AbstractDatabaseHandler {
+public class DatabaseManager extends AbstractSQLiteHandler {
 
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition;
     private PreparedStatement loadAllProtections;
 
-    public DatabaseManager(String pluginName, File dataFolder) {
-        super(pluginName, dataFolder);
-    }
-
-    @Override
-    protected DatabaseConnection createConnection(String pluginName, File dataFolder) throws Exception {
-        File configFile = new File(dataFolder, "sqlconfig.yml");
-        if (!configFile.exists()) {
-            DatabaseUtils.createDatabaseConfig(DatabaseType.SQLLite, configFile, pluginName);
-            return null;
-        } else {
-            return new DatabaseConnection(pluginName, DatabaseType.SQLLite, new MinestarConfig(configFile));
-        }
+    public DatabaseManager(String pluginName, File SQLConfigFile) {
+        super(pluginName, SQLConfigFile);
     }
 
     @Override
