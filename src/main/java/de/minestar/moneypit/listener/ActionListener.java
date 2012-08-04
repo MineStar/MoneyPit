@@ -95,6 +95,7 @@ public class ActionListener implements Listener {
 
         this.refreshRedstoneCheckBlocks(event.getBlock());
         Module module;
+        HashSet<BlockVector> list = new HashSet<BlockVector>();
         for (Block block : this.redstoneCheckBlocks) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(block.getLocation());
@@ -106,6 +107,19 @@ public class ActionListener implements Listener {
 
                     // only private protections are blocked
                     if (protection.isPublic()) {
+                        if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                            list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                            Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                            if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                                list.add(new BlockVector(bl.getLocation()));
+                            }
+                        } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                            list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                            Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                            if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                                list.add(new BlockVector(bl.getLocation()));
+                            }
+                        }
                         continue;
                     }
 
@@ -130,6 +144,19 @@ public class ActionListener implements Listener {
                     for (SubProtection subProtection : holder.getProtections()) {
                         // only private protections are blocked
                         if (subProtection.getParent().isPublic()) {
+                            if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                                list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                                Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                                if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                                    list.add(new BlockVector(bl.getLocation()));
+                                }
+                            } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                                list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                                Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                                if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                                    list.add(new BlockVector(bl.getLocation()));
+                                }
+                            }
                             continue;
                         }
 
@@ -148,7 +175,29 @@ public class ActionListener implements Listener {
                         return;
                     }
                 }
+            } else {
+                if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                    list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                    Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                    if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                        list.add(new BlockVector(bl.getLocation()));
+                    }
+                } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                    list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                    Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                    if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                        list.add(new BlockVector(bl.getLocation()));
+                    }
+                }
             }
+        }
+
+        boolean openDoor = event.getNewCurrent() > 0;
+        for (BlockVector vector : list) {
+            if (openDoor)
+                DoorHelper.openDoor(vector.getLocation().getBlock());
+            else
+                DoorHelper.closeDoor(vector.getLocation().getBlock());
         }
     }
 
@@ -777,7 +826,9 @@ public class ActionListener implements Listener {
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
                 if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
-                    DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                    if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                    }
                 } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
                     DoorHelper.toggleDoor(event.getClickedBlock());
                 }
@@ -827,10 +878,14 @@ public class ActionListener implements Listener {
         if (event.getAction() != Action.PHYSICAL) {
             if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
                 DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                // if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
+                // DoorHelper.openSecondDoor(event.getClickedBlock());
+                // } else {
+                // DoorHelper.closeSecondDoor(event.getClickedBlock());
+                // }
             }
         }
     }
-
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: EVENTS THAT ARE NOT DIRECTLY TRIGGERED BY A PLAYER

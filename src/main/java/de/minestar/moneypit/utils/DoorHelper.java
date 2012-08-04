@@ -60,6 +60,16 @@ public class DoorHelper {
         return false;
     }
 
+    public static boolean isDoorClosed(Block block) {
+        Block lower = DoorHelper.getLowerDoorPart(block);
+        return (lower.getData() < 4);
+    }
+
+    public static boolean isSecondDoorClosed(Block block) {
+        Block lower = DoorHelper.getOppositeLowerDoorPart(block);
+        return (lower.getData() < 4);
+    }
+
     public static Block getLowerDoorPart(Block block) {
         if (block.getData() < 8) {
             return block;
@@ -88,16 +98,20 @@ public class DoorHelper {
     public static void openDoor(Block block) {
         Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
         if (doorBlocks[0] != null && doorBlocks[1] != null) {
-            doorBlocks[0].setData((byte) (doorBlocks[0].getData() + 4), false);
-            doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+            if (DoorHelper.isDoorClosed(block)) {
+                doorBlocks[0].setData((byte) (doorBlocks[0].getData() + 4), false);
+                doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+            }
         }
     }
 
     public static void closeDoor(Block block) {
         Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
         if (doorBlocks[0] != null && doorBlocks[1] != null) {
-            doorBlocks[0].setData((byte) (doorBlocks[0].getData() - 4), false);
-            doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+            if (!DoorHelper.isDoorClosed(block)) {
+                doorBlocks[0].setData((byte) (doorBlocks[0].getData() - 4), false);
+                doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
+            }
         }
     }
 
@@ -114,8 +128,10 @@ public class DoorHelper {
         Block[] secondDoor = DoorHelper.getOppositeDoorBlocks(block);
         if (secondDoor[0] != null && secondDoor[1] != null) {
             if (DoorHelper.validateDoorBlocks(getDoorBlocks(block), secondDoor)) {
-                secondDoor[0].setData((byte) (secondDoor[0].getData() + 4), false);
-                secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
+                if (DoorHelper.isDoorClosed(secondDoor[0])) {
+                    secondDoor[0].setData((byte) (secondDoor[0].getData() + 4), false);
+                    secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
+                }
             }
         }
     }
@@ -124,8 +140,10 @@ public class DoorHelper {
         Block[] secondDoor = DoorHelper.getOppositeDoorBlocks(block);
         if (secondDoor[0] != null && secondDoor[1] != null) {
             if (DoorHelper.validateDoorBlocks(getDoorBlocks(block), secondDoor)) {
-                secondDoor[0].setData((byte) (secondDoor[0].getData() - 4), false);
-                secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
+                if (!DoorHelper.isDoorClosed(secondDoor[0])) {
+                    secondDoor[0].setData((byte) (secondDoor[0].getData() - 4), false);
+                    secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
+                }
             }
         }
     }
