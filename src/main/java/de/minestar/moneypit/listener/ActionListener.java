@@ -170,6 +170,12 @@ public class ActionListener implements Listener {
             if (result.isCancelEvent()) {
                 event.setBuild(false);
                 event.setCancelled(true);
+
+                BlockVector vector = result.getProtection().getVector();
+                CraftWorld cWorld = (CraftWorld) vector.getLocation().getWorld();
+                CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
+                Packet53BlockChange packet = new Packet53BlockChange(vector.getX(), vector.getY(), vector.getZ(), cWorld.getHandle());
+                cPlayer.getHandle().netServerHandler.sendPacket(packet);
             }
             if (result.isAbort()) {
                 return;
@@ -798,6 +804,7 @@ public class ActionListener implements Listener {
             return;
         }
     }
+
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: EVENTS THAT ARE NOT DIRECTLY TRIGGERED BY A PLAYER
