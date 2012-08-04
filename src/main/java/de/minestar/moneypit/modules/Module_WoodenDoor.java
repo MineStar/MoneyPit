@@ -72,26 +72,26 @@ public class Module_WoodenDoor extends Module {
         // search a second chest
         BlockVector doubleDoor = DoorHelper.getSecondWoodDoor(vector);
         if (doubleDoor == null) {
-            return new EventResult(false, false);
+            return new EventResult(false, false, null);
         }
 
         // check if there is a protection
         Protection protection = Core.protectionManager.getProtection(doubleDoor);
         if (protection == null) {
-            return new EventResult(false, false);
+            return new EventResult(false, false, null);
         }
 
         // check permissions
         if (!protection.canEdit(player)) {
             PlayerUtils.sendError(player, Core.NAME, "You cannot place a door here.");
             PlayerUtils.sendInfo(player, "The neighbour is a protected door.");
-            return new EventResult(true, true);
+            return new EventResult(true, true, protection);
         }
 
         // send info
         PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
 
         // return true to abort the event
-        return new EventResult(false, true);
+        return new EventResult(false, true, protection);
     }
 }

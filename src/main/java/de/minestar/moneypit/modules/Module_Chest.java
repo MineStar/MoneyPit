@@ -48,32 +48,32 @@ public class Module_Chest extends Module {
         // search a second chest
         BlockVector doubleChest = ChestHelper.getDoubleChest(vector);
         if (doubleChest == null) {
-            return new EventResult(false, false);
+            return new EventResult(false, false, null);
         }
 
         // check if there is a protection
         Protection protection = Core.protectionManager.getProtection(doubleChest);
         if (protection == null) {
-            return new EventResult(false, false);
+            return new EventResult(false, false, null);
         }
 
         // check permissions
-        // if (!protection.canEdit(event.getPlayer())) {
-        PlayerUtils.sendError(player, Core.NAME, "You cannot place a chest here.");
-        PlayerUtils.sendInfo(player, "The neighbour is a protected chest.");
-        return new EventResult(true, true);
-        // }
+        if (!protection.canEdit(player)) {
+            PlayerUtils.sendError(player, Core.NAME, "You cannot place a chest here.");
+            PlayerUtils.sendInfo(player, "The neighbour is a protected chest.");
+            return new EventResult(true, true, protection);
+        }
 
-        // // add the SubProtection to the Protection
-        // SubProtection subProtection = new SubProtection(vector, protection);
-        // protection.addSubProtection(subProtection);
-        // // add the SubProtection to the ProtectionManager
-        // Core.protectionManager.addSubProtection(subProtection);
-        //
-        // // send info
-        // PlayerUtils.sendInfo(event.getPlayer(), Core.NAME, "Subprotection created.");
-        //
-        // // return true to abort the event
-        // return new EventResult(false, true);
+        // add the SubProtection to the Protection
+        SubProtection subProtection = new SubProtection(vector, protection);
+        protection.addSubProtection(subProtection);
+        // add the SubProtection to the ProtectionManager
+        Core.protectionManager.addSubProtection(subProtection);
+
+        // send info
+        PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
+
+        // return true to abort the event
+        return new EventResult(false, true, protection);
     }
 }

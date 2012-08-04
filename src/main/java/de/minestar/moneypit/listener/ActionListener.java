@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.server.Packet53BlockChange;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -724,7 +728,7 @@ public class ActionListener implements Listener {
     private void handleNormalInteract(PlayerInteractEvent event) {
 
         // ---------> WORKAROUND FOR CHESTS BEING ROTATED
-        if (event.getAction() != Action.PHYSICAL && event.getPlayer().getItemInHand().getTypeId() == Material.CHEST.getId()) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == Material.CHEST.getId()) {
             Module module = this.moduleManager.getRegisteredModule(Material.CHEST.getId());
             if (module != null) {
                 EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()));
@@ -732,6 +736,11 @@ public class ActionListener implements Listener {
                     event.setCancelled(true);
                     event.setUseInteractedBlock(Event.Result.DENY);
                     event.setUseItemInHand(Event.Result.DENY);
+                    BlockVector vector = result.getProtection().getVector();
+                    CraftWorld cWorld = (CraftWorld) vector.getLocation().getWorld();
+                    CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
+                    Packet53BlockChange packet = new Packet53BlockChange(vector.getX(), vector.getY(), vector.getZ(), cWorld.getHandle());
+                    cPlayer.getHandle().netServerHandler.sendPacket(packet);
                 }
                 if (result.isAbort()) {
                     return;

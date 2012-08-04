@@ -96,7 +96,7 @@ public abstract class Module {
      * @return <b>true</b> if the blockplace-event should abort after the check, <b>false</b> if it should continue
      */
     public EventResult onPlace(Player player, BlockVector vector) {
-        return new EventResult(false, false);
+        return new EventResult(false, false, null);
     }
 
     public abstract void addProtection(Protection protection, byte subData);
