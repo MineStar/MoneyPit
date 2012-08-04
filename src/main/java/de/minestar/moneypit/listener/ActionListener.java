@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,6 +32,7 @@ import com.bukkit.gemo.utils.UtilPermissions;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.PlayerState;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
@@ -148,7 +150,7 @@ public class ActionListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
-        if (event.isCancelled()) {
+        if (event.isCancelled() || !event.canBuild()) {
             return;
         }
 
@@ -160,7 +162,12 @@ public class ActionListener implements Listener {
 
         // check for neighbours, if the module wants it
         if (module.doNeighbourCheck()) {
-            if (module.onPlace(event, new BlockVector(event.getBlockPlaced().getLocation()))) {
+            EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getBlockPlaced().getLocation()));
+            if (result.isCancelEvent()) {
+                event.setBuild(false);
+                event.setCancelled(true);
+            }
+            if (result.isAbort()) {
                 return;
             }
         }
@@ -715,6 +722,24 @@ public class ActionListener implements Listener {
     }
 
     private void handleNormalInteract(PlayerInteractEvent event) {
+
+        // ---------> WORKAROUND FOR CHESTS BEING ROTATED
+        if (event.getAction() != Action.PHYSICAL && event.getPlayer().getItemInHand().getTypeId() == Material.CHEST.getId()) {
+            Module module = this.moduleManager.getRegisteredModule(Material.CHEST.getId());
+            if (module != null) {
+                EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()));
+                if (result.isCancelEvent()) {
+                    event.setCancelled(true);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    event.setUseItemInHand(Event.Result.DENY);
+                }
+                if (result.isAbort()) {
+                    return;
+                }
+            }
+        }
+        // ---------> END WORKAROUND FOR CHESTS BEING ROTATED
+
         // CHECK: Protection?
         if (this.protectionInfo.hasProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
@@ -764,7 +789,6 @@ public class ActionListener implements Listener {
             return;
         }
     }
-
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: EVENTS THAT ARE NOT DIRECTLY TRIGGERED BY A PLAYER

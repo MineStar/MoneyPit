@@ -5,10 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.entity.Player;
 
 import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -94,8 +95,8 @@ public abstract class Module {
      * @param vector
      * @return <b>true</b> if the blockplace-event should abort after the check, <b>false</b> if it should continue
      */
-    public boolean onPlace(BlockPlaceEvent event, BlockVector vector) {
-        return false;
+    public EventResult onPlace(Player player, BlockVector vector) {
+        return new EventResult(false, false);
     }
 
     public abstract void addProtection(Protection protection, byte subData);
