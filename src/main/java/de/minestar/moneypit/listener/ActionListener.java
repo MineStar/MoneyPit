@@ -911,82 +911,37 @@ public class ActionListener implements Listener {
         return list;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        // /////////////////////////////////
-        // event cancelled => return
-        // /////////////////////////////////
-        if (event.isCancelled())
-            return;
-
         ArrayList<Block> changedBlocks = this.getPistonChangeBlocks(event.getBlock(), event.getDirection());
         for (Block block : changedBlocks) {
-            // update the BlockVector & the ProtectionInfo
-            this.vector.update(block.getLocation());
-            this.protectionInfo.update(this.vector);
-
-            // cancel the event, if the block is protected
-            if (this.protectionInfo.hasAnyProtection()) {
+            if (this.cancelBlockEvent(block)) {
                 event.setCancelled(true);
                 return;
             }
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        // /////////////////////////////////
-        // event cancelled or normal piston => return
-        // /////////////////////////////////
-        if (event.isCancelled() || !event.isSticky())
-            return;
-
-        // update the BlockVector & the ProtectionInfo
-        this.vector.update(event.getRetractLocation());
-        this.protectionInfo.update(this.vector);
-
-        // cancel the event, if the block is protected
-        if (this.protectionInfo.hasAnyProtection()) {
+        if (this.cancelBlockEvent(event.getRetractLocation().getBlock())) {
             event.setCancelled(true);
             return;
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
-        // /////////////////////////////////
-        // event cancelled => return
-        // /////////////////////////////////
-        if (event.isCancelled())
-            return;
-
-        final Block toBlock = event.getToBlock();
-        // update the BlockVector & the ProtectionInfo
-        this.vector.update(toBlock.getLocation());
-        this.protectionInfo.update(this.vector);
-
-        // cancel the event, if the block is protected
-        if (this.protectionInfo.hasAnyProtection()) {
+        if (this.cancelBlockEvent(event.getToBlock())) {
             event.setCancelled(true);
             return;
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockExplode(EntityExplodeEvent event) {
-        // /////////////////////////////////
-        // event cancelled => return
-        // /////////////////////////////////
-        if (event.isCancelled())
-            return;
-
         for (Block block : event.blockList()) {
-            // update the BlockVector & the ProtectionInfo
-            this.vector.update(block.getLocation());
-            this.protectionInfo.update(this.vector);
-
-            // cancel the event, if the block is protected
-            if (this.protectionInfo.hasAnyProtection()) {
+            if (this.cancelBlockEvent(block)) {
                 event.setCancelled(true);
                 event.setYield(0f);
                 return;
@@ -994,41 +949,32 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        // /////////////////////////////////
-        // event cancelled => return
-        // /////////////////////////////////
-        if (event.isCancelled())
-            return;
-
-        // update the BlockVector & the ProtectionInfo
-        this.vector.update(event.getBlock().getLocation());
-        this.protectionInfo.update(this.vector);
-
-        // cancel the event, if the block is protected
-        if (this.protectionInfo.hasAnyProtection()) {
+        if (this.cancelBlockEvent(event.getBlock())) {
             event.setCancelled(true);
             return;
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreakDoor(EntityBreakDoorEvent event) {
-        // /////////////////////////////////
-        // event cancelled => return
-        // /////////////////////////////////
-        if (event.isCancelled())
+        if (this.cancelBlockEvent(event.getBlock())) {
+            event.setCancelled(true);
             return;
+        }
+    }
 
+    private boolean cancelBlockEvent(Block block) {
         // update the BlockVector & the ProtectionInfo
-        this.vector.update(event.getBlock().getLocation());
+        this.vector.update(block.getLocation());
         this.protectionInfo.update(this.vector);
 
         // cancel the event, if the block is protected
         if (this.protectionInfo.hasAnyProtection()) {
-            event.setCancelled(true);
-            return;
+            return true;
         }
+
+        return false;
     }
 }
