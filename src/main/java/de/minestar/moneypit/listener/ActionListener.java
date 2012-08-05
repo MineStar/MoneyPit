@@ -66,6 +66,8 @@ public class ActionListener implements Listener {
     private BlockVector vector;
     private ProtectionInfo protectionInfo;
 
+    private HashSet<BlockVector> redstoneQueuedDoors = new HashSet<BlockVector>();
+
     private Block[] redstoneCheckBlocks = new Block[6];
 
     public ActionListener() {
@@ -95,7 +97,7 @@ public class ActionListener implements Listener {
 
         this.refreshRedstoneCheckBlocks(event.getBlock());
         Module module;
-        HashSet<BlockVector> list = new HashSet<BlockVector>();
+
         for (Block block : this.redstoneCheckBlocks) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(block.getLocation());
@@ -108,16 +110,16 @@ public class ActionListener implements Listener {
                     // only private protections are blocked
                     if (protection.isPublic()) {
                         if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                            list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                            this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                             Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                             if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                                list.add(new BlockVector(bl.getLocation()));
+                                this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                             }
                         } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                            list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                            this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                             Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                             if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                                list.add(new BlockVector(bl.getLocation()));
+                                this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                             }
                         }
                         continue;
@@ -145,16 +147,16 @@ public class ActionListener implements Listener {
                         // only private protections are blocked
                         if (subProtection.getParent().isPublic()) {
                             if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                                list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                                this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                                 if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                                    list.add(new BlockVector(bl.getLocation()));
+                                    this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                                 }
                             } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                                list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                                this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                                 if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                                    list.add(new BlockVector(bl.getLocation()));
+                                    this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                                 }
                             }
                             continue;
@@ -177,23 +179,23 @@ public class ActionListener implements Listener {
                 }
             } else {
                 if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                    list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                    this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                     Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                     if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
-                        list.add(new BlockVector(bl.getLocation()));
+                        this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                     }
                 } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                    list.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                    this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                     Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                     if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                        list.add(new BlockVector(bl.getLocation()));
+                        this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                     }
                 }
             }
         }
 
         boolean openDoor = event.getNewCurrent() > 0;
-        for (BlockVector vector : list) {
+        for (BlockVector vector : this.redstoneQueuedDoors) {
             if (openDoor)
                 DoorHelper.openDoor(vector.getLocation().getBlock());
             else
