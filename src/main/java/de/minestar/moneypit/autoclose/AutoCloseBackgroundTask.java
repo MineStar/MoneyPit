@@ -30,6 +30,9 @@ public class AutoCloseBackgroundTask extends TimerTask {
         ArrayList<QueuedAutoClose> collection = new ArrayList<QueuedAutoClose>(this.queuedTasks.values());
         long timestamp = System.currentTimeMillis();
         for (int i = collection.size() - 1; i >= 0; i--) {
+            if (DoorHelper.isDoorClosed(collection.get(i).getBlock())) {
+                this.queuedTasks.remove(collection.get(i).getVector());
+            }
             if (collection.get(i).hasEnded(timestamp)) {
                 if (!DoorHelper.isDoorClosed(collection.get(i).getBlock())) {
                     AutoCloseTask task = new AutoCloseTask(collection.get(i).getBlock());
