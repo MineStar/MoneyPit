@@ -87,6 +87,13 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     }
 
     /**
+     * Init this Manager
+     */
+    public void init() {
+        this.loadAllProtections();
+    }
+
+    /**
      * Get the protection at a certain BlockVector
      * 
      * @param vector
@@ -175,23 +182,25 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         }
     }
 
-    public void init() {
-        this.loadAllProtections();
-    }
-
+    /**
+     * Load all protections from the Database
+     */
     private void loadAllProtections() {
         try {
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
+            int noProtectionCount = 0;
             while (results.next()) {
                 BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
                 try {
                     Location location = vector.getLocation();
                     if (location == null) {
+                        ++noProtectionCount;
                         continue;
                     }
                     Module module = Core.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
                     if (module == null) {
+                        ++noProtectionCount;
                         continue;
                     }
                     Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
@@ -203,6 +212,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 }
             }
             ConsoleUtils.printInfo(Core.NAME, count + " protections loaded!");
+            if (noProtectionCount > 0) {
+                ConsoleUtils.printInfo(Core.NAME, noProtectionCount + " protections are NOT loaded due to missing blocks or locations!");
+            }
         } catch (Exception e) {
             ConsoleUtils.printException(e, Core.NAME, "Can't load protections!");
         }
