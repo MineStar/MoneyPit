@@ -95,20 +95,22 @@ public class DoorHelper {
         }
     }
 
-    public static void toggleDoor(Block block) {
+    public static void toggleDoor(Block block, boolean autoClose) {
         Block lower = DoorHelper.getLowerDoorPart(block);
         if (lower.getData() < 4) {
-            DoorHelper.openDoor(lower);
+            DoorHelper.openDoor(lower, autoClose);
         } else {
             DoorHelper.closeDoor(lower);
         }
     }
 
-    public static void openDoor(Block block) {
+    public static void openDoor(Block block, boolean autoClose) {
         Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
         if (doorBlocks[0] != null && doorBlocks[1] != null) {
             if (DoorHelper.isDoorClosed(block)) {
-                Core.autoCloseTask.queue(block);
+                if (autoClose) {
+                    Core.autoCloseTask.queue(block);
+                }
                 doorBlocks[0].setData((byte) (doorBlocks[0].getData() + 4), false);
                 doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
             }
@@ -125,19 +127,19 @@ public class DoorHelper {
         }
     }
 
-    public static void toggleSecondDoor(Block block) {
+    public static void toggleSecondDoor(Block block, boolean autoClose) {
         Block lower = DoorHelper.getOppositeLowerDoorPart(block);
         if (lower != null && lower.getData() < 4) {
-            DoorHelper.openDoor(lower);
+            DoorHelper.openDoor(lower, autoClose);
         } else {
             DoorHelper.closeDoor(lower);
         }
     }
 
-    public static void openSecondDoor(Block block) {
+    public static void openSecondDoor(Block block, boolean autoClose) {
         Block lower = DoorHelper.getOppositeLowerDoorPart(block);
         if (lower != null && lower.getData() < 4) {
-            DoorHelper.openDoor(lower);
+            DoorHelper.openDoor(lower, autoClose);
         }
     }
 

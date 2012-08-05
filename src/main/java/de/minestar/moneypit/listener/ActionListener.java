@@ -197,11 +197,12 @@ public class ActionListener implements Listener {
         boolean openDoor = event.getNewCurrent() > 0;
         for (BlockVector vector : this.redstoneQueuedDoors) {
             if (openDoor) {
-                DoorHelper.openDoor(vector.getLocation().getBlock());
+                DoorHelper.openDoor(vector.getLocation().getBlock(), true);
             } else {
                 DoorHelper.closeDoor(vector.getLocation().getBlock());
             }
         }
+        this.redstoneQueuedDoors.clear();
     }
 
     @EventHandler
@@ -830,11 +831,15 @@ public class ActionListener implements Listener {
             if (event.getAction() != Action.PHYSICAL) {
                 if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
                     if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
-                        Core.autoCloseTask.queue(event.getClickedBlock());
-                        DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                        if (this.protectionInfo.getProtection().isPrivate()) {
+                            Core.autoCloseTask.queue(event.getClickedBlock());
+                            DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
+                        } else {
+                            DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
+                        }
                     }
                 } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                    DoorHelper.toggleDoor(event.getClickedBlock());
+                    DoorHelper.toggleDoor(event.getClickedBlock(), true);
                 }
             }
             return;
@@ -844,6 +849,8 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasSubProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
+            boolean isWoodDoor = event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId();
+            boolean isIronDoor = event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId();
             for (SubProtection subProtection : holder.getProtections()) {
                 // is this protection private?
                 if (!subProtection.getParent().isPrivate()) {
@@ -860,6 +867,7 @@ public class ActionListener implements Listener {
                     }
                     return;
                 }
+
             }
 
             // show information about the protection
@@ -869,23 +877,30 @@ public class ActionListener implements Listener {
 
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
-                if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
-                    Core.autoCloseTask.queue(event.getClickedBlock());
-                    DoorHelper.toggleSecondDoor(event.getClickedBlock());
-                } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                    DoorHelper.toggleDoor(event.getClickedBlock());
+                SubProtection subProtection = this.protectionInfo.getSubProtections().getProtection(0);
+                if (isWoodDoor) {
+                    if (subProtection.getParent().isPrivate()) {
+                        Core.autoCloseTask.queue(event.getClickedBlock());
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
+                    } else {
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
+                    }
+                } else if (isIronDoor) {
+                    if (subProtection.getParent().isPrivate()) {
+                        DoorHelper.toggleDoor(event.getClickedBlock(), true);
+                    } else {
+                        DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                    }
                 }
             }
+
             return;
         }
 
         // toggle both doors
         if (event.getAction() != Action.PHYSICAL) {
             if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
-                if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
-                    Core.autoCloseTask.queue(event.getClickedBlock());
-                }
-                DoorHelper.toggleSecondDoor(event.getClickedBlock());
+                DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
             }
         }
     }
