@@ -194,15 +194,17 @@ public class ActionListener implements Listener {
             }
         }
 
-        boolean openDoor = event.getNewCurrent() > 0;
-        for (BlockVector vector : this.redstoneQueuedDoors) {
-            if (openDoor) {
-                DoorHelper.openDoor(vector.getLocation().getBlock(), true);
-            } else {
-                DoorHelper.closeDoor(vector.getLocation().getBlock());
+        if (!this.redstoneQueuedDoors.isEmpty()) {
+            boolean openDoor = event.getNewCurrent() > 0;
+            for (BlockVector vector : this.redstoneQueuedDoors) {
+                if (openDoor) {
+                    DoorHelper.openDoor(vector.getLocation().getBlock(), true);
+                } else {
+                    DoorHelper.closeDoor(vector.getLocation().getBlock());
+                }
             }
+            this.redstoneQueuedDoors.clear();
         }
-        this.redstoneQueuedDoors.clear();
     }
 
     @EventHandler
