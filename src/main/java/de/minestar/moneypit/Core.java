@@ -19,11 +19,13 @@
 package de.minestar.moneypit;
 
 import java.io.File;
+import java.util.Timer;
 
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
 import de.minestar.minestarlibrary.commands.CommandList;
+import de.minestar.moneypit.autoclose.AutoCloseBackgroundTask;
 import de.minestar.moneypit.commands.cmd_cinfo;
 import de.minestar.moneypit.commands.cmd_cinvite;
 import de.minestar.moneypit.commands.cmd_cprivate;
@@ -58,6 +60,10 @@ public class Core extends AbstractCore {
     /** DATABASE */
     public static DatabaseManager databaseManager;
 
+    /** AUTOCLOSETASK */
+    private static Timer timer;
+    public static AutoCloseBackgroundTask autoCloseTask;
+
     /** CONSTRUCTOR */
     public Core() {
         super(NAME);
@@ -83,6 +89,10 @@ public class Core extends AbstractCore {
         // load data
         databaseManager.init();
 
+        // create timer
+        autoCloseTask = new AutoCloseBackgroundTask();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(autoCloseTask, 0, 3 * 1000);
         return true;
     }
 
@@ -98,6 +108,7 @@ public class Core extends AbstractCore {
         if (databaseManager.hasConnection()) {
             databaseManager.closeConnection();
         }
+        timer.cancel();
         return true;
     }
 

@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
+import de.minestar.moneypit.Core;
 import de.minestar.moneypit.data.BlockVector;
 
 public class DoorHelper {
@@ -99,6 +100,7 @@ public class DoorHelper {
         Block[] doorBlocks = DoorHelper.getDoorBlocks(block);
         if (doorBlocks[0] != null && doorBlocks[1] != null) {
             if (DoorHelper.isDoorClosed(block)) {
+                Core.autoCloseTask.queue(block);
                 doorBlocks[0].setData((byte) (doorBlocks[0].getData() + 4), false);
                 doorBlocks[1].setData((byte) (doorBlocks[1].getData()), false);
             }
@@ -129,6 +131,7 @@ public class DoorHelper {
         if (secondDoor[0] != null && secondDoor[1] != null) {
             if (DoorHelper.validateDoorBlocks(getDoorBlocks(block), secondDoor)) {
                 if (DoorHelper.isDoorClosed(secondDoor[0])) {
+                    Core.autoCloseTask.queue(block);
                     secondDoor[0].setData((byte) (secondDoor[0].getData() + 4), false);
                     secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
                 }

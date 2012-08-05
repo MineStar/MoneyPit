@@ -196,10 +196,11 @@ public class ActionListener implements Listener {
 
         boolean openDoor = event.getNewCurrent() > 0;
         for (BlockVector vector : this.redstoneQueuedDoors) {
-            if (openDoor)
+            if (openDoor) {
                 DoorHelper.openDoor(vector.getLocation().getBlock());
-            else
+            } else {
                 DoorHelper.closeDoor(vector.getLocation().getBlock());
+            }
         }
     }
 
