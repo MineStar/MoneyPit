@@ -207,7 +207,7 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         // event is already cancelled => return
         if (event.isCancelled() || !event.canBuild()) {
@@ -275,13 +275,8 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        // event is already cancelled => return
-        if (event.isCancelled()) {
-            return;
-        }
-
         // update the BlockVector & the ProtectionInfo
         this.vector.update(event.getBlock().getLocation());
         this.protectionInfo.update(this.vector);
@@ -336,13 +331,8 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        // event is already cancelled => return
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getChangedTypeId() == Material.TNT.getId()) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(event.getBlock().getLocation());
@@ -354,13 +344,8 @@ public class ActionListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        // event is already cancelled => return
-        if (event.isCancelled()) {
-            return;
-        }
-
         // Only handle Left- & Right-Click on a block
         Action action = event.getAction();
         if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
