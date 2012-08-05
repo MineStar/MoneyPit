@@ -60,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.minestar</groupId>
-			<artifactId>MineStarLibrary</artifactId>
+			<artifactId>minestarlibrary</artifactId>
 			<version>1.9-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

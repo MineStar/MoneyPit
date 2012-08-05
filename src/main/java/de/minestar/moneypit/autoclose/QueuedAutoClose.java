@@ -10,7 +10,7 @@ public class QueuedAutoClose implements Comparable<QueuedAutoClose> {
 
     public QueuedAutoClose(BlockVector vector) {
         this.vector = vector;
-        this.endTime = System.currentTimeMillis() + (1000 * 3);
+        this.endTime = System.currentTimeMillis() + (1000 * 2);
     }
 
     public BlockVector getVector() {

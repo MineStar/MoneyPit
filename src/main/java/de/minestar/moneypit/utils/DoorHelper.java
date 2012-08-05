@@ -72,6 +72,10 @@ public class DoorHelper {
     }
 
     public static Block getLowerDoorPart(Block block) {
+        if (block == null || (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId())) {
+            return null;
+        }
+
         if (block.getData() < 8) {
             return block;
         } else {
@@ -80,6 +84,10 @@ public class DoorHelper {
     }
 
     public static Block getUpperDoorPart(Block block) {
+        if (block == null || (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId())) {
+            return null;
+        }
+
         if (block.getData() < 8) {
             return block.getRelative(BlockFace.UP);
         } else {
@@ -118,36 +126,25 @@ public class DoorHelper {
     }
 
     public static void toggleSecondDoor(Block block) {
-        Block lower = DoorHelper.getLowerDoorPart(block);
-        if (lower.getData() < 4) {
-            DoorHelper.openSecondDoor(lower);
+        Block lower = DoorHelper.getOppositeLowerDoorPart(block);
+        if (lower != null && lower.getData() < 4) {
+            DoorHelper.openDoor(lower);
         } else {
-            DoorHelper.closeSecondDoor(lower);
+            DoorHelper.closeDoor(lower);
         }
     }
 
     public static void openSecondDoor(Block block) {
-        Block[] secondDoor = DoorHelper.getOppositeDoorBlocks(block);
-        if (secondDoor[0] != null && secondDoor[1] != null) {
-            if (DoorHelper.validateDoorBlocks(getDoorBlocks(block), secondDoor)) {
-                if (DoorHelper.isDoorClosed(secondDoor[0])) {
-                    Core.autoCloseTask.queue(block);
-                    secondDoor[0].setData((byte) (secondDoor[0].getData() + 4), false);
-                    secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
-                }
-            }
+        Block lower = DoorHelper.getOppositeLowerDoorPart(block);
+        if (lower != null && lower.getData() < 4) {
+            DoorHelper.openDoor(lower);
         }
     }
 
     public static void closeSecondDoor(Block block) {
-        Block[] secondDoor = DoorHelper.getOppositeDoorBlocks(block);
-        if (secondDoor[0] != null && secondDoor[1] != null) {
-            if (DoorHelper.validateDoorBlocks(getDoorBlocks(block), secondDoor)) {
-                if (!DoorHelper.isDoorClosed(secondDoor[0])) {
-                    secondDoor[0].setData((byte) (secondDoor[0].getData() - 4), false);
-                    secondDoor[1].setData((byte) (secondDoor[1].getData()), false);
-                }
-            }
+        Block lower = DoorHelper.getOppositeLowerDoorPart(block);
+        if (lower != null && lower.getData() > 3) {
+            DoorHelper.closeDoor(lower);
         }
     }
 
@@ -166,6 +163,9 @@ public class DoorHelper {
     }
 
     public static Block getOppositeUpperDoorPart(Block block) {
+        if (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId()) {
+            return null;
+        }
         Block selfLower = DoorHelper.getLowerDoorPart(block);
         Block selfUpper = DoorHelper.getUpperDoorPart(block);
         final byte dataLower = selfLower.getData();
@@ -230,7 +230,11 @@ public class DoorHelper {
         if (upper == null) {
             return null;
         } else {
-            return upper.getRelative(BlockFace.DOWN);
+            Block lower = upper.getRelative(BlockFace.DOWN);
+            if (lower.getTypeId() != Material.WOODEN_DOOR.getId() && lower.getTypeId() != Material.IRON_DOOR_BLOCK.getId()) {
+                return null;
+            }
+            return lower;
         }
     }
 }

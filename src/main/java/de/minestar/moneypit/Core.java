@@ -92,7 +92,7 @@ public class Core extends AbstractCore {
         // create timer
         autoCloseTask = new AutoCloseBackgroundTask();
         timer = new Timer();
-        timer.scheduleAtFixedRate(autoCloseTask, 0, 3 * 1000);
+        timer.scheduleAtFixedRate(autoCloseTask, 0, 2 * 1000);
         return true;
     }
 
