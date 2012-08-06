@@ -817,16 +817,18 @@ public class ActionListener implements Listener {
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
                 if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
-                    if (DoorHelper.isDoorClosed(event.getClickedBlock())) {
-                        if (this.protectionInfo.getProtection().isPrivate()) {
-                            Core.autoCloseTask.queue(event.getClickedBlock());
-                            DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
-                        } else {
-                            DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
-                        }
+                    if (this.protectionInfo.getProtection().isPrivate()) {
+                        Core.autoCloseTask.queue(event.getClickedBlock());
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
+                    } else {
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                    DoorHelper.toggleDoor(event.getClickedBlock(), true);
+                    if (this.protectionInfo.getProtection().isPrivate()) {
+                        DoorHelper.toggleDoor(event.getClickedBlock(), true);
+                    } else {
+                        DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                    }
                 }
             }
             return;
