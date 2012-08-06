@@ -63,11 +63,17 @@ public class DoorHelper {
 
     public static boolean isDoorClosed(Block block) {
         Block lower = DoorHelper.getLowerDoorPart(block);
+        if (lower == null) {
+            return true;
+        }
         return (lower.getData() < 4);
     }
 
     public static boolean isSecondDoorClosed(Block block) {
         Block lower = DoorHelper.getOppositeLowerDoorPart(block);
+        if (lower == null) {
+            return true;
+        }
         return (lower.getData() < 4);
     }
 
