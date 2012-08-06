@@ -21,6 +21,7 @@ package de.minestar.moneypit;
 import java.io.File;
 import java.util.Timer;
 
+import org.bukkit.block.Block;
 import org.bukkit.plugin.PluginManager;
 
 import de.minestar.minestarlibrary.AbstractCore;
@@ -33,6 +34,8 @@ import de.minestar.moneypit.commands.cmd_cpublic;
 import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
+import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.listener.MonitorListener;
@@ -64,9 +67,15 @@ public class Core extends AbstractCore {
     private static Timer timer;
     public static AutoCloseBackgroundTask autoCloseTask;
 
+    /** BlockVector */
+    private static BlockVector vector;
+    private static ProtectionInfo protectionInfo;
+
     /** CONSTRUCTOR */
     public Core() {
         super(NAME);
+        vector = new BlockVector("", 0, 0, 0);
+        protectionInfo = new ProtectionInfo();
     }
 
     @Override
@@ -94,6 +103,18 @@ public class Core extends AbstractCore {
         timer = new Timer();
         timer.scheduleAtFixedRate(autoCloseTask, 0, 2 * 1000);
         return true;
+    }
+
+    public static boolean hasProtection(Block block) {
+        vector.update(block.getLocation());
+        protectionInfo.update(vector);
+        return protectionInfo.hasAnyProtection();
+    }
+
+    public static ProtectionInfo getProtectionInfo(Block block) {
+        vector.update(block.getLocation());
+        protectionInfo.update(vector);
+        return protectionInfo.clone();
     }
 
     @Override
