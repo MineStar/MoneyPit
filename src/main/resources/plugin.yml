@@ -1,5 +1,5 @@
 name: MoneyPit
-main: de.minestar.moneypit.Core
+main: de.minestar.moneypit.MoneyPitCore
 version: ${pom.version}
 depend: [MineStarLibrary, MinestarCore]
 softdepend: [GreenMile]
