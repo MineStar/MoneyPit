@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import com.bukkit.gemo.utils.BlockUtils;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
@@ -52,14 +52,14 @@ public class Module_Chest extends Module {
         }
 
         // check if there is a protection
-        Protection protection = Core.protectionManager.getProtection(doubleChest);
+        Protection protection = MoneyPitCore.protectionManager.getProtection(doubleChest);
         if (protection == null) {
             return new EventResult(false, false, null);
         }
 
         // check permissions
         if (!protection.canEdit(player)) {
-            PlayerUtils.sendError(player, Core.NAME, "You cannot place a chest here.");
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot place a chest here.");
             PlayerUtils.sendInfo(player, "The neighbour is a protected chest.");
             return new EventResult(true, true, protection);
         }
@@ -69,10 +69,10 @@ public class Module_Chest extends Module {
         protection.addSubProtection(subProtection);
 
         // add the SubProtection to the ProtectionManager
-        Core.protectionManager.addSubProtection(subProtection);
+        MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
         // send info
-        PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
+        PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
 
         // return true to abort the event
         return new EventResult(false, true, protection);

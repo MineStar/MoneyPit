@@ -34,7 +34,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import com.bukkit.gemo.utils.UtilPermissions;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.PlayerState;
@@ -71,10 +71,10 @@ public class ActionListener implements Listener {
     private Block[] redstoneCheckBlocks = new Block[6];
 
     public ActionListener() {
-        this.moduleManager = Core.moduleManager;
-        this.playerManager = Core.playerManager;
-        this.protectionManager = Core.protectionManager;
-        this.queueManager = Core.queueManager;
+        this.moduleManager = MoneyPitCore.moduleManager;
+        this.playerManager = MoneyPitCore.playerManager;
+        this.protectionManager = MoneyPitCore.protectionManager;
+        this.queueManager = MoneyPitCore.queueManager;
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
     }
@@ -259,18 +259,18 @@ public class ActionListener implements Listener {
                 AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE);
                 this.queueManager.addQueue(queue);
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You don't have permissions to protect this block.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You don't have permissions to protect this block.");
                 return;
             }
         } else {
             if (this.protectionInfo.hasSubProtection()) {
                 if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protected block!");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protected block!");
                     event.setCancelled(true);
                     return;
                 }
             }
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Cannot create protection!");
             PlayerUtils.sendInfo(event.getPlayer(), "This block is already protected.");
         }
     }
@@ -292,7 +292,7 @@ public class ActionListener implements Listener {
             // registered)
             Module module = this.moduleManager.getRegisteredModule(event.getBlock().getTypeId());
             if (module == null) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getBlock().getType().name() + "' is not registered!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getBlock().getType().name() + "' is not registered!");
                 return;
             }
 
@@ -303,7 +303,7 @@ public class ActionListener implements Listener {
             boolean isOwner = protection.isOwner(event.getPlayer().getName());
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             if (!isOwner && !isAdmin) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to break this protected block.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to break this protected block.");
                 event.setCancelled(true);
                 return;
             }
@@ -317,7 +317,7 @@ public class ActionListener implements Listener {
         } else {
             // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to remove this subprotection!");
                 event.setCancelled(true);
                 return;
             }
@@ -375,7 +375,7 @@ public class ActionListener implements Listener {
                 // the module must be registered
                 Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
                 if (module == null) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
                     return;
                 }
 
@@ -387,7 +387,7 @@ public class ActionListener implements Listener {
                 // the module must be registered
                 Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
                 if (module == null) {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
                     return;
                 }
 
@@ -432,7 +432,7 @@ public class ActionListener implements Listener {
             // MainProtection
 
             if (this.protectionInfo.getProtection().isPublic()) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You must click on a private protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You must click on a private protection.");
                 this.showInformation(event.getPlayer());
                 return;
             }
@@ -442,15 +442,15 @@ public class ActionListener implements Listener {
                 // clear guestlist
                 this.protectionInfo.getProtection().clearGuestList();
 
-                if (Core.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
                     // send info
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+                    PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "The guestlist has been cleared.");
                 } else {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
                 }
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
             }
         } else if (this.protectionInfo.hasSubProtection()) {
@@ -463,24 +463,24 @@ public class ActionListener implements Listener {
                         // clear guestlist
                         subProtection.getParent().clearGuestList();
                     }
-                    if (!Core.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
                         result = false;
                     }
                 }
 
                 // send info
                 if (result) {
-                    PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "The guestlist has been cleared.");
+                    PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "The guestlist has been cleared.");
                 } else {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
                 }
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
             }
         } else {
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected.");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block is not protected.");
         }
     }
 
@@ -495,7 +495,7 @@ public class ActionListener implements Listener {
             // MainProtection
 
             if (this.protectionInfo.getProtection().isPublic()) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You must click on a private protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You must click on a private protection.");
                 this.showInformation(event.getPlayer());
                 return;
             }
@@ -514,17 +514,17 @@ public class ActionListener implements Listener {
                 }
                 // send info
 
-                if (Core.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
                     if (add)
-                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
                     else
-                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                 } else {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
                 }
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
             }
         } else if (this.protectionInfo.hasSubProtection()) {
@@ -546,26 +546,26 @@ public class ActionListener implements Listener {
                         }
                     }
 
-                    if (!Core.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
                         result = false;
                     }
                 }
                 // send info
                 if (result) {
                     if (add)
-                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been added to the guestlist.");
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
                     else
-                        PlayerUtils.sendSuccess(event.getPlayer(), Core.NAME, "Players have been removed from the guestlist.");
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                 } else {
-                    PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
                 }
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to edit this protection.");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
             }
         } else {
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected.");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block is not protected.");
         }
 
         // clear guestlist
@@ -580,7 +580,7 @@ public class ActionListener implements Listener {
         // we need a protection to show some information about it
         if (!this.protectionInfo.hasAnyProtection()) {
             if (showErrorMessage) {
-                PlayerUtils.sendError(player, Core.NAME, "This block is not protected.");
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "This block is not protected.");
             }
             return;
         }
@@ -629,7 +629,7 @@ public class ActionListener implements Listener {
     private void showExtendedInformation(Player player) {
         // we need a protection to show some information about it
         if (!this.protectionInfo.hasAnyProtection()) {
-            PlayerUtils.sendError(player, Core.NAME, "This block is not protected.");
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "This block is not protected.");
             return;
         }
 
@@ -698,7 +698,7 @@ public class ActionListener implements Listener {
 
         // try to remove the protection
         if (!this.protectionInfo.hasAnyProtection()) {
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "This block is not protected!");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block is not protected!");
             return;
         } else if (this.protectionInfo.hasProtection()) {
             // get protection
@@ -706,7 +706,7 @@ public class ActionListener implements Listener {
 
             // check permission
             if (!protection.canEdit(event.getPlayer())) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this protection!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to remove this protection!");
                 event.setCancelled(true);
                 return;
             }
@@ -720,7 +720,7 @@ public class ActionListener implements Listener {
         } else {
             // we have a SubProtection => check permissions and handle it
             if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to remove this subprotection!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to remove this subprotection!");
                 event.setCancelled(true);
                 return;
             }
@@ -740,7 +740,7 @@ public class ActionListener implements Listener {
 
         // check permissions
         if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "You are not allowed to protect this block!");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to protect this block!");
             return;
         }
 
@@ -764,7 +764,7 @@ public class ActionListener implements Listener {
             }
         } else {
             // Send errormessage
-            PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Cannot create protection!");
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Cannot create protection!");
             event.setCancelled(true);
 
             // show information about the protection
@@ -818,7 +818,7 @@ public class ActionListener implements Listener {
             if (event.getAction() != Action.PHYSICAL) {
                 if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
                     if (this.protectionInfo.getProtection().isPrivate()) {
-                        Core.autoCloseTask.queue(event.getClickedBlock());
+                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
@@ -869,7 +869,7 @@ public class ActionListener implements Listener {
                 SubProtection subProtection = this.protectionInfo.getSubProtections().getProtection(0);
                 if (isWoodDoor) {
                     if (subProtection.getParent().isPrivate()) {
-                        Core.autoCloseTask.queue(event.getClickedBlock());
+                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);

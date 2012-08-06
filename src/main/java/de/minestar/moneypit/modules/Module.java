@@ -3,7 +3,7 @@ package de.minestar.moneypit.modules;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
@@ -20,7 +20,7 @@ public abstract class Module {
     private boolean blockRedstone = false;
 
     protected Module() {
-        this.protectionManager = Core.protectionManager;
+        this.protectionManager = MoneyPitCore.protectionManager;
     }
 
     public boolean doNeighbourCheck() {

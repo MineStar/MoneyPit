@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_Dispenser;
@@ -36,7 +36,7 @@ public class ModuleManager {
 
     private void printInfo() {
         // PRINT INFO
-        ConsoleUtils.printInfo(Core.NAME, this.registeredModules.size() + " Modules registered!");
+        ConsoleUtils.printInfo(MoneyPitCore.NAME, this.registeredModules.size() + " Modules registered!");
     }
 
     public void registerModule(Module module) {
@@ -55,7 +55,7 @@ public class ModuleManager {
     }
 
     private void loadConfig() {
-        File file = new File(Core.INSTANCE.getDataFolder(), FILENAME);
+        File file = new File(MoneyPitCore.INSTANCE.getDataFolder(), FILENAME);
         if (!file.exists()) {
             this.writeDefaultConfig();
         }
@@ -92,7 +92,7 @@ public class ModuleManager {
     }
 
     private void writeDefaultConfig() {
-        File file = new File(Core.INSTANCE.getDataFolder(), FILENAME);
+        File file = new File(MoneyPitCore.INSTANCE.getDataFolder(), FILENAME);
         if (file.exists()) {
             file.delete();
         }

@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
@@ -85,14 +85,14 @@ public class Module_IronDoor extends Module {
         }
 
         // check if there is a protection
-        Protection protection = Core.protectionManager.getProtection(doubleDoor);
+        Protection protection = MoneyPitCore.protectionManager.getProtection(doubleDoor);
         if (protection == null) {
             return new EventResult(false, false, null);
         }
 
         // check permissions
         if (!protection.canEdit(player)) {
-            PlayerUtils.sendError(player, Core.NAME, "You cannot place a door here.");
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot place a door here.");
             PlayerUtils.sendInfo(player, "The neighbour is a protected door.");
             return new EventResult(true, true, protection);
         }
@@ -103,26 +103,26 @@ public class Module_IronDoor extends Module {
             // protect the upper block of the second door
             SubProtection subProtection = new SubProtection(new BlockVector(secondDoor[1].getLocation()), protection);
             protection.addSubProtection(subProtection);
-            Core.protectionManager.addSubProtection(subProtection);
+            MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // protect the lower block of the second door
             subProtection = new SubProtection(new BlockVector(secondDoor[0].getLocation()), protection);
             protection.addSubProtection(subProtection);
-            Core.protectionManager.addSubProtection(subProtection);
+            MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // protect the block below
             subProtection = new SubProtection(subProtection.getVector().getRelative(0, -1, 0), protection);
             protection.addSubProtection(subProtection);
-            Core.protectionManager.addSubProtection(subProtection);
+            MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // fetch non-solid-blocks
             ArrayList<SubProtection> list = PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
             for (SubProtection sub : list) {
-                Core.protectionManager.addSubProtection(sub);
+                MoneyPitCore.protectionManager.addSubProtection(sub);
             }
 
             // send info
-            PlayerUtils.sendInfo(player, Core.NAME, "Subprotection created.");
+            PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
         }
 
         // return true to abort the event

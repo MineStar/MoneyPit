@@ -1,6 +1,6 @@
 package de.minestar.moneypit.data.protection;
 
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -13,11 +13,11 @@ public class ProtectionInfo {
     private final ProtectionManager protectionManager;
 
     public ProtectionInfo() {
-        this.protectionManager = Core.protectionManager;
+        this.protectionManager = MoneyPitCore.protectionManager;
     }
 
     private ProtectionInfo(boolean hasProtection, boolean hasSubProtection, boolean hasAnyProtection, Protection protection, SubProtectionHolder subProtections) {
-        this.protectionManager = Core.protectionManager;
+        this.protectionManager = MoneyPitCore.protectionManager;
         this.hasProtection = hasProtection;
         this.hasSubProtection = hasSubProtection;
         this.hasAnyProtection = hasAnyProtection;

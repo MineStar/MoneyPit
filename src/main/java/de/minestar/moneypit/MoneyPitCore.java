@@ -44,9 +44,9 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.manager.QueueManager;
 
-public class Core extends AbstractCore {
+public class MoneyPitCore extends AbstractCore {
 
-    public static Core INSTANCE;
+    public static MoneyPitCore INSTANCE;
 
     public static final String NAME = "MoneyPit";
 
@@ -72,7 +72,7 @@ public class Core extends AbstractCore {
     private static ProtectionInfo protectionInfo;
 
     /** CONSTRUCTOR */
-    public Core() {
+    public MoneyPitCore() {
         super(NAME);
         vector = new BlockVector("", 0, 0, 0);
         protectionInfo = new ProtectionInfo();
@@ -89,7 +89,7 @@ public class Core extends AbstractCore {
         queueManager = new QueueManager();
 
         // database
-        databaseManager = new DatabaseManager(Core.NAME, new File(getDataFolder(), "sqlconfig.yml"));
+        databaseManager = new DatabaseManager(MoneyPitCore.NAME, new File(getDataFolder(), "sqlconfig.yml"));
 
         // init
         moduleManager.init();

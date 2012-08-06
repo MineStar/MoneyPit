@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.Queue;
@@ -21,7 +21,7 @@ public class MonitorListener implements Listener {
     private Queue addQueue, removeQueue, interactQueue;
 
     public MonitorListener() {
-        this.queueManager = Core.queueManager;
+        this.queueManager = MoneyPitCore.queueManager;
         this.vector = new BlockVector("", 0, 0, 0);
     }
 
@@ -84,7 +84,7 @@ public class MonitorListener implements Listener {
                 // cancel the event
                 event.setCancelled(true);
             } else {
-                PlayerUtils.sendError(event.getPlayer(), Core.NAME, "Could not complete your interact request!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Could not complete your interact request!");
                 PlayerUtils.sendInfo(event.getPlayer(), "The event was cancelled by another plugin.");
             }
         }

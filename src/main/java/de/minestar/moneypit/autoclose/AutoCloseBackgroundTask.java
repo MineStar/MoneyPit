@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.utils.DoorHelper;
 
@@ -37,7 +37,7 @@ public class AutoCloseBackgroundTask extends TimerTask {
             if (collection.get(i).hasEnded(timestamp)) {
                 if (!DoorHelper.isDoorClosed(collection.get(i).getBlock())) {
                     AutoCloseTask task = new AutoCloseTask(collection.get(i).getBlock());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Core.INSTANCE, task, 1);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(MoneyPitCore.INSTANCE, task, 1);
                 }
                 this.queuedTasks.remove(collection.get(i).getVector());
             }

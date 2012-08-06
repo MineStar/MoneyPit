@@ -9,7 +9,7 @@ import org.bukkit.Location;
 
 import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
@@ -111,7 +111,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             }
             return null;
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't get the protection at position: " + vector.toString() + "!");
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't get the protection at position: " + vector.toString() + "!");
             return null;
         }
     }
@@ -136,7 +136,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             this.addProtection.executeUpdate();
             return this.getProtectionAtPosition(vector);
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't create protection!");
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't create protection!");
             return null;
         }
     }
@@ -155,7 +155,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             this.updateGuestList.executeUpdate();
             return true;
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't save guestList in database! ID=" + protection.getID());
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getID());
             return false;
         }
     }
@@ -177,7 +177,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 return false;
             }
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't delete protection from database @ " + vector.toString());
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete protection from database @ " + vector.toString());
             return false;
         }
     }
@@ -198,7 +198,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         ++noProtectionCount;
                         continue;
                     }
-                    Module module = Core.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
+                    Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
                     if (module == null) {
                         ++noProtectionCount;
                         continue;
@@ -208,15 +208,15 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     module.addProtection(protection, location.getBlock().getData());
                     ++count;
                 } catch (Exception error) {
-                    ConsoleUtils.printWarning(Core.NAME, "Can't load protection: " + vector.toString());
+                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: " + vector.toString());
                 }
             }
-            ConsoleUtils.printInfo(Core.NAME, count + " protections loaded!");
+            ConsoleUtils.printInfo(MoneyPitCore.NAME, count + " protections loaded!");
             if (noProtectionCount > 0) {
-                ConsoleUtils.printInfo(Core.NAME, noProtectionCount + " protections are NOT loaded due to missing blocks or locations!");
+                ConsoleUtils.printInfo(MoneyPitCore.NAME, noProtectionCount + " protections are NOT loaded due to missing blocks or locations!");
             }
         } catch (Exception e) {
-            ConsoleUtils.printException(e, Core.NAME, "Can't load protections!");
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
         }
     }
 }

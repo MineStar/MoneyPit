@@ -7,13 +7,13 @@ import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.commands.AbstractExtendedCommand;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
 
 public class cmd_cinvite extends AbstractExtendedCommand {
 
     public cmd_cinvite(String syntax, String arguments, String node) {
-        super(Core.NAME, syntax, arguments, node);
+        super(MoneyPitCore.NAME, syntax, arguments, node);
         this.description = "Invite players to a private protection.";
     }
 
@@ -35,7 +35,7 @@ public class cmd_cinvite extends AbstractExtendedCommand {
         HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
 
         // send info
-        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, Core.NAME, "Click on a private protection to invite the following people:");
+        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to invite the following people:");
         String infoMessage = "";
         int i = 0;
         for (String name : guestList) {
@@ -48,7 +48,7 @@ public class cmd_cinvite extends AbstractExtendedCommand {
         PlayerUtils.sendInfo(player, infoMessage);
 
         // set states
-        Core.playerManager.setGuestList(player.getName(), guestList);
-        Core.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
+        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList);
+        MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
     }
 }

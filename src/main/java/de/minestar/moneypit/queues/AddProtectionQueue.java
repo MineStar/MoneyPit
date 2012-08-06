@@ -4,7 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionType;
@@ -29,17 +29,17 @@ public class AddProtectionQueue implements Queue {
         Block block = vector.getLocation().getBlock();
         if (player.isOnline()) {
             // create protection
-            Protection protection = Core.databaseManager.createProtection(vector, player.getName(), this.protectionType);
+            Protection protection = MoneyPitCore.databaseManager.createProtection(vector, player.getName(), this.protectionType);
             if (protection == null) {
-                PlayerUtils.sendError(player, Core.NAME, "Could not save new protection!");
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Could not save new protection!");
                 PlayerUtils.sendInfo(player, "Please contact an admin.");
                 return false;
             }
             module.addProtection(protection, block.getData());
             if (this.protectionType == ProtectionType.PRIVATE) {
-                PlayerUtils.sendSuccess(player, Core.NAME, "Private protection created.");
+                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");
             } else {
-                PlayerUtils.sendSuccess(player, Core.NAME, "Public protection created.");
+                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Public protection created.");
             }
             return true;
         }

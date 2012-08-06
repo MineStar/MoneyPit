@@ -3,7 +3,7 @@ package de.minestar.moneypit.queues;
 import org.bukkit.entity.Player;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
-import de.minestar.moneypit.Core;
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.data.subprotection.SubProtection;
@@ -28,8 +28,8 @@ public class RemoveSubProtectionQueue implements Queue {
         for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
             protection = this.protectionInfo.getSubProtections().getProtection(i);
             if (protection != null) {
-                if (Core.databaseManager.deleteProtection(protection.getParent().getVector())) {
-                    Core.protectionManager.removeProtection(protection.getParent().getVector());
+                if (MoneyPitCore.databaseManager.deleteProtection(protection.getParent().getVector())) {
+                    MoneyPitCore.protectionManager.removeProtection(protection.getParent().getVector());
                 } else {
                     result = false;
                 }
@@ -38,9 +38,9 @@ public class RemoveSubProtectionQueue implements Queue {
 
         // Send info
         if (result) {
-            PlayerUtils.sendSuccess(this.player, Core.NAME, "Protection removed!");
+            PlayerUtils.sendSuccess(this.player, MoneyPitCore.NAME, "Protection removed!");
         } else {
-            PlayerUtils.sendError(player, Core.NAME, "Could not delete all subprotections!");
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Could not delete all subprotections!");
             PlayerUtils.sendInfo(player, "Please contact an admin.");
         }
         return result;
