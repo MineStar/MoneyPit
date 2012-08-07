@@ -1,16 +1,18 @@
 package de.minestar.moneypit.data.protection;
 
 public enum ProtectionType {
-    UNKNOWN(-1),
+    UNKNOWN(-1, "Unknown"),
 
-    PUBLIC(0),
+    PUBLIC(0, "Public"),
 
-    PRIVATE(1);
+    PRIVATE(1, "Private");
 
     private final int ID;
+    private final String typeName;
 
-    private ProtectionType(int ID) {
+    private ProtectionType(int ID, String typeName) {
         this.ID = ID;
+        this.typeName = typeName;
     }
 
     public int getID() {
@@ -23,5 +25,9 @@ public enum ProtectionType {
                 return type;
         }
         return UNKNOWN;
+    }
+
+    public String toString() {
+        return this.typeName;
     }
 }

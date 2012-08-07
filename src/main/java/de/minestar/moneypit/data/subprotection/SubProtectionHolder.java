@@ -94,6 +94,17 @@ public class SubProtectionHolder {
         }
         return true;
     }
+    
+    public boolean areAllPublic() {
+        if (this.getSize() > 0) {
+            for (SubProtection subProtection : this.protections) {
+                if (subProtection.isPrivate()) {
+                    return false;
+                }
+            }            
+        }
+        return true;
+    }
 
     /**
      * Check if a player can access all SubSrotections
