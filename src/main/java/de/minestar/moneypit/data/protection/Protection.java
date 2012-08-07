@@ -264,6 +264,16 @@ public class Protection {
         return this.isPublic() || this.canEdit(player) || this.isGuest(player.getName());
     }
 
+    /**
+     * Check if the player can access this protection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
+    public boolean canAccess(String playerName) {
+        return this.isPublic() || this.isOwner(playerName) || this.isGuest(playerName);
+    }
+
     public boolean equals(Protection protection) {
         return this.ID == protection.ID && this.vector.equals(protection.getVector());
     }

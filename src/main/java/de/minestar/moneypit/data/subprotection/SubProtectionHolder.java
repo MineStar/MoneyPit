@@ -96,6 +96,23 @@ public class SubProtectionHolder {
     }
 
     /**
+     * Check if a player can access all SubSrotections
+     * 
+     * @param player
+     * @return <b>true</b> if the player can access all SubSrotections, otherwise <b>false</b>
+     */
+    public boolean canAccessAll(String playerName) {
+        if (this.getSize() > 0) {
+            for (SubProtection subProtection : this.protections) {
+                if (!subProtection.canAccess(playerName)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Check if a player can edit all SubSrotections
      * 
      * @param player

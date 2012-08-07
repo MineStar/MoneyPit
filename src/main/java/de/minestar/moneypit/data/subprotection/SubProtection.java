@@ -161,6 +161,16 @@ public class SubProtection {
         return this.parent.canAccess(player);
     }
 
+    /**
+     * Check if the player can access this SubProtection
+     * 
+     * @param player
+     * @return <b>true</b> if the player can, otherwise <b>false</b>
+     */
+    public boolean canAccess(String playerName) {
+        return this.parent.canAccess(playerName);
+    }
+
     @Override
     public String toString() {
         return "SubProtection={ " + this.vector.toString() + " ; " + this.parent.toString() + " }";
