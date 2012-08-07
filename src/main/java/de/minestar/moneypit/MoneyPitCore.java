@@ -74,8 +74,6 @@ public class MoneyPitCore extends AbstractCore {
     /** CONSTRUCTOR */
     public MoneyPitCore() {
         super(NAME);
-        vector = new BlockVector("", 0, 0, 0);
-        protectionInfo = new ProtectionInfo();
     }
 
     @Override
@@ -102,19 +100,23 @@ public class MoneyPitCore extends AbstractCore {
         autoCloseTask = new AutoCloseBackgroundTask();
         timer = new Timer();
         timer.scheduleAtFixedRate(autoCloseTask, 0, 2 * 1000);
+
+        // create some vars
+        MoneyPitCore.vector = new BlockVector("", 0, 0, 0);
+        MoneyPitCore.protectionInfo = new ProtectionInfo();
         return true;
     }
 
     public static boolean hasProtection(Block block) {
-        vector.update(block.getLocation());
-        protectionInfo.update(vector);
-        return protectionInfo.hasAnyProtection();
+        MoneyPitCore.vector.update(block.getLocation());
+        MoneyPitCore.protectionInfo.update(vector);
+        return MoneyPitCore.protectionInfo.hasAnyProtection();
     }
 
     public static ProtectionInfo getProtectionInfo(Block block) {
-        vector.update(block.getLocation());
-        protectionInfo.update(vector);
-        return protectionInfo.clone();
+        MoneyPitCore.vector.update(block.getLocation());
+        MoneyPitCore.protectionInfo.update(vector);
+        return MoneyPitCore.protectionInfo.clone();
     }
 
     @Override
