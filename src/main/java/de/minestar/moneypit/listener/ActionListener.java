@@ -800,16 +800,14 @@ public class ActionListener implements Listener {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             // is this protection private?
             if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
-                if (event.getAction() != Action.PHYSICAL && isAdmin) {
-                    // show information about the protection
-                    this.showInformation(event.getPlayer());
-                }
+                // show information about the protection
+                this.showInformation(event.getPlayer());
                 // cancel the event
                 event.setCancelled(true);
                 return;
             }
 
-            if (event.getAction() != Action.PHYSICAL && isAdmin) {
+            if (isAdmin) {
                 // show information about the protection
                 this.showInformation(event.getPlayer());
             }
@@ -850,17 +848,15 @@ public class ActionListener implements Listener {
                 if (!subProtection.canAccess(event.getPlayer())) {
                     // cancel event
                     event.setCancelled(true);
-                    if (event.getAction() != Action.PHYSICAL && isAdmin) {
-                        // show information about the protection
-                        this.showInformation(event.getPlayer());
-                    }
+                    // show information about the protection
+                    this.showInformation(event.getPlayer());
                     return;
                 }
 
             }
 
             // show information about the protection
-            if (event.getAction() != Action.PHYSICAL && isAdmin) {
+            if (isAdmin) {
                 this.showInformation(event.getPlayer());
             }
 
