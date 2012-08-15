@@ -17,6 +17,6 @@ public class cmd_cprivate extends AbstractCommand {
 
     public void execute(String[] args, Player player) {
         MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_ADD_PRIVATE);
-        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a block to protect it with a public protection!");
+        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a block to protect it with a private protection!");
     }
 }
