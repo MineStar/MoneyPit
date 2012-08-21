@@ -17,22 +17,9 @@ public class cmd_cuninvite extends AbstractExtendedCommand {
         this.description = "Uninvite players from a private protection.";
     }
 
-    public static HashSet<String> parseGuestList(String[] args) {
-        // create guestList
-        HashSet<String> guestList = new HashSet<String>();
-        for (String name : args) {
-            String correctName = PlayerUtils.getCorrectPlayerName(name);
-            if (correctName == null) {
-                correctName = name;
-            }
-            guestList.add(name);
-        }
-        return guestList;
-    }
-
     public void execute(String[] args, Player player) {
         // create guestList
-        HashSet<String> guestList = cmd_cuninvite.parseGuestList(args);
+        HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
 
         // send info
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to uninvite the following people:");
