@@ -824,8 +824,10 @@ public class ActionListener implements Listener {
                 } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
                     if (this.protectionInfo.getProtection().isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 }
             }
@@ -873,8 +875,10 @@ public class ActionListener implements Listener {
                 } else if (isIronDoor) {
                     if (subProtection.getParent().isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 }
             }
