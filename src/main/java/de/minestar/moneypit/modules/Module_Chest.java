@@ -72,9 +72,13 @@ public class Module_Chest extends Module {
         MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
         // send info
-        PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
-
-        // return true to abort the event
-        return new EventResult(false, true, protection);
+        BlockVector alreadyDoubleChest = ChestHelper.getDoubleChest(doubleChest);
+        if (alreadyDoubleChest == null) {
+            PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
+            return new EventResult(false, false, null);
+        } else {
+            // return true to abort the event
+            return new EventResult(false, true, null);
+        }
     }
 }
