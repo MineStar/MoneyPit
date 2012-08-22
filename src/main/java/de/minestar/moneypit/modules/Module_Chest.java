@@ -64,16 +64,15 @@ public class Module_Chest extends Module {
             return new EventResult(true, true, protection);
         }
 
-        // add the SubProtection to the Protection
-        SubProtection subProtection = new SubProtection(vector, protection);
-        protection.addSubProtection(subProtection);
-
-        // add the SubProtection to the ProtectionManager
-        MoneyPitCore.protectionManager.addSubProtection(subProtection);
-
-        // send info
         BlockVector alreadyDoubleChest = ChestHelper.getDoubleChest(doubleChest);
         if (alreadyDoubleChest == null) {
+            // add the SubProtection to the Protection
+            SubProtection subProtection = new SubProtection(vector, protection);
+            protection.addSubProtection(subProtection);
+
+            // add the SubProtection to the ProtectionManager
+            MoneyPitCore.protectionManager.addSubProtection(subProtection);
+            // send info
             PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
             return new EventResult(false, false, null);
         } else {
