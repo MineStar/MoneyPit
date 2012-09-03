@@ -102,6 +102,11 @@ public class ProtectionManager {
     public void removeProtection(BlockVector vector) {
         Protection protection = this.protections.get(vector);
         if (protection != null) {
+            // check if it is a giftprotection
+            if(protection.isGift()) {
+                this.removeGiftProtection(protection.getOwner());
+            }
+            
             // remove the protection
             this.protections.remove(vector);
             // remove the subprotections
