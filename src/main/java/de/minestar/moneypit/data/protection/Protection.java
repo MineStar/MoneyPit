@@ -78,6 +78,15 @@ public class Protection {
     public boolean isPublic() {
         return this.type == ProtectionType.PUBLIC;
     }
+    
+    /**
+    * Is this protection a giftprotection?
+    *
+    * @return <b>true</b> if it is a giftprotection, otherwise <b>false</b>
+    */
+    public boolean isPrivate() {
+        return this.type == ProtectionType.GIFT;
+    }
 
     /**
      * Is this protection private?
