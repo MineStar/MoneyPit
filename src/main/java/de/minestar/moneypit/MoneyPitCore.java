@@ -129,6 +129,8 @@ public class MoneyPitCore extends AbstractCore {
 
     @Override
     protected boolean commonDisable() {
+        actionListener.closeInventories();
+
         if (databaseManager.hasConnection()) {
             databaseManager.closeConnection();
         }

@@ -203,7 +203,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         ++noProtectionCount;
                         continue;
                     }
-                    System.out.println("loading: " + ProtectionType.byID(results.getInt("protectionType")));
                     Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
                     module.addProtection(protection, location.getBlock().getData());

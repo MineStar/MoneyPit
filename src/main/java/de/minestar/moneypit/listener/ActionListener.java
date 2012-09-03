@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.minecraft.server.Packet53BlockChange;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -83,6 +84,16 @@ public class ActionListener implements Listener {
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
         this.openedGiftChests = new HashSet<String>();
+    }
+
+    public void closeInventories() {
+        Player player = null;
+        for (String playerName : this.openedGiftChests) {
+            player = Bukkit.getPlayer(playerName);
+            if (player != null && player.isOnline()) {
+                player.closeInventory();
+            }
+        }
     }
 
     private void refreshRedstoneCheckBlocks(Block block) {
@@ -447,7 +458,7 @@ public class ActionListener implements Listener {
         if (this.openedGiftChests.contains(player.getName())) {
             // handle event
             if (event.getRawSlot() <= event.getInventory().getSize() - 1) {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take any items from this chest!");
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take/move the items of this chest!");
                 event.setCancelled(true);
             }
         }
@@ -935,7 +946,6 @@ public class ActionListener implements Listener {
             }
         }
     }
-
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: EVENTS THAT ARE NOT DIRECTLY TRIGGERED BY A PLAYER
