@@ -130,6 +130,15 @@ public class SubProtection {
     public boolean isPrivate() {
         return this.parent.isPrivate();
     }
+    
+    /**
+     * Is this protection a giftprotection?
+     * 
+     * @return <b>true</b> if it is a giftprotection, otherwise <b>false</b>
+     */
+    public boolean isGift() {
+        return this.parent.isGift();
+    }    
 
     /**
      * Check if a SubProtection equals this subProtection
