@@ -35,6 +35,7 @@ public class AddProtectionQueue implements Queue {
                 PlayerUtils.sendInfo(player, "Please contact an admin.");
                 return false;
             }
+
             boolean result = module.addProtection(protection, block.getData());
             if (this.protectionType == ProtectionType.PRIVATE && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");

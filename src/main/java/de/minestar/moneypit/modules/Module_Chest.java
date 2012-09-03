@@ -28,6 +28,7 @@ public class Module_Chest extends Module {
         super();
         this.init(moduleManager, ymlFile, Material.CHEST.getId(), NAME);
         this.setDoNeighbourCheck(true);
+        this.setGiftable(true);
     }
 
     @Override

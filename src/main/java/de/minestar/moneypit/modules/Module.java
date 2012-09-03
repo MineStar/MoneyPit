@@ -18,9 +18,18 @@ public abstract class Module {
     private boolean autoLock = false;
     private boolean doNeighbourCheck = false;
     private boolean blockRedstone = false;
+    private boolean isGiftable = false;
 
     protected Module() {
         this.protectionManager = MoneyPitCore.protectionManager;
+    }
+
+    public void setGiftable(boolean isGiftable) {
+        this.isGiftable = isGiftable;
+    }
+
+    public boolean isGiftable() {
+        return isGiftable;
     }
 
     public boolean doNeighbourCheck() {

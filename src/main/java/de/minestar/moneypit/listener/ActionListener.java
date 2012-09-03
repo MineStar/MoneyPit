@@ -381,7 +381,7 @@ public class ActionListener implements Listener {
                 }
 
                 // handle add
-                this.handleAddInteract(event, module, state);
+                this.handleAddInteract(event, module, state, module.isGiftable());
                 break;
             }
             case PROTECTION_ADD_PUBLIC : {
@@ -393,7 +393,7 @@ public class ActionListener implements Listener {
                 }
 
                 // handle add
-                this.handleAddInteract(event, module, state);
+                this.handleAddInteract(event, module, state, module.isGiftable());
                 break;
             }
             case PROTECTION_INVITE : {
@@ -719,7 +719,7 @@ public class ActionListener implements Listener {
         }
     }
 
-    private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state) {
+    private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state, boolean giftable) {
         // return to normalmode
         this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
 
@@ -734,18 +734,28 @@ public class ActionListener implements Listener {
             // create the vector
             BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
 
-            if (state == PlayerState.PROTECTION_ADD_PRIVATE || state == PlayerState.PROTECTION_ADD_GIFT) {
-                // create a privatge protection
-
+            if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+                // create a private protection
                 // queue the event for later use in MonitorListener
                 AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE);
                 this.queueManager.addQueue(queue);
-            } else {
+            } else if (state == PlayerState.PROTECTION_ADD_PUBLIC) {
                 // create a public protection
 
                 // queue the event for later use in MonitorListener
                 AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PUBLIC);
                 this.queueManager.addQueue(queue);
+            } else if (state == PlayerState.PROTECTION_ADD_GIFT) {
+                // create a gift protection
+                if (giftable) {
+                    // queue the event for later use in MonitorListener
+                    AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.GIFT);
+                    this.queueManager.addQueue(queue);
+                } else {
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block cannot be a gift protection!");
+                    event.setCancelled(true);
+                    return;
+                }
             }
         } else {
             // Send errormessage
