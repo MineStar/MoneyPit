@@ -26,8 +26,8 @@ public class Module_FenceGate extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 }
