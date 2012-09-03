@@ -23,7 +23,7 @@ public class Module_StonePlate extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // get the anchor
         BlockVector anchor = protection.getVector().getRelative(0, -1, 0);
 
@@ -35,6 +35,6 @@ public class Module_StonePlate extends Module {
         PhysicsHelper.protectNonSolidBlocks(protection, anchor);
 
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 }
