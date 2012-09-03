@@ -208,7 +208,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     module.addProtection(protection, location.getBlock().getData());
                     ++count;
                 } catch (Exception error) {
-                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: " + vector.toString());
+                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
                 }
             }
             ConsoleUtils.printInfo(MoneyPitCore.NAME, count + " protections loaded!");
