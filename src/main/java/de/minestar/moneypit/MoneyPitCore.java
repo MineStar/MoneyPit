@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginManager;
 import de.minestar.minestarlibrary.AbstractCore;
 import de.minestar.minestarlibrary.commands.CommandList;
 import de.minestar.moneypit.autoclose.AutoCloseBackgroundTask;
+import de.minestar.moneypit.commands.cmd_cgift;
 import de.minestar.moneypit.commands.cmd_cinfo;
 import de.minestar.moneypit.commands.cmd_cinvite;
 import de.minestar.moneypit.commands.cmd_cprivate;
@@ -149,6 +150,7 @@ public class MoneyPitCore extends AbstractCore {
                 new cmd_cinfo           ("/cinfo",          "",                         "moneypit.commands.cinfo"),
                 new cmd_cprivate        ("/cprivate",       "",                         "moneypit.commands.cprivate"),
                 new cmd_cpublic         ("/cpublic",        "",                         "moneypit.commands.cpublic"),
+                new cmd_cgift           ("/cgift",          "",                         "moneypit.commands.cgift"),                
                 new cmd_cremove         ("/cremove",        "",                         "moneypit.commands.cremove"),
                 new cmd_cinvite         ("/cinvite",        "<Player> [ ... Player n]", "moneypit.commands.cinvite"),
                 new cmd_cuninvite       ("/cuninvite",      "<Player> [ ... Player n]", "moneypit.commands.cuninvite"),
