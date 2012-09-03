@@ -29,7 +29,9 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -422,9 +424,33 @@ public class ActionListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        // remove a players from the giftchest when closing the inventory, no matter which inventory to be safe
+        // handle inventory-events for gift-chests
+        InventoryType type = event.getInventory().getType();
+        if (type != InventoryType.CHEST) {
+            return;
+        }
+
+        // remove a player from the giftchest-list when closing the inventory, no matter which inventory to be safe
         Player player = (Player) event.getPlayer();
         this.openedGiftChests.remove(player.getName());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        // handle inventory-events for gift-chests
+        InventoryType type = event.getInventory().getType();
+        if (type != InventoryType.CHEST) {
+            return;
+        }
+
+        Player player = (Player) event.getView().getPlayer();
+        if (this.openedGiftChests.contains(player.getName())) {
+            // handle event
+            if (event.getRawSlot() <= event.getInventory().getSize() - 1) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take any items from this chest!");
+                event.setCancelled(true);
+            }
+        }
     }
 
     // //////////////////////////////////////////////////////////////////////
