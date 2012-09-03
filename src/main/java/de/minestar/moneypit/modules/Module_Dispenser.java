@@ -20,7 +20,7 @@ public class Module_Dispenser extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // register the protection
         return getProtectionManager().addProtection(protection);
     }
