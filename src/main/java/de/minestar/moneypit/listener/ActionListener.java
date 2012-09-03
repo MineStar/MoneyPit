@@ -588,13 +588,7 @@ public class ActionListener implements Listener {
 
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
-            String pType = " PRIVATE ";
-            if (this.protectionInfo.getProtection().isPublic()) {
-                pType = " PUBLIC ";
-            } else if (this.protectionInfo.getProtection().isGift()) {
-                pType = " GIFT ";
-            }
-
+            String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
             int moduleID = this.protectionInfo.getProtection().getModuleID();
             String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
             PlayerUtils.sendInfo(player, message);
@@ -602,13 +596,7 @@ public class ActionListener implements Listener {
         } else {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
-                String pType = " PRIVATE ";
-                if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
-                    pType = " PUBLIC ";
-                } else if (this.protectionInfo.getSubProtections().getProtection(0).isGift()) {
-                    pType = " GIFT ";
-                }
-
+                String pType = " " + this.protectionInfo.getSubProtections().getProtection(0).getParent().getType().toString() + " ";
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
                 String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
@@ -640,13 +628,7 @@ public class ActionListener implements Listener {
 
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
-            String pType = " PRIVATE ";
-            if (this.protectionInfo.getProtection().isPublic()) {
-                pType = " PUBLIC ";
-            } else if (this.protectionInfo.getProtection().isGift()) {
-                pType = " GIFT ";
-            }
-
+            String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
             int moduleID = this.protectionInfo.getProtection().getModuleID();
             String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
 
@@ -662,14 +644,7 @@ public class ActionListener implements Listener {
         } else {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
-                String pType = " PRIVATE ";
-                if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
-                    pType = " PUBLIC ";
-                }
-                else if (this.protectionInfo.getSubProtections().getProtection(0).isGift()) {
-                    pType = " GIFT ";
-                }
-
+                String pType = " " + this.protectionInfo.getSubProtections().getProtection(0).getParent().getType().toString() + " ";
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
                 String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
