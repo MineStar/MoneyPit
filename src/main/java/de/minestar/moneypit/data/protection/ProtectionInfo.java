@@ -52,6 +52,16 @@ public class ProtectionInfo {
     }
 
     /**
+     * @return the First Protection
+     */
+    public Protection getFirstSubProtection() {
+        if(this.hasSubProtection) {
+            return this.subProtections.getProtection(0).getParent();
+        }
+        return null;
+    }
+
+    /**
      * @return the hasAnyProtection
      */
     public boolean hasAnyProtection() {
