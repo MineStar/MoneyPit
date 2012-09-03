@@ -31,7 +31,7 @@ public class Module_Chest extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // search a second chest and add the subprotection, if found
         Chest secondChest = BlockUtils.isDoubleChest(protection.getVector().getLocation().getBlock());
         if (secondChest != null) {
@@ -40,7 +40,7 @@ public class Module_Chest extends Module {
         }
 
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 
     @Override
