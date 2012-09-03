@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -70,6 +71,8 @@ public class ActionListener implements Listener {
 
     private Block[] redstoneCheckBlocks = new Block[6];
 
+    private HashSet<String> openedGiftChests;
+
     public ActionListener() {
         this.moduleManager = MoneyPitCore.moduleManager;
         this.playerManager = MoneyPitCore.playerManager;
@@ -77,6 +80,7 @@ public class ActionListener implements Listener {
         this.queueManager = MoneyPitCore.queueManager;
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
+        this.openedGiftChests = new HashSet<String>();
     }
 
     private void refreshRedstoneCheckBlocks(Block block) {
@@ -414,6 +418,13 @@ public class ActionListener implements Listener {
                 break;
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        // remove a players from the giftchest when closing the inventory, no matter which inventory to be safe
+        Player player = (Player) event.getPlayer();
+        this.openedGiftChests.remove(player.getName());
     }
 
     // //////////////////////////////////////////////////////////////////////
@@ -807,6 +818,11 @@ public class ActionListener implements Listener {
                 this.showInformation(event.getPlayer());
             }
 
+            // handle gift-protections
+            if (this.protectionInfo.getProtection().isGift() && !this.protectionInfo.getProtection().canEdit(event.getPlayer())) {
+                this.openedGiftChests.add(event.getPlayer().getName());
+            }
+
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
                 if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
@@ -855,6 +871,11 @@ public class ActionListener implements Listener {
             // show information about the protection
             if (isAdmin) {
                 this.showInformation(event.getPlayer());
+            }
+
+            // handle gift-protections
+            if (this.protectionInfo.getFirstProtection().isGift() && !this.protectionInfo.getFirstProtection().canEdit(event.getPlayer())) {
+                this.openedGiftChests.add(event.getPlayer().getName());
             }
 
             // toggle both doors
