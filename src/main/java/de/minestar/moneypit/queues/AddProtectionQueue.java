@@ -28,6 +28,14 @@ public class AddProtectionQueue implements Queue {
     public boolean execute() {
         Block block = vector.getLocation().getBlock();
         if (player.isOnline()) {
+            // handle giftprotections
+            if (this.protectionType == ProtectionType.GIFT) {
+                if (MoneyPitCore.protectionManager.hasGiftProtection(player.getName())) {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");
+                    return false;
+                }
+            }
+
             // create protection
             Protection protection = MoneyPitCore.databaseManager.createProtection(vector, player.getName(), this.protectionType);
             if (protection == null) {
@@ -42,17 +50,12 @@ public class AddProtectionQueue implements Queue {
             } else if (this.protectionType == ProtectionType.PUBLIC && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Public protection created.");
             } else if (this.protectionType == ProtectionType.GIFT) {
-                if (result) {
-                    PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Gift protection created.");
-                } else {
-                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");
-                }
+                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Gift protection created.");
             }
             return true;
         }
         return false;
     }
-
     @Override
     public BlockVector getVector() {
         return this.vector;
