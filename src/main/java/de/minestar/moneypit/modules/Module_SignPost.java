@@ -22,7 +22,7 @@ public class Module_SignPost extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // protect the block below
         SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
         protection.addSubProtection(subProtection);
@@ -31,6 +31,6 @@ public class Module_SignPost extends Module {
         PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
 
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 }
