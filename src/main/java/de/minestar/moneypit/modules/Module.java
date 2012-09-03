@@ -89,5 +89,5 @@ public abstract class Module {
         return new EventResult(false, false, null);
     }
 
-    public abstract void addProtection(Protection protection, byte subData);
+    public abstract boolean addProtection(Protection protection, byte subData);
 }
