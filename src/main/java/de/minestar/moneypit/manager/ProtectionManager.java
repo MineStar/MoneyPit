@@ -22,8 +22,6 @@ public class ProtectionManager {
         this.protections = new HashMap<BlockVector, Protection>(512);
         this.subProtections = new HashMap<BlockVector, SubProtectionHolder>(1024);
         this.giftList = new HashSet<String>(128);
-
-        // TODO: load protections
     }
 
     // ////////////////////////////////////////////////////////////////
