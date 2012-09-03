@@ -596,13 +596,13 @@ public class ActionListener implements Listener {
         } else {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
-                String pType = " " + this.protectionInfo.getSubProtections().getProtection(0).getParent().getType().toString() + " ";
-                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
+                String pType = " " + this.protectionInfo.getFirstProtection().getType().toString() + " ";
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
-                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
                 String message = "This " + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
                 PlayerUtils.sendInfo(player, message);
                 return;
@@ -644,13 +644,13 @@ public class ActionListener implements Listener {
         } else {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
-                String pType = " " + this.protectionInfo.getSubProtections().getProtection(0).getParent().getType().toString() + " ";
-                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getSubProtections().getProtection(0).getOwner() + ".";
+                String pType = " " + this.protectionInfo.getFirstProtection().getType().toString() + " ";
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
+                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
 
-                if (this.protectionInfo.getSubProtections().getProtection(0).canAccess(player)) {
-                    HashSet<String> guestList = this.protectionInfo.getSubProtections().getProtection(0).getParent().getGuestList();
+                if (this.protectionInfo.getFirstProtection().canAccess(player)) {
+                    HashSet<String> guestList = this.protectionInfo.getFirstProtection().getGuestList();
                     if (guestList != null) {
                         this.displayGuestList(player, guestList);
                     }
@@ -658,7 +658,7 @@ public class ActionListener implements Listener {
 
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
-                int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
                 String message = "This" + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + "multiple protections" + ".";
                 PlayerUtils.sendInfo(player, message);
                 return;

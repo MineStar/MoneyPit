@@ -16,6 +16,9 @@ commands:
   cpublic:
     description: Add a public protection
     usage: /cpublic
+  cgift:
+    description: Add a gift protection
+    usage: /cgift
   cinvite:
     description: Invite players to a private protection
     usage: /cinvite <Player> [... Player n]
