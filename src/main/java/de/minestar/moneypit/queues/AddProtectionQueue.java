@@ -43,8 +43,7 @@ public class AddProtectionQueue implements Queue {
             } else if (this.protectionType == ProtectionType.GIFT) {
                 if(result) {
                     PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Gift protection created.");
-                }
-                else {
+                } else {
                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");                 
                 }
             }
