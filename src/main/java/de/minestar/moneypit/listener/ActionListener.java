@@ -371,7 +371,8 @@ public class ActionListener implements Listener {
                 this.handleRemoveInteract(event);
                 break;
             }
-            case PROTECTION_ADD_PRIVATE : {
+            case PROTECTION_ADD_PRIVATE :
+            case PROTECTION_ADD_GIFT : {
                 // the module must be registered
                 Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
                 if (module == null) {
@@ -590,6 +591,8 @@ public class ActionListener implements Listener {
             String pType = " PRIVATE ";
             if (this.protectionInfo.getProtection().isPublic()) {
                 pType = " PUBLIC ";
+            } else if (this.protectionInfo.getProtection().isGift()) {
+                pType = " GIFT ";
             }
 
             int moduleID = this.protectionInfo.getProtection().getModuleID();
@@ -602,6 +605,8 @@ public class ActionListener implements Listener {
                 String pType = " PRIVATE ";
                 if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
                     pType = " PUBLIC ";
+                } else if (this.protectionInfo.getSubProtections().getProtection(0).isGift()) {
+                    pType = " GIFT ";
                 }
 
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
@@ -638,6 +643,8 @@ public class ActionListener implements Listener {
             String pType = " PRIVATE ";
             if (this.protectionInfo.getProtection().isPublic()) {
                 pType = " PUBLIC ";
+            } else if (this.protectionInfo.getProtection().isGift()) {
+                pType = " GIFT ";
             }
 
             int moduleID = this.protectionInfo.getProtection().getModuleID();
@@ -658,6 +665,9 @@ public class ActionListener implements Listener {
                 String pType = " PRIVATE ";
                 if (this.protectionInfo.getSubProtections().getProtection(0).getParent().isPublic()) {
                     pType = " PUBLIC ";
+                }
+                else if (this.protectionInfo.getSubProtections().getProtection(0).isGift()) {
+                    pType = " GIFT ";
                 }
 
                 int moduleID = this.protectionInfo.getSubProtections().getProtection(0).getVector().getLocation().getBlock().getTypeId();
@@ -749,7 +759,7 @@ public class ActionListener implements Listener {
             // create the vector
             BlockVector tempVector = new BlockVector(event.getClickedBlock().getLocation());
 
-            if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+            if (state == PlayerState.PROTECTION_ADD_PRIVATE || state == PlayerState.PROTECTION_ADD_GIFT) {
                 // create a privatge protection
 
                 // queue the event for later use in MonitorListener
