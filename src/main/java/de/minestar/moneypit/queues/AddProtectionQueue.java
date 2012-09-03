@@ -34,17 +34,17 @@ public class AddProtectionQueue implements Queue {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "Could not save new protection!");
                 PlayerUtils.sendInfo(player, "Please contact an admin.");
                 return false;
-            }            
+            }
             boolean result = module.addProtection(protection, block.getData());
             if (this.protectionType == ProtectionType.PRIVATE && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");
             } else if (this.protectionType == ProtectionType.PUBLIC && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Public protection created.");
             } else if (this.protectionType == ProtectionType.GIFT) {
-                if(result) {
+                if (result) {
                     PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Gift protection created.");
                 } else {
-                   PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");                 
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");
                 }
             }
             return true;

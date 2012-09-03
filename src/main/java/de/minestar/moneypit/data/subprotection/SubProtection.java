@@ -130,7 +130,7 @@ public class SubProtection {
     public boolean isPrivate() {
         return this.parent.isPrivate();
     }
-    
+
     /**
      * Is this protection a giftprotection?
      * 
@@ -138,7 +138,7 @@ public class SubProtection {
      */
     public boolean isGift() {
         return this.parent.isGift();
-    }    
+    }
 
     /**
      * Check if a SubProtection equals this subProtection

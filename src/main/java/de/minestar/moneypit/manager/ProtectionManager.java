@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
+import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 
@@ -57,17 +58,17 @@ public class ProtectionManager {
      */
     public boolean addProtection(Protection protection) {
         // is it a gift-protection?
-        if(protection.getType().equals(ProtectionType.GIFT)) {
-            if(this.hasGiftProtection(protection.getOwner())) {
+        if (protection.getType().equals(ProtectionType.GIFT)) {
+            if (this.hasGiftProtection(protection.getOwner())) {
                 return false;
             }
-            
+
             this.giftList.add(protection.getOwner().toLowerCase());
         }
-        
+
         // register the protection
         this.protections.put(protection.getVector(), protection);
-        
+
         // register the subprotections
         if (protection.hasAnySubProtection()) {
             Collection<SubProtection> subs = protection.getSubProtections();
@@ -101,10 +102,10 @@ public class ProtectionManager {
         Protection protection = this.protections.get(vector);
         if (protection != null) {
             // check if it is a giftprotection
-            if(protection.isGift()) {
+            if (protection.isGift()) {
                 this.removeGiftProtection(protection.getOwner());
             }
-            
+
             // remove the protection
             this.protections.remove(vector);
             // remove the subprotections
@@ -191,14 +192,14 @@ public class ProtectionManager {
             this.subProtections.remove(vector);
         }
     }
-    
+
     // ////////////////////////////////////////////////////////////////
     //
     // Gifts
     //
     // ////////////////////////////////////////////////////////////////
-     
-     /**
+
+    /**
      * Check if a player has a GiftProtection
      * 
      * @param playerName
@@ -207,8 +208,7 @@ public class ProtectionManager {
     public boolean hasGiftProtection(String playerName) {
         return this.giftList.contains(playerName.toLowerCase());
     }
-    
-    
+
     /**
      * Remove the GiftProtection for a player
      * 
