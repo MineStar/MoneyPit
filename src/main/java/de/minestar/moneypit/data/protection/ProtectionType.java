@@ -5,7 +5,9 @@ public enum ProtectionType {
 
     PUBLIC(0, "Public"),
 
-    PRIVATE(1, "Private");
+    PRIVATE(1, "Private"),
+
+    GIFT(2, "Gift");
 
     private final int ID;
     private final String typeName;
