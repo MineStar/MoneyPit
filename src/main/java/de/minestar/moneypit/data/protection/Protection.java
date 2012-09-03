@@ -84,7 +84,7 @@ public class Protection {
     *
     * @return <b>true</b> if it is a giftprotection, otherwise <b>false</b>
     */
-    public boolean isPrivate() {
+    public boolean isGift() {
         return this.type == ProtectionType.GIFT;
     }
 
