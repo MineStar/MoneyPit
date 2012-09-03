@@ -38,7 +38,7 @@ public class Module_WoodenDoor extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // protect the block above
         SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
@@ -73,7 +73,7 @@ public class Module_WoodenDoor extends Module {
         }
 
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 
     @Override
