@@ -30,7 +30,7 @@ public class Module_TrapDoor extends Module {
     }
 
     @Override
-    public void addProtection(Protection protection, byte subData) {
+    public boolean addProtection(Protection protection, byte subData) {
         // get the anchor
         BlockVector anchor = DoorHelper.getTrapDoorAnchor(protection.getVector(), subData);
 
@@ -42,6 +42,6 @@ public class Module_TrapDoor extends Module {
         PhysicsHelper.protectNonSolidBlocks(protection, anchor);
 
         // register the protection
-        getProtectionManager().addProtection(protection);
+        return getProtectionManager().addProtection(protection);
     }
 }
