@@ -205,8 +205,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     }
                     Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
-                    module.addProtection(protection, location.getBlock().getData());
-                    ++count;
+                    if (module.addProtection(protection, location.getBlock().getData())) {
+                        ++count;
+                    } else {
+                        ++noProtectionCount;
+                    }
                 } catch (Exception error) {
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
                 }
