@@ -2,6 +2,7 @@ package de.minestar.moneypit.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.bukkit.gemo.utils.UtilPermissions;
 
@@ -75,6 +77,7 @@ public class ActionListener implements Listener {
     private Block[] redstoneCheckBlocks = new Block[6];
 
     private HashSet<String> openedGiftChests;
+    private HashMap<String, Boolean> wasPlayerInv;
 
     public ActionListener() {
         this.moduleManager = MoneyPitCore.moduleManager;
@@ -84,6 +87,7 @@ public class ActionListener implements Listener {
         this.vector = new BlockVector("", 0, 0, 0);
         this.protectionInfo = new ProtectionInfo();
         this.openedGiftChests = new HashSet<String>();
+        this.wasPlayerInv = new HashMap<String, Boolean>();
     }
 
     public void closeInventories() {
@@ -456,10 +460,35 @@ public class ActionListener implements Listener {
 
         Player player = (Player) event.getView().getPlayer();
         if (this.openedGiftChests.contains(player.getName())) {
-            // handle event
-            if (event.getRawSlot() <= event.getInventory().getSize() - 1) {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take/move any items of this chest!");
-                event.setCancelled(true);
+            // get all needed vars
+            ItemStack inSlot = event.getView().getItem(event.getRawSlot());
+            boolean slotNull = (inSlot == null || inSlot.getTypeId() == Material.AIR.getId());
+            boolean inChest = event.getRawSlot() <= event.getInventory().getSize() - 1;
+            boolean shiftClick = event.isShiftClick();
+
+            if (!inChest) {
+                // click in normal inventory
+                if (!slotNull && !shiftClick) {
+                    this.wasPlayerInv.put(player.getName(), true);
+                    return;
+                } else {
+                    this.wasPlayerInv.put(player.getName(), false);
+                    return;
+                }
+            } else {
+                // click in chest inventory
+                Boolean lastPlayerInv = this.wasPlayerInv.get(player.getName());
+                if (lastPlayerInv == null) {
+                    lastPlayerInv = false;
+                }
+
+                if (!lastPlayerInv || !slotNull) {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take/move any items of this chest!");
+                    event.setCancelled(true);
+                    return;
+                }
+
+                this.wasPlayerInv.put(player.getName(), false);
             }
         }
     }
