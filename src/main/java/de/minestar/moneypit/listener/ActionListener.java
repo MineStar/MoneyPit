@@ -458,7 +458,7 @@ public class ActionListener implements Listener {
         if (this.openedGiftChests.contains(player.getName())) {
             // handle event
             if (event.getRawSlot() <= event.getInventory().getSize() - 1) {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take/move the items of this chest!");
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You cannot take/move any items of this chest!");
                 event.setCancelled(true);
             }
         }

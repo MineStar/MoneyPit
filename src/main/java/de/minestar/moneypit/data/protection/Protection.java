@@ -270,17 +270,17 @@ public class Protection {
      * @return <b>true</b> if the player can, otherwise <b>false</b>
      */
     public boolean canAccess(Player player) {
-        return this.isPublic() || this.canEdit(player) || this.isGuest(player.getName());
+        return this.canAccess(player.getName());
     }
 
     /**
      * Check if the player can access this protection
      * 
-     * @param player
+     * @param playerName
      * @return <b>true</b> if the player can, otherwise <b>false</b>
      */
     public boolean canAccess(String playerName) {
-        return this.isPublic() || this.isOwner(playerName) || this.isGuest(playerName);
+        return this.isPublic() || this.isGift() || this.isOwner(playerName) || this.isGuest(playerName);
     }
 
     public boolean equals(Protection protection) {
