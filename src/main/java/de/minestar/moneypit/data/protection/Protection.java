@@ -270,7 +270,7 @@ public class Protection {
      * @return <b>true</b> if the player can, otherwise <b>false</b>
      */
     public boolean canAccess(Player player) {
-        return this.canAccess(player.getName());
+        return this.isPublic() || this.isGift() || this.isOwner(player.getName()) || this.isGuest(player.getName()) || this.canEdit(player);
     }
 
     /**
