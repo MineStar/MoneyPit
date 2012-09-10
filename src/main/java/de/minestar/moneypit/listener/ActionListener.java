@@ -885,8 +885,10 @@ public class ActionListener implements Listener {
             }
 
             // handle gift-protections
-            if (this.protectionInfo.getProtection().isGift() && !this.protectionInfo.getProtection().canEdit(event.getPlayer())) {
-                this.openedGiftChests.add(event.getPlayer().getName());
+            if (this.protectionInfo.getProtection().isGift()) {
+                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer().getName())) {
+                    this.openedGiftChests.add(event.getPlayer().getName());
+                }
             }
 
             // toggle both doors
@@ -940,8 +942,10 @@ public class ActionListener implements Listener {
             }
 
             // handle gift-protections
-            if (this.protectionInfo.getFirstProtection().isGift() && !this.protectionInfo.getFirstProtection().canEdit(event.getPlayer())) {
-                this.openedGiftChests.add(event.getPlayer().getName());
+            if (this.protectionInfo.getFirstProtection().isGift()) {
+                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer().getName())) {
+                    this.openedGiftChests.add(event.getPlayer().getName());
+                }
             }
 
             // toggle both doors
