@@ -15,6 +15,7 @@ import de.minestar.moneypit.modules.Module_FenceGate;
 import de.minestar.moneypit.modules.Module_Furnace;
 import de.minestar.moneypit.modules.Module_FurnaceBurning;
 import de.minestar.moneypit.modules.Module_IronDoor;
+import de.minestar.moneypit.modules.Module_ItemFrame;
 import de.minestar.moneypit.modules.Module_Jukebox;
 import de.minestar.moneypit.modules.Module_Lever;
 import de.minestar.moneypit.modules.Module_SignPost;
@@ -85,6 +86,7 @@ public class ModuleManager {
             new Module_Furnace          (this, ymlFile); 
             new Module_FurnaceBurning   (this, ymlFile);
             new Module_Jukebox          (this, ymlFile);
+            new Module_ItemFrame        (this, ymlFile);
             
             // @formatter:on
 
@@ -120,6 +122,7 @@ public class ModuleManager {
             new Module_Furnace          (ymlFile); 
             new Module_FurnaceBurning   (ymlFile);
             new Module_Jukebox          (ymlFile);
+            new Module_ItemFrame        (ymlFile);
             
             // @formatter:on
 
