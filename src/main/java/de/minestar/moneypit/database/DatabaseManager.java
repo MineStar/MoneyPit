@@ -226,7 +226,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             for (Painting paint : paintList) {
                                 BlockVector otherVector = new BlockVector(paint.getLocation());
                                 if (vector.equals(otherVector)) {
-                                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+                                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING.getId());
                                     entityHanging = paint;
                                     found = true;
                                     break;
