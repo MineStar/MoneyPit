@@ -4,8 +4,13 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collection;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 
 import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
@@ -198,14 +203,53 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         ++noProtectionCount;
                         continue;
                     }
+
+                    location.getChunk().load(true);
                     Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
+
+                    Hanging entityHanging = null;
+
                     if (module == null) {
-                        ++noProtectionCount;
-                        continue;
+                        Collection<ItemFrame> frameList = location.getWorld().getEntitiesByClass(ItemFrame.class);
+                        boolean found = false;
+                        for (ItemFrame frame : frameList) {
+                            BlockVector otherVector = new BlockVector(frame.getLocation());
+                            if (vector.equals(otherVector)) {
+                                module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+                                entityHanging = frame;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            Collection<Painting> paintList = location.getWorld().getEntitiesByClass(Painting.class);
+                            for (Painting paint : paintList) {
+                                BlockVector otherVector = new BlockVector(paint.getLocation());
+                                if (vector.equals(otherVector)) {
+                                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+                                    entityHanging = paint;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                ++noProtectionCount;
+                                continue;
+                            }
+                        }
                     }
                     Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
-                    if (module.addProtection(protection, location.getBlock().getData())) {
+                    byte subData = location.getBlock().getData();
+                    if (module.getRegisteredTypeID() == Material.ITEM_FRAME.getId() || module.getRegisteredTypeID() == Material.PAINTING.getId()) {
+                        if (entityHanging != null) {
+                            subData = (byte) entityHanging.getAttachedFace().ordinal();
+                        } else {
+                            ++noProtectionCount;
+                            continue;
+                        }
+                    }
+                    if (module.addProtection(protection, subData)) {
                         ++count;
                     } else {
                         ++noProtectionCount;

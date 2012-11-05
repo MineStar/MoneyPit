@@ -15,6 +15,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -31,9 +33,13 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -108,6 +114,12 @@ public class ActionListener implements Listener {
         redstoneCheckBlocks[4] = block.getRelative(BlockFace.EAST);
         redstoneCheckBlocks[5] = block.getRelative(BlockFace.SOUTH);
     }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
+    // BLOCKCHANGES
+    //
+    // //////////////////////////////////////////////////////////////////////
 
     @EventHandler
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {
@@ -364,6 +376,187 @@ public class ActionListener implements Listener {
             }
         }
     }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
+    // HANGING ENTITIES
+    //
+    // //////////////////////////////////////////////////////////////////////
+
+    public void handleHangingBreakByEntity(HangingBreakByEntityEvent event, Module module, Player player) {
+        // Block is protected => check: Protection OR SubProtection
+        if (this.protectionInfo.hasProtection()) {
+            // get the protection
+            Protection protection = this.protectionInfo.getProtection();
+
+            // check permission
+            boolean isOwner = protection.isOwner(player.getName());
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
+            if (!isOwner && !isAdmin) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to break this protected block.");
+                event.setCancelled(true);
+                return;
+            }
+
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getEntity().getLocation());
+
+            // queue the event for later use in MonitorListener
+            RemoveProtectionQueue queue = new RemoveProtectionQueue(player, tempVector);
+            this.queueManager.addQueue(queue);
+        } else {
+            // we have a SubProtection => check permissions and handle it
+            if (!this.protectionInfo.getSubProtections().canEditAll(player)) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to remove this subprotection!");
+                event.setCancelled(true);
+                return;
+            }
+
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getEntity().getLocation());
+
+            // queue the event for later use in MonitorListener
+            RemoveSubProtectionQueue queue = new RemoveSubProtectionQueue(player, tempVector, this.protectionInfo.clone());
+            this.queueManager.addQueue(queue);
+        }
+    }
+
+    public void handleHangingInteract(PlayerInteractEntityEvent event, Module module) {
+        // get PlayerState
+        final PlayerState state = this.playerManager.getState(event.getPlayer().getName());
+
+        Hanging entity = (Hanging) event.getRightClicked();
+
+        // decide what to do
+        switch (state) {
+            case PROTECTION_INFO : {
+                // handle info
+                this.handleHangingInfoInteract(event);
+                break;
+            }
+            case PROTECTION_REMOVE : {
+                // handle remove
+                this.handleHangingRemoveInteract(event);
+                break;
+            }
+            case PROTECTION_ADD_PRIVATE : {
+                // handle add
+                this.handleHangingAddInteract(event, module, state, entity);
+                break;
+            }
+            case PROTECTION_INVITE :
+            case PROTECTION_UNINVITE :
+            case PROTECTION_UNINVITEALL :
+            case PROTECTION_ADD_GIFT :
+            case PROTECTION_ADD_PUBLIC : {
+                // return to normalmode
+                this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+                // cancel event and send error
+                event.setCancelled(true);
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Action is not allowed for '" + entity.getType().name() + "'!");
+                return;
+            }
+            default : {
+                // handle normal interact
+                this.handleHangingNormalInteract(event);
+                break;
+            }
+        }
+    }
+
+    public void onHangingBreak(HangingBreakEvent event, Module module) {
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getEntity().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // Block is not protected => return
+        if (!this.protectionInfo.hasAnyProtection()) {
+            return;
+        }
+
+        if (event.getCause().equals(RemoveCause.PHYSICS) || event.getCause().equals(RemoveCause.OBSTRUCTION)) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        // Only handle ItemFrames & Paintings
+        if (!event.getEntity().getType().equals(EntityType.ITEM_FRAME) && !event.getEntity().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // get the module
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        if (event.getEntity().getType().equals(EntityType.PAINTING)) {
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+        }
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getEntity().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // Block is not protected => return
+        if (!this.protectionInfo.hasAnyProtection()) {
+            return;
+        }
+
+        // Removed by a player?
+        if (event.getRemover().getType().equals(EntityType.PLAYER)) {
+            // get the player
+            Player player = (Player) event.getRemover();
+
+            // is the module registered?
+            if (module == null) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Module for '" + event.getEntity().getType().name() + "' is not registered!");
+                return;
+            }
+
+            // handle
+            this.handleHangingBreakByEntity(event, module, player);
+        } else {
+            // block removal by other entities
+            if (this.cancelBlockEvent(event.getEntity().getLocation().getBlock())) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHangingInteract(PlayerInteractEntityEvent event) {
+        // Only handle ItemFrames & Paintings
+        if (!event.getRightClicked().getType().equals(EntityType.ITEM_FRAME) && !event.getRightClicked().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // get the module
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        if (event.getRightClicked().getType().equals(EntityType.PAINTING)) {
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+        }
+
+        // is the module registered?
+        if (module == null) {
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for '" + event.getRightClicked().getType().name() + "' is not registered!");
+            return;
+        }
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(event.getRightClicked().getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // handle
+        this.handleHangingInteract(event, module);
+    }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
+    // INTERACT & INVENTORIES
+    //
+    // //////////////////////////////////////////////////////////////////////
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -979,6 +1172,170 @@ public class ActionListener implements Listener {
             }
         }
     }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
+    // FROM HERE ON: METHODS TO HANDLE THE HANGING ENTITIES
+    //
+    // //////////////////////////////////////////////////////////////////////
+
+    private void handleHangingInfoInteract(PlayerInteractEntityEvent event) {
+        // cancel the event
+        event.setCancelled(true);
+
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+        // show information
+        this.showExtendedInformation(event.getPlayer());
+    }
+
+    private void handleHangingAddInteract(PlayerInteractEntityEvent event, Module module, PlayerState state, Hanging entity) {
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+        // check permissions
+        if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to protect this block!");
+            return;
+        }
+
+        // add protection, if it isn't protected yet
+        if (!this.protectionInfo.hasAnyProtection()) {
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getRightClicked().getLocation());
+            if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+                // create a private protection
+                // queue the event for later use in MonitorListener
+                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE, (byte) entity.getAttachedFace().ordinal());
+                this.queueManager.addQueue(queue);
+            } else if (state == PlayerState.PROTECTION_ADD_PUBLIC) {
+                // create a public protection
+
+                // queue the event for later use in MonitorListener
+                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PUBLIC, (byte) entity.getAttachedFace().ordinal());
+                this.queueManager.addQueue(queue);
+            } else if (state == PlayerState.PROTECTION_ADD_GIFT) {
+                // create protection
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block cannot be a gift protection!");
+                event.setCancelled(true);
+                return;
+            }
+        } else {
+            // Send errormessage
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Cannot create protection!");
+            event.setCancelled(true);
+
+            // show information about the protection
+            this.showInformation(event.getPlayer());
+        }
+    }
+
+    private void handleHangingRemoveInteract(PlayerInteractEntityEvent event) {
+        // return to normalmode
+        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+
+        // try to remove the protection
+        if (!this.protectionInfo.hasAnyProtection()) {
+            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block is not protected!");
+            return;
+        } else if (this.protectionInfo.hasProtection()) {
+            // get protection
+            Protection protection = this.protectionInfo.getProtection();
+
+            // check permission
+            if (!protection.canEdit(event.getPlayer())) {
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to remove this protection!");
+                event.setCancelled(true);
+                return;
+            }
+
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getRightClicked().getLocation());
+
+            // queue the event for later use in MonitorListener
+            RemoveProtectionQueue queue = new RemoveProtectionQueue(event.getPlayer(), tempVector);
+            this.queueManager.addQueue(queue);
+        } else {
+            // we have a SubProtection => check permissions and handle it
+            if (!this.protectionInfo.getSubProtections().canEditAll(event.getPlayer())) {
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to remove this subprotection!");
+                event.setCancelled(true);
+                return;
+            }
+
+            // create the vector
+            BlockVector tempVector = new BlockVector(event.getRightClicked().getLocation());
+
+            // queue the event for later use in MonitorListener
+            RemoveSubProtectionQueue queue = new RemoveSubProtectionQueue(event.getPlayer(), tempVector, this.protectionInfo.clone());
+            this.queueManager.addQueue(queue);
+        }
+    }
+
+    private void handleHangingNormalInteract(PlayerInteractEntityEvent event) {
+        // CHECK: Protection?
+        if (this.protectionInfo.hasProtection()) {
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+            // is this protection private?
+            if (!this.protectionInfo.getProtection().canAccess(event.getPlayer())) {
+                // show information about the protection
+                this.showInformation(event.getPlayer());
+                // cancel the event
+                event.setCancelled(true);
+                return;
+            }
+
+            if (isAdmin) {
+                // show information about the protection
+                this.showInformation(event.getPlayer());
+            }
+
+            // handle gift-protections
+            if (this.protectionInfo.getProtection().isGift()) {
+                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer().getName())) {
+                    this.openedGiftChests.add(event.getPlayer().getName());
+                }
+            }
+            return;
+        }
+
+        // CHECK: SubProtection?
+        if (this.protectionInfo.hasSubProtection()) {
+            boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
+            SubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
+            for (SubProtection subProtection : holder.getProtections()) {
+                // is this protection private?
+                if (!subProtection.getParent().isPrivate()) {
+                    continue;
+                }
+
+                // check the access
+                if (!subProtection.canAccess(event.getPlayer())) {
+                    // cancel event
+                    event.setCancelled(true);
+                    // show information about the protection
+                    this.showInformation(event.getPlayer());
+                    return;
+                }
+
+            }
+
+            // show information about the protection
+            if (isAdmin) {
+                this.showInformation(event.getPlayer());
+            }
+
+            // handle gift-protections
+            if (this.protectionInfo.getFirstProtection().isGift()) {
+                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer().getName())) {
+                    this.openedGiftChests.add(event.getPlayer().getName());
+                }
+            }
+            return;
+        }
+    }
+
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: EVENTS THAT ARE NOT DIRECTLY TRIGGERED BY A PLAYER

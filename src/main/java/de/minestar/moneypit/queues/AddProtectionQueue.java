@@ -17,6 +17,16 @@ public class AddProtectionQueue implements Queue {
     private final BlockVector vector;
     private final ProtectionType protectionType;
 
+    private byte subData = -1;
+
+    public AddProtectionQueue(Player player, Module module, BlockVector vector, ProtectionType protectionType, byte subData) {
+        this.player = player;
+        this.module = module;
+        this.vector = vector;
+        this.protectionType = protectionType;
+        this.subData = subData;
+    }
+
     public AddProtectionQueue(Player player, Module module, BlockVector vector, ProtectionType protectionType) {
         this.player = player;
         this.module = module;
@@ -27,6 +37,10 @@ public class AddProtectionQueue implements Queue {
     @Override
     public boolean execute() {
         Block block = vector.getLocation().getBlock();
+        byte data = block.getData();
+        if (subData != -1) {
+            data = subData;
+        }
         if (player.isOnline()) {
             // handle giftprotections
             if (this.protectionType == ProtectionType.GIFT) {
@@ -44,7 +58,7 @@ public class AddProtectionQueue implements Queue {
                 return false;
             }
 
-            boolean result = module.addProtection(protection, block.getData());
+            boolean result = module.addProtection(protection, data);
             if (this.protectionType == ProtectionType.PRIVATE && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");
             } else if (this.protectionType == ProtectionType.PUBLIC && result) {
@@ -56,6 +70,7 @@ public class AddProtectionQueue implements Queue {
         }
         return false;
     }
+
     @Override
     public BlockVector getVector() {
         return this.vector;

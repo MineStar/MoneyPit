@@ -1,11 +1,15 @@
 package de.minestar.moneypit.listener;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
@@ -55,6 +59,79 @@ public class MonitorListener implements Listener {
                 if (!this.removeQueue.execute()) {
                     event.setCancelled(true);
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onHangingBreak(HangingBreakEvent event) {
+        // Only handle ItemFrames & Paintings
+        if (!event.getEntity().getType().equals(EntityType.ITEM_FRAME) && !event.getEntity().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // update the BlockVector
+        this.vector.update(event.getEntity().getLocation());
+
+        // get the AddQueue
+        this.removeQueue = this.queueManager.getAndRemoveQueue(this.vector);
+        if (this.removeQueue != null) {
+            // execute the queue, if the event was not cancelled
+            if (!event.isCancelled()) {
+                if (!this.removeQueue.execute()) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        // Only handle ItemFrames & Paintings
+        if (!event.getEntity().getType().equals(EntityType.ITEM_FRAME) && !event.getEntity().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // update the BlockVector
+        this.vector.update(event.getEntity().getLocation());
+
+        // get the AddQueue
+        this.removeQueue = this.queueManager.getAndRemoveQueue(this.vector);
+        if (this.removeQueue != null) {
+            // execute the queue, if the event was not cancelled
+            if (!event.isCancelled()) {
+                if (!this.removeQueue.execute()) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onHangingInteract(PlayerInteractEntityEvent event) {
+        // Only handle ItemFrames & Paintings
+        if (!event.getRightClicked().getType().equals(EntityType.ITEM_FRAME) && !event.getRightClicked().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // update the BlockVector
+        this.vector.update(event.getRightClicked().getLocation());
+
+        // get the AddQueue
+        this.interactQueue = this.queueManager.getAndRemoveQueue(this.vector);
+        if (this.interactQueue != null) {
+            // execute the queue, if the event was not cancelled
+            if (!event.isCancelled()) {
+                // execute the event
+                if (!this.interactQueue.execute()) {
+                    event.setCancelled(true);
+                }
+
+                // cancel the event
+                event.setCancelled(true);
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Could not complete your interact request!");
+                PlayerUtils.sendInfo(event.getPlayer(), "The event was cancelled by another plugin.");
             }
         }
     }
