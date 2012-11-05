@@ -208,8 +208,8 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
 
                     Hanging entityHanging = null;
-
                     if (module == null) {
+                        // search for an itemframe
                         Collection<ItemFrame> frameList = location.getWorld().getEntitiesByClass(ItemFrame.class);
                         boolean found = false;
                         for (ItemFrame frame : frameList) {
@@ -222,6 +222,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             }
                         }
                         if (!found) {
+                            // search for a painting
                             Collection<Painting> paintList = location.getWorld().getEntitiesByClass(Painting.class);
                             for (Painting paint : paintList) {
                                 BlockVector otherVector = new BlockVector(paint.getLocation());
