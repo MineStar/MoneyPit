@@ -217,12 +217,6 @@ public class ActionListener implements Listener {
                     if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
                         this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                     }
-                } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                    this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
-                    Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                    if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
-                        this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
-                    }
                 }
             }
         }
