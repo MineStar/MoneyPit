@@ -41,22 +41,12 @@
 		<dependency>
 			<groupId>de.minestar</groupId>
 			<artifactId>MinestarCore</artifactId>
-			<version>1.6.5</version>
-		</dependency>
-		<dependency>
-			<groupId>de.minestar</groupId>
-			<artifactId>FalseBookCore</artifactId>
-			<version>0.92.3alpha</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>1.4.4-R0.1-SNAPSHOT</version>
+			<version>1.7</version>
 		</dependency>
 		<dependency>
 			<groupId>de.minestar</groupId>
 			<artifactId>minestarlibrary</artifactId>
-			<version>1.9</version>
+			<version>1.9.2</version>
 		</dependency>
 	</dependencies>
 </project>
