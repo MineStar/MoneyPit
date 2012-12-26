@@ -6,15 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.server.Packet53BlockChange;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
@@ -68,7 +65,7 @@ import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
 
-    private static final Set<Integer> nonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132));
+    private static final Set<Integer> nonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId()));
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -255,10 +252,8 @@ public class ActionListener implements Listener {
                 event.setCancelled(true);
 
                 BlockVector vector = result.getProtection().getVector();
-                CraftWorld cWorld = (CraftWorld) vector.getLocation().getWorld();
                 CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
-                Packet53BlockChange packet = new Packet53BlockChange(vector.getX(), vector.getY(), vector.getZ(), cWorld.getHandle());
-                cPlayer.getHandle().netServerHandler.sendPacket(packet);
+                cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getTypeId(), vector.getLocation().getBlock().getData());
             }
             if (result.isAbort()) {
                 return;
@@ -1042,10 +1037,8 @@ public class ActionListener implements Listener {
                     event.setUseInteractedBlock(Event.Result.DENY);
                     event.setUseItemInHand(Event.Result.DENY);
                     BlockVector vector = result.getProtection().getVector();
-                    CraftWorld cWorld = (CraftWorld) vector.getLocation().getWorld();
                     CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
-                    Packet53BlockChange packet = new Packet53BlockChange(vector.getX(), vector.getY(), vector.getZ(), cWorld.getHandle());
-                    cPlayer.getHandle().netServerHandler.sendPacket(packet);
+                    cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getTypeId(), vector.getLocation().getBlock().getData());
                 }
                 if (result.isAbort()) {
                     return;
