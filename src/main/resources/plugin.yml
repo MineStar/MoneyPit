@@ -28,3 +28,6 @@ commands:
   cuninviteall:
     description: Uninvite all players from a private protection
     usage: /cuninviteall
+  ctoggle:
+    description: Toggle the keepmode
+    usage: /ctoggle    

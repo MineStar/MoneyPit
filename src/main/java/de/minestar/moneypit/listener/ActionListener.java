@@ -439,7 +439,9 @@ public class ActionListener implements Listener {
             case PROTECTION_ADD_GIFT :
             case PROTECTION_ADD_PUBLIC : {
                 // return to normalmode
-                this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+                if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+                    this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+                }
 
                 // cancel event and send error
                 event.setCancelled(true);
@@ -686,7 +688,9 @@ public class ActionListener implements Listener {
         event.setCancelled(true);
 
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         if (this.protectionInfo.hasProtection()) {
             // MainProtection
@@ -749,7 +753,9 @@ public class ActionListener implements Listener {
         event.setCancelled(true);
 
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         if (this.protectionInfo.hasProtection()) {
             // MainProtection
@@ -930,7 +936,9 @@ public class ActionListener implements Listener {
         event.setCancelled(true);
 
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // show information
         this.showExtendedInformation(event.getPlayer());
@@ -938,7 +946,9 @@ public class ActionListener implements Listener {
 
     private void handleRemoveInteract(PlayerInteractEvent event) {
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // try to remove the protection
         if (!this.protectionInfo.hasAnyProtection()) {
@@ -980,7 +990,9 @@ public class ActionListener implements Listener {
 
     private void handleAddInteract(PlayerInteractEvent event, Module module, PlayerState state, boolean giftable) {
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // check permissions
         if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
@@ -1171,7 +1183,9 @@ public class ActionListener implements Listener {
         event.setCancelled(true);
 
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // show information
         this.showExtendedInformation(event.getPlayer());
@@ -1179,7 +1193,9 @@ public class ActionListener implements Listener {
 
     private void handleHangingAddInteract(PlayerInteractEntityEvent event, Module module, PlayerState state, Hanging entity) {
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // check permissions
         if (!UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.protect." + module.getModuleName()) && !UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin")) {
@@ -1220,7 +1236,9 @@ public class ActionListener implements Listener {
 
     private void handleHangingRemoveInteract(PlayerInteractEntityEvent event) {
         // return to normalmode
-        this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.setState(event.getPlayer().getName(), PlayerState.NORMAL);
+        }
 
         // try to remove the protection
         if (!this.protectionInfo.hasAnyProtection()) {
