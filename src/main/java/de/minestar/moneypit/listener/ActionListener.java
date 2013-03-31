@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
@@ -835,7 +835,9 @@ public class ActionListener implements Listener {
         }
 
         // clear guestlist
-        this.playerManager.clearGuestList(event.getPlayer().getName());
+        if (!this.playerManager.keepsMode(event.getPlayer().getName())) {
+            this.playerManager.clearGuestList(event.getPlayer().getName());
+        }
     }
 
     private void showInformation(Player player) {

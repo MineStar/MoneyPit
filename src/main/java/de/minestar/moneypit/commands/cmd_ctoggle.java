@@ -19,6 +19,7 @@ public class cmd_ctoggle extends AbstractCommand {
         if (MoneyPitCore.playerManager.keepsMode(player.getName())) {
             MoneyPitCore.playerManager.removeKeepMode(player.getName());
             MoneyPitCore.playerManager.setState(player.getName(), PlayerState.NORMAL);
+            MoneyPitCore.playerManager.clearGuestList(player.getName());
             PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "You are no longer in endless mode...");
         } else {
             MoneyPitCore.playerManager.setKeepMode(player.getName());
