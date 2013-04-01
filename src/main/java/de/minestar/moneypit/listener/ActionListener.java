@@ -125,95 +125,114 @@ public class ActionListener implements Listener {
 
     @EventHandler
     public void onInventoryItemMove(InventoryMoveItemEvent event) {
-        InventoryHolder holder = event.getSource().getHolder();
-        InventoryHolder destination = event.getDestination().getHolder();
 
-        // CHESTS
-        {
-            // out of a chest
-            if (holder instanceof CraftChest) {
-                CraftChest chest = (CraftChest) holder;
+        if (event.getSource() != null) {
+            InventoryHolder holder = event.getSource().getHolder();
+            if (holder != null) {
+                // CHESTS
+                {
+                    // out of a chest
+                    if (holder instanceof CraftChest) {
+                        CraftChest chest = (CraftChest) holder;
 
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(chest.getLocation());
-                this.protectionInfo.update(this.vector);
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(chest.getLocation());
+                        this.protectionInfo.update(this.vector);
 
-                if (this.blockItemMoveWithGift()) {
-                    event.setCancelled(true);
-                    return;
+                        if (this.blockItemMoveWithGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                // DISPENSER
+                {
+                    // out of a dispenser
+                    if (holder instanceof CraftDispenser) {
+                        CraftDispenser dispenser = (CraftDispenser) holder;
+
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(dispenser.getLocation());
+                        this.protectionInfo.update(this.vector);
+
+                        if (this.blockItemMoveWithGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                // FURNACE
+                {
+                    // out of a furnace
+                    if (holder instanceof CraftFurnace) {
+                        CraftFurnace furnace = (CraftFurnace) holder;
+
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(furnace.getLocation());
+                        this.protectionInfo.update(this.vector);
+
+                        if (this.blockItemMoveWithGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
                 }
             }
-            // into a chest
-            if (destination instanceof CraftChest) {
-                CraftChest chest = (CraftChest) destination;
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(chest.getLocation());
-                this.protectionInfo.update(this.vector);
-                if (this.blockItemMoveWithoutGift()) {
-                    event.setCancelled(true);
-                    return;
+        }
+
+        if (event.getDestination() != null) {
+            InventoryHolder destination = event.getDestination().getHolder();
+            if (destination != null) {
+                // CHESTS
+                {
+                    // into a chest
+                    if (destination instanceof CraftChest) {
+                        CraftChest chest = (CraftChest) destination;
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(chest.getLocation());
+                        this.protectionInfo.update(this.vector);
+                        if (this.blockItemMoveWithoutGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                // DISPENSER
+                {
+                    // into a dispenser
+                    if (destination instanceof CraftDispenser) {
+                        CraftDispenser dispenser = (CraftDispenser) destination;
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(dispenser.getLocation());
+                        this.protectionInfo.update(this.vector);
+                        if (this.blockItemMoveWithoutGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                // FURNACE
+                {
+                    // into a furnace
+                    if (destination instanceof CraftFurnace) {
+                        CraftFurnace furnace = (CraftFurnace) destination;
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(furnace.getLocation());
+                        this.protectionInfo.update(this.vector);
+                        if (this.blockItemMoveWithoutGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
                 }
             }
         }
 
-        // DISPENSER
-        {
-            // out of a dispenser
-            if (holder instanceof CraftDispenser) {
-                CraftDispenser dispenser = (CraftDispenser) holder;
-
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(dispenser.getLocation());
-                this.protectionInfo.update(this.vector);
-
-                if (this.blockItemMoveWithGift()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-            // into a dispenser
-            if (destination instanceof CraftDispenser) {
-                CraftDispenser dispenser = (CraftDispenser) destination;
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(dispenser.getLocation());
-                this.protectionInfo.update(this.vector);
-                if (this.blockItemMoveWithoutGift()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-        }
-
-        // FURNACE
-        {
-            // out of a furnace
-            if (holder instanceof CraftFurnace) {
-                CraftFurnace furnace = (CraftFurnace) holder;
-
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(furnace.getLocation());
-                this.protectionInfo.update(this.vector);
-
-                if (this.blockItemMoveWithGift()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-
-            // into a furnace
-            if (destination instanceof CraftFurnace) {
-                CraftFurnace furnace = (CraftFurnace) destination;
-                // update the BlockVector & the ProtectionInfo
-                this.vector.update(furnace.getLocation());
-                this.protectionInfo.update(this.vector);
-                if (this.blockItemMoveWithoutGift()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-        }
     }
-
     private boolean blockItemMoveWithGift() {
         if (this.protectionInfo.hasAnyProtection()) {
             // block private- and gift-protections
