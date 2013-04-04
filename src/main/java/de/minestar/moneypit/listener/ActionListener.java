@@ -11,9 +11,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.craftbukkit.v1_5_R2.block.CraftBlockState;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftChest;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftDispenser;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftFurnace;
+import org.bukkit.craftbukkit.v1_5_R2.block.CraftHopper;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
@@ -125,7 +128,6 @@ public class ActionListener implements Listener {
 
     @EventHandler
     public void onInventoryItemMove(InventoryMoveItemEvent event) {
-
         if (event.getSource() != null) {
             InventoryHolder holder = event.getSource().getHolder();
             if (holder != null) {
@@ -133,7 +135,23 @@ public class ActionListener implements Listener {
                 {
                     // out of a chest
                     if (holder instanceof CraftChest) {
+                        System.out.println("chest");
                         CraftChest chest = (CraftChest) holder;
+
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(chest.getLocation());
+                        this.protectionInfo.update(this.vector);
+
+                        if (this.blockItemMoveWithGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+
+                    // out of a doublechest
+                    if (holder instanceof DoubleChest) {
+                        System.out.println("doublechest");
+                        DoubleChest chest = (DoubleChest) holder;
 
                         // update the BlockVector & the ProtectionInfo
                         this.vector.update(chest.getLocation());
@@ -180,6 +198,30 @@ public class ActionListener implements Listener {
                     }
                 }
             }
+        } else if (event.getDestination() != null) {
+            if (event.getDestination().getHolder() instanceof CraftHopper) {
+                InventoryHolder holder = event.getDestination().getHolder();
+                if (holder != null) {
+                    CraftBlockState blockState = (CraftBlockState) holder;
+                    Block block = blockState.getBlock().getRelative(BlockFace.UP);
+                    // CHESTS
+                    {
+                        // out of a chest
+                        if (block.getTypeId() == Material.CHEST.getId()) {
+                            CraftChest chest = (CraftChest) block.getState();
+
+                            // update the BlockVector & the ProtectionInfo
+                            this.vector.update(chest.getLocation());
+                            this.protectionInfo.update(this.vector);
+
+                            if (this.blockItemMoveWithGift()) {
+                                event.setCancelled(true);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if (event.getDestination() != null) {
@@ -190,9 +232,25 @@ public class ActionListener implements Listener {
                     // into a chest
                     if (destination instanceof CraftChest) {
                         CraftChest chest = (CraftChest) destination;
+
                         // update the BlockVector & the ProtectionInfo
                         this.vector.update(chest.getLocation());
                         this.protectionInfo.update(this.vector);
+
+                        if (this.blockItemMoveWithoutGift()) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+
+                    // into a doublechest
+                    if (destination instanceof DoubleChest) {
+                        DoubleChest chest = (DoubleChest) destination;
+
+                        // update the BlockVector & the ProtectionInfo
+                        this.vector.update(chest.getLocation());
+                        this.protectionInfo.update(this.vector);
+
                         if (this.blockItemMoveWithoutGift()) {
                             event.setCancelled(true);
                             return;
@@ -205,9 +263,11 @@ public class ActionListener implements Listener {
                     // into a dispenser
                     if (destination instanceof CraftDispenser) {
                         CraftDispenser dispenser = (CraftDispenser) destination;
+
                         // update the BlockVector & the ProtectionInfo
                         this.vector.update(dispenser.getLocation());
                         this.protectionInfo.update(this.vector);
+
                         if (this.blockItemMoveWithoutGift()) {
                             event.setCancelled(true);
                             return;
@@ -220,9 +280,11 @@ public class ActionListener implements Listener {
                     // into a furnace
                     if (destination instanceof CraftFurnace) {
                         CraftFurnace furnace = (CraftFurnace) destination;
+
                         // update the BlockVector & the ProtectionInfo
                         this.vector.update(furnace.getLocation());
                         this.protectionInfo.update(this.vector);
+
                         if (this.blockItemMoveWithoutGift()) {
                             event.setCancelled(true);
                             return;
@@ -231,7 +293,6 @@ public class ActionListener implements Listener {
                 }
             }
         }
-
     }
     private boolean blockItemMoveWithGift() {
         if (this.protectionInfo.hasAnyProtection()) {
@@ -243,8 +304,8 @@ public class ActionListener implements Listener {
                 }
             } else {
                 SubProtectionHolder protHolder = this.protectionInfo.getSubProtections();
-                for (SubProtection protection : protHolder.getProtections()) {
-                    if (protection.isPrivate() || protection.isGift()) {
+                for (SubProtection subProtection : protHolder.getProtections()) {
+                    if (subProtection.isPrivate() || subProtection.isGift()) {
                         return true;
                     }
                 }
@@ -255,7 +316,7 @@ public class ActionListener implements Listener {
 
     private boolean blockItemMoveWithoutGift() {
         if (this.protectionInfo.hasAnyProtection()) {
-            // block private- and gift-protections
+            // block private-protections
             if (this.protectionInfo.hasProtection()) {
                 Protection protection = this.protectionInfo.getProtection();
                 if (protection.isPrivate()) {
@@ -263,8 +324,8 @@ public class ActionListener implements Listener {
                 }
             } else {
                 SubProtectionHolder protHolder = this.protectionInfo.getSubProtections();
-                for (SubProtection protection : protHolder.getProtections()) {
-                    if (protection.isPrivate()) {
+                for (SubProtection subProtection : protHolder.getProtections()) {
+                    if (subProtection.isPrivate()) {
                         return true;
                     }
                 }
