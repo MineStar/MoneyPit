@@ -135,7 +135,6 @@ public class ActionListener implements Listener {
                 {
                     // out of a chest
                     if (holder instanceof CraftChest) {
-                        System.out.println("chest");
                         CraftChest chest = (CraftChest) holder;
 
                         // update the BlockVector & the ProtectionInfo
@@ -150,7 +149,6 @@ public class ActionListener implements Listener {
 
                     // out of a doublechest
                     if (holder instanceof DoubleChest) {
-                        System.out.println("doublechest");
                         DoubleChest chest = (DoubleChest) holder;
 
                         // update the BlockVector & the ProtectionInfo
