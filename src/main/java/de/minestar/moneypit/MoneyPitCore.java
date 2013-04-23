@@ -37,7 +37,9 @@ import de.minestar.moneypit.commands.cmd_ctoggle;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
 import de.minestar.moneypit.data.BlockVector;
+import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
+import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.listener.MonitorListener;
@@ -106,6 +108,48 @@ public class MoneyPitCore extends AbstractCore {
         // create some vars
         MoneyPitCore.vector = new BlockVector("", 0, 0, 0);
         MoneyPitCore.protectionInfo = new ProtectionInfo();
+        return true;
+    }
+
+    public static boolean protectionsAreEqual(ProtectionInfo protection1, ProtectionInfo protection2) {
+        ProtectionInfo protectionChest = protection1;
+        ProtectionInfo protectionSign = protection2;
+
+        // BOTH BLOCKS ARE PROTECTED/UNPROTECTED?
+        boolean hasChestProtection = protectionChest.hasAnyProtection();
+        boolean hasSignProtection = protectionSign.hasAnyProtection();
+        if (hasChestProtection != hasSignProtection) {
+            return false;
+        }
+
+        // CHECK PROTECTION
+        if (hasChestProtection && hasSignProtection) {
+            // CHECK OWNER
+            Protection chestProtection = protectionChest.getProtection();
+            Protection signProtection = protectionSign.getProtection();
+
+            if (!protectionChest.hasProtection()) {
+                chestProtection = protectionChest.getFirstProtection();
+            }
+            if (!protectionSign.hasProtection()) {
+                signProtection = protectionSign.getFirstProtection();
+            }
+
+            if (!signProtection.getOwner().equalsIgnoreCase(chestProtection.getOwner())) {
+                return false;
+            }
+
+            // CHECK PROTECTION TYPE
+            if (signProtection.getType().equals(chestProtection.getType())) {
+                return true;
+            }
+
+            if ((chestProtection.getType().equals(ProtectionType.GIFT) && signProtection.getType().equals(ProtectionType.PRIVATE)) || (chestProtection.getType().equals(ProtectionType.PRIVATE) && signProtection.getType().equals(ProtectionType.GIFT))) {
+                return true;
+            }
+
+            return false;
+        }
         return true;
     }
 

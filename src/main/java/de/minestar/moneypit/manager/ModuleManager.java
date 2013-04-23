@@ -11,9 +11,11 @@ import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_Dispenser;
+import de.minestar.moneypit.modules.Module_Dropper;
 import de.minestar.moneypit.modules.Module_FenceGate;
 import de.minestar.moneypit.modules.Module_Furnace;
 import de.minestar.moneypit.modules.Module_FurnaceBurning;
+import de.minestar.moneypit.modules.Module_Hopper;
 import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_ItemFrame;
 import de.minestar.moneypit.modules.Module_Jukebox;
@@ -89,6 +91,9 @@ public class ModuleManager {
             new Module_Jukebox          (this, ymlFile);
             new Module_ItemFrame        (this, ymlFile);
             new Module_Skull            (this, ymlFile);
+            new Module_Hopper           (this, ymlFile);
+            new Module_Dropper          (this, ymlFile);
+            
             // @formatter:on
 
         } catch (Exception e) {
@@ -125,6 +130,8 @@ public class ModuleManager {
             new Module_Jukebox          (ymlFile);
             new Module_ItemFrame        (ymlFile);
             new Module_Skull            (ymlFile);
+            new Module_Hopper           (ymlFile);
+            new Module_Dropper          (ymlFile);
             
             // @formatter:on
 

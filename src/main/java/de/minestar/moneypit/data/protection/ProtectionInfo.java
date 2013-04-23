@@ -13,7 +13,7 @@ public class ProtectionInfo {
     private final ProtectionManager protectionManager;
 
     public ProtectionInfo() {
-        this.protectionManager = MoneyPitCore.protectionManager;
+        this(false, false, false, null, null);
     }
 
     private ProtectionInfo(boolean hasProtection, boolean hasSubProtection, boolean hasAnyProtection, Protection protection, SubProtectionHolder subProtections) {

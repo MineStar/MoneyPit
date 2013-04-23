@@ -11,11 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftBlockState;
-import org.bukkit.craftbukkit.v1_5_R2.block.CraftChest;
-import org.bukkit.craftbukkit.v1_5_R2.block.CraftDispenser;
-import org.bukkit.craftbukkit.v1_5_R2.block.CraftFurnace;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftHopper;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
@@ -42,6 +38,7 @@ import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -122,217 +119,91 @@ public class ActionListener implements Listener {
 
     // //////////////////////////////////////////////////////////////////////
     //
+    // INVENTORYCHANGES
+    //
+    // //////////////////////////////////////////////////////////////////////
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryItemPickup(InventoryPickupItemEvent event) {
+        if (event.getInventory() != null) {
+            InventoryHolder holder = event.getInventory().getHolder();
+            if (holder != null && holder instanceof CraftHopper) {
+                // get the hopper
+                CraftHopper hopper = (CraftHopper) holder;
+
+                // update the BlockVector & the ProtectionInfo
+                this.vector.update(hopper.getLocation());
+                this.protectionInfo.update(this.vector);
+
+                // Block is not protected => return
+                if (!this.protectionInfo.hasAnyProtection()) {
+                    return;
+                }
+
+                if (this.protectionInfo.hasProtection()) {
+                    // so we have a main-protection
+                    Protection protection = this.protectionInfo.getProtection();
+                    if (protection.isPrivate()) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                } else {
+                    // so we have a sub-protection
+                    Protection protection = this.protectionInfo.getFirstProtection();
+                    if (protection.isPrivate()) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryItemMove(InventoryMoveItemEvent event) {
+        ProtectionInfo infoSource = new ProtectionInfo();
+        ProtectionInfo infoDestination = new ProtectionInfo();
+
+        // update source
+        if (event.getSource() != null) {
+            InventoryHolder holder = event.getSource().getHolder();
+            if (holder != null) {
+                if (holder instanceof CraftBlockState) {
+                    CraftBlockState blockState = (CraftBlockState) holder;
+                    // update the BlockVector & the ProtectionInfo
+                    this.vector.update(blockState.getLocation());
+                    infoSource.update(this.vector);
+                }
+            }
+        }
+
+        // update destination
+        if (event.getDestination() != null) {
+            InventoryHolder destination = event.getDestination().getHolder();
+            if (destination != null) {
+                if (destination instanceof CraftBlockState) {
+                    CraftBlockState blockState = (CraftBlockState) destination;
+                    // update the BlockVector & the ProtectionInfo
+                    this.vector.update(blockState.getLocation());
+                    infoDestination.update(this.vector);
+                }
+            }
+        }
+
+        // obviously, we have two protections..
+        // ... so we need to check if the owners of both protections are equal
+        if (!MoneyPitCore.protectionsAreEqual(infoSource, infoDestination)) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    // //////////////////////////////////////////////////////////////////////
+    //
     // BLOCKCHANGES
     //
     // //////////////////////////////////////////////////////////////////////
 
-    @EventHandler
-    public void onInventoryItemMove(InventoryMoveItemEvent event) {
-        if (event.getSource() != null) {
-            InventoryHolder holder = event.getSource().getHolder();
-            if (holder != null) {
-                // CHESTS
-                {
-                    // out of a chest
-                    if (holder instanceof CraftChest) {
-                        CraftChest chest = (CraftChest) holder;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(chest.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-
-                    // out of a doublechest
-                    if (holder instanceof DoubleChest) {
-                        DoubleChest chest = (DoubleChest) holder;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(chest.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-
-                // DISPENSER
-                {
-                    // out of a dispenser
-                    if (holder instanceof CraftDispenser) {
-                        CraftDispenser dispenser = (CraftDispenser) holder;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(dispenser.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-
-                // FURNACE
-                {
-                    // out of a furnace
-                    if (holder instanceof CraftFurnace) {
-                        CraftFurnace furnace = (CraftFurnace) holder;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(furnace.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-            }
-        } else if (event.getDestination() != null) {
-            if (event.getDestination().getHolder() instanceof CraftHopper) {
-                InventoryHolder holder = event.getDestination().getHolder();
-                if (holder != null) {
-                    CraftBlockState blockState = (CraftBlockState) holder;
-                    Block block = blockState.getBlock().getRelative(BlockFace.UP);
-                    // CHESTS
-                    {
-                        // out of a chest
-                        if (block.getTypeId() == Material.CHEST.getId()) {
-                            CraftChest chest = (CraftChest) block.getState();
-
-                            // update the BlockVector & the ProtectionInfo
-                            this.vector.update(chest.getLocation());
-                            this.protectionInfo.update(this.vector);
-
-                            if (this.blockItemMoveWithGift()) {
-                                event.setCancelled(true);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (event.getDestination() != null) {
-            InventoryHolder destination = event.getDestination().getHolder();
-            if (destination != null) {
-                // CHESTS
-                {
-                    // into a chest
-                    if (destination instanceof CraftChest) {
-                        CraftChest chest = (CraftChest) destination;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(chest.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithoutGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-
-                    // into a doublechest
-                    if (destination instanceof DoubleChest) {
-                        DoubleChest chest = (DoubleChest) destination;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(chest.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithoutGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-
-                // DISPENSER
-                {
-                    // into a dispenser
-                    if (destination instanceof CraftDispenser) {
-                        CraftDispenser dispenser = (CraftDispenser) destination;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(dispenser.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithoutGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-
-                // FURNACE
-                {
-                    // into a furnace
-                    if (destination instanceof CraftFurnace) {
-                        CraftFurnace furnace = (CraftFurnace) destination;
-
-                        // update the BlockVector & the ProtectionInfo
-                        this.vector.update(furnace.getLocation());
-                        this.protectionInfo.update(this.vector);
-
-                        if (this.blockItemMoveWithoutGift()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    private boolean blockItemMoveWithGift() {
-        if (this.protectionInfo.hasAnyProtection()) {
-            // block private- and gift-protections
-            if (this.protectionInfo.hasProtection()) {
-                Protection protection = this.protectionInfo.getProtection();
-                if (protection.isPrivate() || protection.isGift()) {
-                    return true;
-                }
-            } else {
-                SubProtectionHolder protHolder = this.protectionInfo.getSubProtections();
-                for (SubProtection subProtection : protHolder.getProtections()) {
-                    if (subProtection.isPrivate() || subProtection.isGift()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean blockItemMoveWithoutGift() {
-        if (this.protectionInfo.hasAnyProtection()) {
-            // block private-protections
-            if (this.protectionInfo.hasProtection()) {
-                Protection protection = this.protectionInfo.getProtection();
-                if (protection.isPrivate()) {
-                    return true;
-                }
-            } else {
-                SubProtectionHolder protHolder = this.protectionInfo.getSubProtections();
-                for (SubProtection subProtection : protHolder.getProtections()) {
-                    if (subProtection.isPrivate()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {
         // event is already cancelled => return
         if (event.getNewCurrent() == event.getOldCurrent()) {
