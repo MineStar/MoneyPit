@@ -25,6 +25,7 @@ import de.minestar.moneypit.modules.Module_Skull;
 import de.minestar.moneypit.modules.Module_StoneButton;
 import de.minestar.moneypit.modules.Module_StonePlate;
 import de.minestar.moneypit.modules.Module_TrapDoor;
+import de.minestar.moneypit.modules.Module_TrappedChest;
 import de.minestar.moneypit.modules.Module_WallSign;
 import de.minestar.moneypit.modules.Module_WoodenDoor;
 
@@ -93,6 +94,7 @@ public class ModuleManager {
             new Module_Skull            (this, ymlFile);
             new Module_Hopper           (this, ymlFile);
             new Module_Dropper          (this, ymlFile);
+            new Module_TrappedChest     (this, ymlFile);
             
             // @formatter:on
 
@@ -132,6 +134,7 @@ public class ModuleManager {
             new Module_Skull            (ymlFile);
             new Module_Hopper           (ymlFile);
             new Module_Dropper          (ymlFile);
+            new Module_TrappedChest     (ymlFile);
             
             // @formatter:on
 

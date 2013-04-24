@@ -14,25 +14,25 @@ import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.ChestHelper;
 
-public class Module_Chest extends Module {
+public class Module_TrappedChest extends Module {
 
-    private final String NAME = "chest";
+    private final String NAME = "trappedchest";
 
-    public Module_Chest(YamlConfiguration ymlFile) {
+    public Module_TrappedChest(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
     }
 
-    public Module_Chest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+    public Module_TrappedChest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.CHEST.getId(), NAME);
+        this.init(moduleManager, ymlFile, Material.TRAPPED_CHEST.getId(), NAME);
         this.setDoNeighbourCheck(true);
-        this.setGiftable(true);
     }
 
     @Override
     public boolean addProtection(Protection protection, byte subData) {
         // search a second chest and add the subprotection, if found
-        Chest secondChest = ChestHelper.isDoubleChest(protection.getVector().getLocation().getBlock());
+        Chest secondChest = ChestHelper.isDoubleTrappedChest(protection.getVector().getLocation().getBlock());
+
         if (secondChest != null) {
             SubProtection subProtection = new SubProtection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);
@@ -45,7 +45,7 @@ public class Module_Chest extends Module {
     @Override
     public EventResult onPlace(Player player, BlockVector vector) {
         // search a second chest
-        BlockVector doubleChest = ChestHelper.getDoubleChest(vector);
+        BlockVector doubleChest = ChestHelper.getDoubleTrappedChest(vector);
         if (doubleChest == null) {
             return new EventResult(false, false, null);
         }
@@ -63,7 +63,7 @@ public class Module_Chest extends Module {
             return new EventResult(true, true, protection);
         }
 
-        BlockVector alreadyDoubleChest = ChestHelper.getDoubleChest(doubleChest);
+        BlockVector alreadyDoubleChest = ChestHelper.getDoubleTrappedChest(doubleChest);
         if (alreadyDoubleChest == null) {
             // add the SubProtection to the Protection
             SubProtection subProtection = new SubProtection(vector, protection);

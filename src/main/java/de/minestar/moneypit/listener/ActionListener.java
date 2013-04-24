@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftBlockState;
 import org.bukkit.craftbukkit.v1_5_R2.block.CraftHopper;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
@@ -158,6 +159,7 @@ public class ActionListener implements Listener {
             }
         }
     }
+
     @EventHandler(ignoreCancelled = true)
     public void onInventoryItemMove(InventoryMoveItemEvent event) {
         ProtectionInfo infoSource = new ProtectionInfo();
@@ -172,6 +174,10 @@ public class ActionListener implements Listener {
                     // update the BlockVector & the ProtectionInfo
                     this.vector.update(blockState.getLocation());
                     infoSource.update(this.vector);
+                } else if (holder instanceof DoubleChest) {
+                    DoubleChest chest = (DoubleChest) holder;
+                    this.vector.update(chest.getLocation());
+                    infoSource.update(this.vector);
                 }
             }
         }
@@ -184,6 +190,10 @@ public class ActionListener implements Listener {
                     CraftBlockState blockState = (CraftBlockState) destination;
                     // update the BlockVector & the ProtectionInfo
                     this.vector.update(blockState.getLocation());
+                    infoDestination.update(this.vector);
+                } else if (destination instanceof DoubleChest) {
+                    DoubleChest chest = (DoubleChest) destination;
+                    this.vector.update(chest.getLocation());
                     infoDestination.update(this.vector);
                 }
             }
