@@ -2,7 +2,8 @@ package de.minestar.moneypit.manager;
 
 import java.util.HashMap;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
+
 import de.minestar.moneypit.queues.Queue;
 
 public class QueueManager {

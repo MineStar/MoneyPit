@@ -2,7 +2,7 @@ package de.minestar.moneypit.autoclose;
 
 import org.bukkit.block.Block;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
 
 public class QueuedAutoClose implements Comparable<QueuedAutoClose> {
     private final BlockVector vector;

@@ -5,9 +5,11 @@ import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
@@ -51,7 +53,7 @@ public class Module_Chest extends Module {
         }
 
         // check if there is a protection
-        Protection protection = MoneyPitCore.protectionManager.getProtection(doubleChest);
+        IProtection protection = MoneyPitCore.protectionManager.getProtection(doubleChest);
         if (protection == null) {
             return new EventResult(false, false, null);
         }

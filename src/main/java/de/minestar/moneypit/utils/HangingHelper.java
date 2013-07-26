@@ -1,6 +1,6 @@
 package de.minestar.moneypit.utils;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
 
 public class HangingHelper {
 

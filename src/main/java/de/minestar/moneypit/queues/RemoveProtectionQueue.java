@@ -2,9 +2,10 @@ package de.minestar.moneypit.queues;
 
 import org.bukkit.entity.Player;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 
 public class RemoveProtectionQueue implements Queue {
 

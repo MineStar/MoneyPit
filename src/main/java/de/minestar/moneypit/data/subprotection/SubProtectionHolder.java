@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 
-public class SubProtectionHolder {
-    private ArrayList<SubProtection> protections = null;
+import com.bukkit.gemo.patchworking.ISubProtection;
+import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 
-    /**
-     * Get the amount of SubProtection in this SubProtectionHolder
-     * 
-     * @return the amount of protections
+public class SubProtectionHolder implements ISubProtectionHolder {
+    private ArrayList<ISubProtection> protections = null;
+
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getSize()
      */
     public int getSize() {
         if (this.protections != null) {
@@ -19,35 +20,29 @@ public class SubProtectionHolder {
         return 0;
     }
 
-    /**
-     * Get all SubProtections
-     * 
-     * @return all SubProtections
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtections()
      */
-    public ArrayList<SubProtection> getProtections() {
+    public ArrayList<ISubProtection> getProtections() {
         return this.protections;
     }
 
-    /**
-     * Add a SubProtection
-     * 
-     * @param subProtection
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#addProtection(de.minestar.moneypit.data.subprotection.SubProtection)
      */
-    public void addProtection(SubProtection subProtection) {
+    public void addProtection(ISubProtection subProtection) {
         if (this.protections == null) {
-            this.protections = new ArrayList<SubProtection>();
+            this.protections = new ArrayList<ISubProtection>();
         }
         if (!this.hasProtection(subProtection)) {
             this.protections.add(subProtection);
         }
     }
 
-    /**
-     * Remove a SubProtection
-     * 
-     * @param subProtection
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#removeProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
-    public void removeProtection(SubProtection subProtection) {
+    public void removeProtection(ISubProtection subProtection) {
         if (this.protections != null) {
             for (int i = 0; i < this.protections.size(); i++) {
                 if (this.protections.get(i).equals(subProtection)) {
@@ -61,13 +56,10 @@ public class SubProtectionHolder {
         }
     }
 
-    /**
-     * Check if we have the SubProtection
-     * 
-     * @param subProtection
-     * @return <b>true</b> if we have the SubProtection, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#hasProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
-    public boolean hasProtection(SubProtection subProtection) {
+    public boolean hasProtection(ISubProtection subProtection) {
         if (this.protections != null) {
             for (int i = 0; i < this.protections.size(); i++) {
                 if (this.protections.get(i).equals(subProtection)) {
@@ -78,15 +70,12 @@ public class SubProtectionHolder {
         return false;
     }
 
-    /**
-     * Check if a player can access all SubSrotections
-     * 
-     * @param player
-     * @return <b>true</b> if the player can access all SubSrotections, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canAccessAll(org.bukkit.entity.Player)
      */
     public boolean canAccessAll(Player player) {
         if (this.getSize() > 0) {
-            for (SubProtection subProtection : this.protections) {
+            for (ISubProtection subProtection : this.protections) {
                 if (!subProtection.canAccess(player)) {
                     return false;
                 }
@@ -95,9 +84,12 @@ public class SubProtectionHolder {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#areAllPublic()
+     */
     public boolean areAllPublic() {
         if (this.getSize() > 0) {
-            for (SubProtection subProtection : this.protections) {
+            for (ISubProtection subProtection : this.protections) {
                 if (subProtection.isPrivate()) {
                     return false;
                 }
@@ -106,15 +98,12 @@ public class SubProtectionHolder {
         return true;
     }
 
-    /**
-     * Check if a player can access all SubSrotections
-     * 
-     * @param player
-     * @return <b>true</b> if the player can access all SubSrotections, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canAccessAll(java.lang.String)
      */
     public boolean canAccessAll(String playerName) {
         if (this.getSize() > 0) {
-            for (SubProtection subProtection : this.protections) {
+            for (ISubProtection subProtection : this.protections) {
                 if (!subProtection.canAccess(playerName)) {
                     return false;
                 }
@@ -123,15 +112,12 @@ public class SubProtectionHolder {
         return true;
     }
 
-    /**
-     * Check if a player can edit all SubSrotections
-     * 
-     * @param player
-     * @return <b>true</b> if the player can edit all SubSrotections, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canEditAll(org.bukkit.entity.Player)
      */
     public boolean canEditAll(Player player) {
         if (this.getSize() > 0) {
-            for (SubProtection subProtection : this.protections) {
+            for (ISubProtection subProtection : this.protections) {
                 if (!subProtection.canEdit(player)) {
                     return false;
                 }
@@ -140,7 +126,10 @@ public class SubProtectionHolder {
         return true;
     }
 
-    public SubProtection getProtection(int index) {
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtection(int)
+     */
+    public ISubProtection getProtection(int index) {
         if (this.getSize() > 0) {
             return this.protections.get(index);
         }

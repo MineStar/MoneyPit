@@ -3,11 +3,12 @@ package de.minestar.moneypit.queues;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.ProtectionType;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.modules.Module;
 
 public class AddProtectionQueue implements Queue {

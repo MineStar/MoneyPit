@@ -12,9 +12,10 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.Queue;
 

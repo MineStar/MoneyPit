@@ -7,8 +7,9 @@ import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.utils.DoorHelper;
 
 public class AutoCloseBackgroundTask extends TimerTask {

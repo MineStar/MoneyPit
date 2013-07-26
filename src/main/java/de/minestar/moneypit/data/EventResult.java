@@ -1,19 +1,19 @@
 package de.minestar.moneypit.data;
 
-import de.minestar.moneypit.data.protection.Protection;
+import com.bukkit.gemo.patchworking.IProtection;
 
 public class EventResult {
     private final boolean cancelEvent;
     private final boolean abort;
-    private final Protection protection;
+    private final IProtection protection;
 
-    public EventResult(boolean cancelEvent, boolean abort, Protection protection) {
+    public EventResult(boolean cancelEvent, boolean abort, IProtection protection) {
         this.cancelEvent = cancelEvent;
         this.abort = abort;
         this.protection = protection;
     }
 
-    public Protection getProtection() {
+    public IProtection getProtection() {
         return protection;
     }
 

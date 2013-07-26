@@ -12,12 +12,14 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+import com.bukkit.gemo.patchworking.ProtectionType;
+
 import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.utils.ListHelper;
 
@@ -153,7 +155,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    public boolean updateGuestList(Protection protection, String guestList) {
+    public boolean updateGuestList(IProtection protection, String guestList) {
         try {
             this.updateGuestList.setString(1, guestList);
             this.updateGuestList.setInt(2, protection.getID());
@@ -173,7 +175,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      */
     public boolean deleteProtection(BlockVector vector) {
         try {
-            Protection protection = this.getProtectionAtPosition(vector);
+            IProtection protection = this.getProtectionAtPosition(vector);
             if (protection != null) {
                 this.removeProtection.setInt(1, protection.getID());
                 this.removeProtection.executeUpdate();

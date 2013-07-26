@@ -4,24 +4,27 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+import com.bukkit.gemo.patchworking.ISubProtection;
+import com.bukkit.gemo.patchworking.ISubProtectionHolder;
+import com.bukkit.gemo.patchworking.ProtectionType;
+
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
 
 public class ProtectionManager {
 
     private HashSet<String> giftList;
-    private HashMap<BlockVector, Protection> protections;
-    private HashMap<BlockVector, SubProtectionHolder> subProtections;
+    private HashMap<BlockVector, IProtection> protections;
+    private HashMap<BlockVector, ISubProtectionHolder> subProtections;
 
     /**
      * Initialize the manager
      */
     public void init() {
-        this.protections = new HashMap<BlockVector, Protection>(512);
-        this.subProtections = new HashMap<BlockVector, SubProtectionHolder>(1024);
+        this.protections = new HashMap<BlockVector, IProtection>(512);
+        this.subProtections = new HashMap<BlockVector, ISubProtectionHolder>(1024);
         this.giftList = new HashSet<String>(128);
     }
 
@@ -47,7 +50,7 @@ public class ProtectionManager {
      * @param vector
      * @return the Protection
      */
-    public Protection getProtection(BlockVector vector) {
+    public IProtection getProtection(BlockVector vector) {
         return this.protections.get(vector);
     }
 
@@ -71,8 +74,8 @@ public class ProtectionManager {
 
         // register the subprotections
         if (protection.hasAnySubProtection()) {
-            Collection<SubProtection> subs = protection.getSubProtections();
-            for (SubProtection sub : subs) {
+            Collection<ISubProtection> subs = protection.getSubProtections();
+            for (ISubProtection sub : subs) {
                 this.addSubProtection(sub);
             }
         }
@@ -84,8 +87,8 @@ public class ProtectionManager {
      * 
      * @param subProtection
      */
-    public void addSubProtection(SubProtection subProtection) {
-        SubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
+    public void addSubProtection(ISubProtection subProtection) {
+        ISubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder == null) {
             holder = new SubProtectionHolder();
             this.addSubProtectionHolder(subProtection.getVector(), holder);
@@ -99,7 +102,7 @@ public class ProtectionManager {
      * @param vector
      */
     public void removeProtection(BlockVector vector) {
-        Protection protection = this.protections.get(vector);
+        IProtection protection = this.protections.get(vector);
         if (protection != null) {
             // check if it is a giftprotection
             if (protection.isGift()) {
@@ -110,8 +113,8 @@ public class ProtectionManager {
             this.protections.remove(vector);
             // remove the subprotections
             if (protection.hasAnySubProtection()) {
-                Collection<SubProtection> subs = protection.getSubProtections();
-                for (SubProtection sub : subs) {
+                Collection<ISubProtection> subs = protection.getSubProtections();
+                for (ISubProtection sub : subs) {
                     this.removeSubProtection(sub);
                 }
             }
@@ -123,8 +126,8 @@ public class ProtectionManager {
      * 
      * @param subProtection
      */
-    private void removeSubProtection(SubProtection subProtection) {
-        SubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
+    private void removeSubProtection(ISubProtection subProtection) {
+        ISubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder != null) {
             holder.removeProtection(subProtection);
         }
@@ -166,7 +169,7 @@ public class ProtectionManager {
      * @param vector
      * @param holder
      */
-    private void addSubProtectionHolder(BlockVector vector, SubProtectionHolder holder) {
+    private void addSubProtectionHolder(BlockVector vector, ISubProtectionHolder holder) {
         if (!this.hasSubProtectionHolder(vector)) {
             this.subProtections.put(vector, holder);
         }
@@ -178,7 +181,7 @@ public class ProtectionManager {
      * @param vector
      * @return the SubProtectionHolder
      */
-    public SubProtectionHolder getSubProtectionHolder(BlockVector vector) {
+    public ISubProtectionHolder getSubProtectionHolder(BlockVector vector) {
         return this.subProtections.get(vector);
     }
 

@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.protection.Protection;
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+
 import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class PhysicsHelper {
@@ -17,7 +18,7 @@ public class PhysicsHelper {
         return nonSolidStateBlocks.contains(ID);
     }
 
-    public static ArrayList<SubProtection> protectNonSolidBlocks(Protection protection, BlockVector vectorBelowProtection) {
+    public static ArrayList<SubProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection) {
         ArrayList<SubProtection> list = new ArrayList<SubProtection>();
         SubProtection subProtection;
         BlockVector tempVector = vectorBelowProtection.getRelative(0, 0, 0);

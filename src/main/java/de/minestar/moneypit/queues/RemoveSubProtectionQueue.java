@@ -2,19 +2,20 @@ package de.minestar.moneypit.queues;
 
 import org.bukkit.entity.Player;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtectionInfo;
+import com.bukkit.gemo.patchworking.ISubProtection;
+
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.protection.ProtectionInfo;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 
 public class RemoveSubProtectionQueue implements Queue {
 
     private final Player player;
     private final BlockVector vector;
-    private ProtectionInfo protectionInfo;
+    private IProtectionInfo protectionInfo;
 
-    public RemoveSubProtectionQueue(Player player, BlockVector vector, ProtectionInfo protectionInfo) {
+    public RemoveSubProtectionQueue(Player player, BlockVector vector, IProtectionInfo protectionInfo) {
         this.player = player;
         this.vector = vector;
         this.protectionInfo = protectionInfo;
@@ -24,7 +25,7 @@ public class RemoveSubProtectionQueue implements Queue {
     public boolean execute() {
         boolean result = true;
         // try to remove all SubProtections
-        SubProtection protection;
+        ISubProtection protection;
         for (int i = 0; i < this.protectionInfo.getSubProtections().getSize(); i++) {
             protection = this.protectionInfo.getSubProtections().getProtection(i);
             if (protection != null) {

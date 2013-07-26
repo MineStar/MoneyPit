@@ -3,7 +3,8 @@ package de.minestar.moneypit.modules;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
+
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;

@@ -24,6 +24,12 @@ import java.util.Timer;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.PluginManager;
 
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+import com.bukkit.gemo.patchworking.IProtectionCore;
+import com.bukkit.gemo.patchworking.IProtectionInfo;
+import com.bukkit.gemo.patchworking.ProtectionType;
+
 import de.minestar.minestarlibrary.AbstractCore;
 import de.minestar.minestarlibrary.commands.CommandList;
 import de.minestar.moneypit.autoclose.AutoCloseBackgroundTask;
@@ -36,10 +42,7 @@ import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.commands.cmd_ctoggle;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
-import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
-import de.minestar.moneypit.data.protection.ProtectionType;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.listener.MonitorListener;
@@ -48,7 +51,7 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.manager.QueueManager;
 
-public class MoneyPitCore extends AbstractCore {
+public class MoneyPitCore extends AbstractCore implements IProtectionCore{
 
     public static MoneyPitCore INSTANCE;
 
@@ -73,7 +76,7 @@ public class MoneyPitCore extends AbstractCore {
 
     /** BlockVector */
     private static BlockVector vector;
-    private static ProtectionInfo protectionInfo;
+    private static IProtectionInfo protectionInfo;
 
     /** CONSTRUCTOR */
     public MoneyPitCore() {
@@ -111,9 +114,9 @@ public class MoneyPitCore extends AbstractCore {
         return true;
     }
 
-    public static boolean protectionsAreEqual(ProtectionInfo protection1, ProtectionInfo protection2) {
-        ProtectionInfo protectionChest = protection1;
-        ProtectionInfo protectionSign = protection2;
+    public static boolean protectionsAreEqual(IProtectionInfo protection1, IProtectionInfo protection2) {
+        IProtectionInfo protectionChest = protection1;
+        IProtectionInfo protectionSign = protection2;
 
         // BOTH BLOCKS ARE PROTECTED/UNPROTECTED?
         boolean hasChestProtection = protectionChest.hasAnyProtection();
@@ -125,8 +128,8 @@ public class MoneyPitCore extends AbstractCore {
         // CHECK PROTECTION
         if (hasChestProtection && hasSignProtection) {
             // CHECK OWNER
-            Protection chestProtection = protectionChest.getProtection();
-            Protection signProtection = protectionSign.getProtection();
+            IProtection chestProtection = protectionChest.getProtection();
+            IProtection signProtection = protectionSign.getProtection();
 
             if (!protectionChest.hasProtection()) {
                 chestProtection = protectionChest.getFirstProtection();
@@ -153,17 +156,7 @@ public class MoneyPitCore extends AbstractCore {
         return true;
     }
 
-    public static boolean hasProtection(Block block) {
-        MoneyPitCore.vector.update(block.getLocation());
-        MoneyPitCore.protectionInfo.update(vector);
-        return MoneyPitCore.protectionInfo.hasAnyProtection();
-    }
 
-    public static ProtectionInfo getProtectionInfo(Block block) {
-        MoneyPitCore.vector.update(block.getLocation());
-        MoneyPitCore.protectionInfo.update(vector);
-        return MoneyPitCore.protectionInfo.clone();
-    }
 
     @Override
     protected boolean createListener() {
@@ -206,5 +199,19 @@ public class MoneyPitCore extends AbstractCore {
          );
         //@formatter:on;
         return true;
+    }
+    
+    @Override
+    public boolean hasProtection(Block block) {
+        vector.update(block.getLocation());
+        protectionInfo.update(vector);
+        return protectionInfo.hasAnyProtection();
+    }
+
+    @Override
+    public IProtectionInfo getProtectionInfo(Block block) {
+        vector.update(block.getLocation());
+        protectionInfo.update(vector);
+        return protectionInfo.clone();
     }
 }

@@ -1,6 +1,6 @@
 package de.minestar.moneypit.queues;
 
-import de.minestar.moneypit.data.BlockVector;
+import com.bukkit.gemo.patchworking.BlockVector;
 
 public interface Queue {
 

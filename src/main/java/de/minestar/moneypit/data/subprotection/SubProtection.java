@@ -2,184 +2,148 @@ package de.minestar.moneypit.data.subprotection;
 
 import org.bukkit.entity.Player;
 
-import de.minestar.moneypit.data.BlockVector;
-import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.protection.ProtectionType;
+import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
+import com.bukkit.gemo.patchworking.ISubProtection;
+import com.bukkit.gemo.patchworking.ProtectionType;
 
-public class SubProtection {
+public class SubProtection implements ISubProtection {
 
     private final BlockVector vector;
-    private final Protection parent;
+    private final IProtection parent;
 
     /**
      * Constructor
      * 
      * @param parent
      */
-    public SubProtection(BlockVector vector, Protection parent) {
+    public SubProtection(BlockVector vector, IProtection parent) {
         this.vector = vector;
         this.parent = parent;
     }
 
-    /**
-     * Get the vector of this protection
-     * 
-     * @return the vector
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getVector()
      */
     public BlockVector getVector() {
         return this.vector;
     }
 
-    /**
-     * Get the parent of this protection
-     * 
-     * @return the parent
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getParent()
      */
-    public Protection getParent() {
+    public IProtection getParent() {
         return this.parent;
     }
 
-    /**
-     * Get the ModuleID
-     * 
-     * @return the ModuleID of this Protection
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getModuleID()
      */
     public int getModuleID() {
         return this.parent.getModuleID();
     }
 
-    /**
-     * Get the type of the parent protection
-     * 
-     * @return the type
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getType()
      */
     public ProtectionType getType() {
         return this.parent.getType();
     }
 
-    /**
-     * Add a guest to the guestlist
-     * 
-     * @param guest
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#addGuest(java.lang.String)
      */
     public void addGuest(String guest) {
         this.parent.addGuest(guest);
     }
 
-    /**
-     * Remove a guest from the guestlist
-     * 
-     * @param guest
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#removeGuest(java.lang.String)
      */
     public void removeGuest(String guest) {
         this.parent.removeGuest(guest);
     }
 
-    /**
-     * Check if someone is on the guestlist
-     * 
-     * @param guest
-     * @return <b>true</b> if the name is found, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isGuest(java.lang.String)
      */
     public boolean isGuest(String guest) {
         return this.parent.isGuest(guest);
     }
 
-    /**
-     * Get the ID of this protection
-     * 
-     * @return the unique ID
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getID()
      */
     public int getID() {
         return this.parent.getID();
     }
 
-    /**
-     * Get the owner of this protection
-     * 
-     * @return the owner;
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#getOwner()
      */
     public String getOwner() {
         return this.parent.getOwner();
     }
 
-    /**
-     * Check if the given name is the owner of this subprotection
-     * 
-     * @param otherName
-     * @return <b>true</b> if the name is the owner, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isOwner(java.lang.String)
      */
     public boolean isOwner(String otherName) {
         return this.getOwner().equalsIgnoreCase(otherName);
     }
 
-    /**
-     * Is this protection public?
-     * 
-     * @return <b>true</b> if it is public, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isPublic()
      */
     public boolean isPublic() {
         return this.parent.isPublic();
     }
 
-    /**
-     * Is this protection private?
-     * 
-     * @return <b>true</b> if it is private, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isPrivate()
      */
     public boolean isPrivate() {
         return this.parent.isPrivate();
     }
 
-    /**
-     * Is this protection a giftprotection?
-     * 
-     * @return <b>true</b> if it is a giftprotection, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isGift()
      */
     public boolean isGift() {
         return this.parent.isGift();
     }
 
-    /**
-     * Check if a SubProtection equals this subProtection
-     * 
-     * @param subProtection
-     * @return
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#equals(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
-    public boolean equals(SubProtection subProtection) {
+    public boolean equals(ISubProtection subProtection) {
         return this.getID() == subProtection.getID() && this.vector.equals(subProtection.getVector());
     }
 
-    /**
-     * Check if the player can edit this SubProtection
-     * 
-     * @param player
-     * @return <b>true</b> if the player can, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#canEdit(org.bukkit.entity.Player)
      */
     public boolean canEdit(Player player) {
         return this.parent.canEdit(player);
     }
 
-    /**
-     * Check if the player can access this SubProtection
-     * 
-     * @param player
-     * @return <b>true</b> if the player can, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#canAccess(org.bukkit.entity.Player)
      */
     public boolean canAccess(Player player) {
         return this.parent.canAccess(player);
     }
 
-    /**
-     * Check if the player can access this SubProtection
-     * 
-     * @param player
-     * @return <b>true</b> if the player can, otherwise <b>false</b>
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#canAccess(java.lang.String)
      */
     public boolean canAccess(String playerName) {
         return this.parent.canAccess(playerName);
     }
 
+    /* (non-Javadoc)
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#toString()
+     */
     @Override
     public String toString() {
         return "SubProtection={ " + this.vector.toString() + " ; " + this.parent.toString() + " }";
