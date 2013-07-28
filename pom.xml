@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>de.minestar</groupId>
 	<artifactId>MoneyPit</artifactId>
 	<version>1.6.2_R1-SNAPSHOT</version>
@@ -8,17 +9,24 @@
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->
 		<repository>
-			<id>nexus</id>
-			<name>RepositoryProxy</name>
+			<id>minestarDeployment</id>
+			<name>Internal Releases</name>
 			<url>http://server2.minestar.de:8081/nexus/content/repositories/releases</url>
 		</repository>
 		<!-- use the following if you ARE using a snapshot version. -->
 		<snapshotRepository>
-			<id>nexus</id>
-			<name>RepositoryProxy</name>
+			<id>minestarDeployment</id>
+			<name>Internal Releases</name>
 			<url>http://server2.minestar.de:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>MinestarNexus</id>
+			<url>http://server2.minestar.de:8081/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -28,16 +36,6 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 
 	<dependencies>
@@ -47,5 +45,4 @@
 			<version>1.6.2_R1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-
 </project>
