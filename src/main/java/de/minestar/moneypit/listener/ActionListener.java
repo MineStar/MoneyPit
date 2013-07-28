@@ -72,7 +72,7 @@ import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
 
-    private static final Set<Integer> nonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId()));
+    private static final Set<Integer> nonPistonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId(), 141, 142, 143, 144, 147, 148, 149, 150, 151, 154, 158));
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -1451,7 +1451,7 @@ public class ActionListener implements Listener {
         for (int count = 0; count < 13; count++) {
             temp = temp.getRelative(direction);
             list.add(temp);
-            if (nonPushableBlocks.contains(temp.getTypeId())) {
+            if (nonPistonPushableBlocks.contains(temp.getTypeId())) {
                 return list;
             }
         }

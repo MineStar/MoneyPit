@@ -22,126 +22,162 @@ public class SubProtection implements ISubProtection {
         this.parent = parent;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getVector()
      */
     public BlockVector getVector() {
         return this.vector;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getParent()
      */
     public IProtection getParent() {
         return this.parent;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getModuleID()
      */
     public int getModuleID() {
         return this.parent.getModuleID();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getType()
      */
     public ProtectionType getType() {
         return this.parent.getType();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#addGuest(java.lang.String)
      */
     public void addGuest(String guest) {
         this.parent.addGuest(guest);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#removeGuest(java.lang.String)
      */
     public void removeGuest(String guest) {
         this.parent.removeGuest(guest);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isGuest(java.lang.String)
      */
     public boolean isGuest(String guest) {
         return this.parent.isGuest(guest);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getID()
      */
     public int getID() {
         return this.parent.getID();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getOwner()
      */
     public String getOwner() {
         return this.parent.getOwner();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isOwner(java.lang.String)
      */
     public boolean isOwner(String otherName) {
         return this.getOwner().equalsIgnoreCase(otherName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isPublic()
      */
     public boolean isPublic() {
         return this.parent.isPublic();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isPrivate()
      */
     public boolean isPrivate() {
         return this.parent.isPrivate();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isGift()
      */
     public boolean isGift() {
         return this.parent.isGift();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#equals(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
     public boolean equals(ISubProtection subProtection) {
         return this.getID() == subProtection.getID() && this.vector.equals(subProtection.getVector());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#canEdit(org.bukkit.entity.Player)
      */
     public boolean canEdit(Player player) {
         return this.parent.canEdit(player);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#canAccess(org.bukkit.entity.Player)
      */
     public boolean canAccess(Player player) {
         return this.parent.canAccess(player);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#canAccess(java.lang.String)
      */
     public boolean canAccess(String playerName) {
         return this.parent.canAccess(playerName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#toString()
      */
     @Override

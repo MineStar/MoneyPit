@@ -10,7 +10,9 @@ import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 public class SubProtectionHolder implements ISubProtectionHolder {
     private ArrayList<ISubProtection> protections = null;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getSize()
      */
     public int getSize() {
@@ -20,14 +22,18 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return 0;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtections()
      */
     public ArrayList<ISubProtection> getProtections() {
         return this.protections;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#addProtection(de.minestar.moneypit.data.subprotection.SubProtection)
      */
     public void addProtection(ISubProtection subProtection) {
@@ -39,7 +45,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#removeProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
     public void removeProtection(ISubProtection subProtection) {
@@ -56,7 +64,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#hasProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
     public boolean hasProtection(ISubProtection subProtection) {
@@ -70,7 +80,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canAccessAll(org.bukkit.entity.Player)
      */
     public boolean canAccessAll(Player player) {
@@ -84,7 +96,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#areAllPublic()
      */
     public boolean areAllPublic() {
@@ -98,7 +112,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canAccessAll(java.lang.String)
      */
     public boolean canAccessAll(String playerName) {
@@ -112,7 +128,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canEditAll(org.bukkit.entity.Player)
      */
     public boolean canEditAll(Player player) {
@@ -126,7 +144,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtection(int)
      */
     public ISubProtection getProtection(int index) {

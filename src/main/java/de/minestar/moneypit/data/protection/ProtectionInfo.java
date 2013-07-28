@@ -28,14 +28,18 @@ public class ProtectionInfo implements IProtectionInfo {
         this.subProtections = subProtections;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#clone()
      */
     public IProtectionInfo clone() {
         return new ProtectionInfo(hasProtection, hasSubProtection, hasAnyProtection, protection, subProtections);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#update(de.minestar.moneypit.data.BlockVector)
      */
     public void update(BlockVector vector) {
@@ -46,21 +50,27 @@ public class ProtectionInfo implements IProtectionInfo {
         this.hasAnyProtection = this.hasProtection || this.hasSubProtection;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#getProtection()
      */
     public IProtection getProtection() {
         return protection;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#getSubProtections()
      */
     public ISubProtectionHolder getSubProtections() {
         return subProtections;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#getFirstProtection()
      */
     public IProtection getFirstProtection() {
@@ -70,21 +80,27 @@ public class ProtectionInfo implements IProtectionInfo {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#hasAnyProtection()
      */
     public boolean hasAnyProtection() {
         return hasAnyProtection;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#hasProtection()
      */
     public boolean hasProtection() {
         return hasProtection;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#hasSubProtection()
      */
     public boolean hasSubProtection() {

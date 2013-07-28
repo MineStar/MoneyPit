@@ -35,63 +35,81 @@ public class Protection implements IProtection {
         this.subProtections = null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getID()
      */
     public int getID() {
         return ID;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getVector()
      */
     public BlockVector getVector() {
         return this.vector;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getModuleID()
      */
     public int getModuleID() {
         return this.vector.getLocation().getBlock().getTypeId();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getOwner()
      */
     public String getOwner() {
         return owner;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#isPublic()
      */
     public boolean isPublic() {
         return this.type == ProtectionType.PUBLIC;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#isGift()
      */
     public boolean isGift() {
         return this.type == ProtectionType.GIFT;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#isPrivate()
      */
     public boolean isPrivate() {
         return this.type == ProtectionType.PRIVATE;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getType()
      */
     public ProtectionType getType() {
         return type;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#addGuest(java.lang.String)
      */
     public void addGuest(String guest) {
@@ -101,7 +119,9 @@ public class Protection implements IProtection {
         this.guestList.add(guest.toLowerCase());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#removeGuest(java.lang.String)
      */
     public void removeGuest(String guest) {
@@ -113,21 +133,27 @@ public class Protection implements IProtection {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getGuestList()
      */
     public HashSet<String> getGuestList() {
         return this.guestList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#setGuestList(java.util.HashSet)
      */
     public void setGuestList(HashSet<String> guestList) {
         this.guestList = guestList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#clearGuestList()
      */
     public void clearGuestList() {
@@ -137,7 +163,9 @@ public class Protection implements IProtection {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#isGuest(java.lang.String)
      */
     public boolean isGuest(String guest) {
@@ -147,14 +175,18 @@ public class Protection implements IProtection {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#isOwner(java.lang.String)
      */
     public boolean isOwner(String otherName) {
         return this.owner.equalsIgnoreCase(otherName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#getSubProtections()
      */
     public Collection<ISubProtection> getSubProtections() {
@@ -164,7 +196,9 @@ public class Protection implements IProtection {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#hasAnySubProtection()
      */
     public boolean hasAnySubProtection() {
@@ -174,7 +208,9 @@ public class Protection implements IProtection {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#addSubProtection(de.minestar.moneypit.data.subprotection.SubProtection)
      */
     public void addSubProtection(ISubProtection subProtection) {
@@ -191,7 +227,9 @@ public class Protection implements IProtection {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#removeSubProtection(de.minestar.moneypit.data.BlockVector)
      */
     public void removeSubProtection(BlockVector vector) {
@@ -204,7 +242,9 @@ public class Protection implements IProtection {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#hasSubProtection(de.minestar.moneypit.data.BlockVector)
      */
     public boolean hasSubProtection(BlockVector vector) {
@@ -214,35 +254,45 @@ public class Protection implements IProtection {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#canEdit(org.bukkit.entity.Player)
      */
     public boolean canEdit(Player player) {
         return this.isOwner(player.getName()) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#canAccess(org.bukkit.entity.Player)
      */
     public boolean canAccess(Player player) {
         return this.isPublic() || this.isGift() || this.isOwner(player.getName()) || this.isGuest(player.getName()) || this.canEdit(player);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#canAccess(java.lang.String)
      */
     public boolean canAccess(String playerName) {
         return this.isPublic() || this.isGift() || this.isOwner(playerName) || this.isGuest(playerName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#equals(de.minestar.moneypit.data.protection.Protection)
      */
     public boolean equals(IProtection protection) {
         return this.ID == protection.getID() && this.vector.equals(protection.getVector());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.minestar.moneypit.data.protection.IProtection#toString()
      */
     @Override

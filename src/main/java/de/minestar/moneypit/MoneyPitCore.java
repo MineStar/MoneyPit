@@ -51,7 +51,7 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.manager.QueueManager;
 
-public class MoneyPitCore extends AbstractCore implements IProtectionCore{
+public class MoneyPitCore extends AbstractCore implements IProtectionCore {
 
     public static MoneyPitCore INSTANCE;
 
@@ -156,8 +156,6 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore{
         return true;
     }
 
-
-
     @Override
     protected boolean createListener() {
         actionListener = new ActionListener();
@@ -200,7 +198,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore{
         //@formatter:on;
         return true;
     }
-    
+
     @Override
     public boolean hasProtection(Block block) {
         vector.update(block.getLocation());
