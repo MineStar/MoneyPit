@@ -16,7 +16,7 @@ public class DoorHelper {
         Block dDoor;
         for (BlockFace face : faceList) {
             dDoor = door.getRelative(face);
-            if (dDoor.getTypeId() == Material.WOODEN_DOOR.getId()) {
+            if (dDoor.getType().equals(Material.WOODEN_DOOR)) {
                 return new BlockVector(dDoor.getLocation());
             }
         }
@@ -28,7 +28,7 @@ public class DoorHelper {
         Block dDoor;
         for (BlockFace face : faceList) {
             dDoor = door.getRelative(face);
-            if (dDoor.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+            if (dDoor.getType().equals(Material.IRON_DOOR_BLOCK)) {
                 return new BlockVector(dDoor.getLocation());
             }
         }
@@ -79,9 +79,11 @@ public class DoorHelper {
     }
 
     public static Block getLowerDoorPart(Block block) {
-        if (block == null || (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId())) {
+        if (block == null)
             return null;
-        }
+
+        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+            return null;
 
         if (block.getData() < 8) {
             return block;
@@ -91,9 +93,11 @@ public class DoorHelper {
     }
 
     public static Block getUpperDoorPart(Block block) {
-        if (block == null || (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId())) {
+        if (block == null)
             return null;
-        }
+
+        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+            return null;
 
         if (block.getData() < 8) {
             return block.getRelative(BlockFace.UP);
@@ -172,9 +176,12 @@ public class DoorHelper {
     }
 
     public static Block getOppositeUpperDoorPart(Block block) {
-        if (block.getTypeId() != Material.WOODEN_DOOR.getId() && block.getTypeId() != Material.IRON_DOOR_BLOCK.getId()) {
+        if (block == null)
             return null;
-        }
+
+        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+            return null;
+
         Block selfLower = DoorHelper.getLowerDoorPart(block);
         Block selfUpper = DoorHelper.getUpperDoorPart(block);
         final byte dataLower = selfLower.getData();
@@ -240,9 +247,10 @@ public class DoorHelper {
             return null;
         } else {
             Block lower = upper.getRelative(BlockFace.DOWN);
-            if (lower.getTypeId() != Material.WOODEN_DOOR.getId() && lower.getTypeId() != Material.IRON_DOOR_BLOCK.getId()) {
+
+            if (!lower.getType().equals(Material.WOODEN_DOOR) && !lower.getType().equals(Material.IRON_DOOR_BLOCK))
                 return null;
-            }
+
             return lower;
         }
     }

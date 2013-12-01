@@ -17,7 +17,7 @@ public class ChestHelper {
         Block dChest;
         for (BlockFace face : faceList) {
             dChest = chest.getRelative(face);
-            if (dChest.getTypeId() == Material.CHEST.getId()) {
+            if (dChest.getType().equals(Material.CHEST)) {
                 return new BlockVector(dChest.getLocation());
             }
         }
@@ -29,7 +29,7 @@ public class ChestHelper {
         Block dChest;
         for (BlockFace face : faceList) {
             dChest = chest.getRelative(face);
-            if (dChest.getTypeId() == Material.TRAPPED_CHEST.getId()) {
+            if (dChest.getType().equals(Material.TRAPPED_CHEST)) {
                 return new BlockVector(dChest.getLocation());
             }
         }
@@ -52,12 +52,12 @@ public class ChestHelper {
 
     // IS DOUBLECHEST?
     public static Chest isDoubleChest(Block chestBlock) {
-        if (chestBlock.getTypeId() != Material.CHEST.getId())
+        if (!chestBlock.getType().equals(Material.CHEST))
             return null;
 
         ArrayList<Block> neighbours = getDirectNeighbours(chestBlock, false);
         for (int i = 0; i < neighbours.size(); i++) {
-            if (neighbours.get(i).getTypeId() == Material.CHEST.getId())
+            if (neighbours.get(i).getType().equals(Material.CHEST))
                 return (Chest) neighbours.get(i).getState();
         }
         return null;
@@ -65,12 +65,12 @@ public class ChestHelper {
 
     // IS DOUBLE-TRAPPED-CHEST?
     public static Chest isDoubleTrappedChest(Block chestBlock) {
-        if (chestBlock.getTypeId() != Material.TRAPPED_CHEST.getId())
+        if (!chestBlock.getType().equals(Material.TRAPPED_CHEST))
             return null;
 
         ArrayList<Block> neighbours = getDirectNeighbours(chestBlock, false);
         for (int i = 0; i < neighbours.size(); i++) {
-            if (neighbours.get(i).getTypeId() == Material.TRAPPED_CHEST.getId())
+            if (neighbours.get(i).getType().equals(Material.TRAPPED_CHEST))
                 return (Chest) neighbours.get(i).getState();
         }
         return null;

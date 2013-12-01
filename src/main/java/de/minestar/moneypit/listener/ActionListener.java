@@ -12,9 +12,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.DoubleChest;
-import org.bukkit.craftbukkit.v1_6_R2.block.CraftBlockState;
-import org.bukkit.craftbukkit.v1_6_R2.block.CraftHopper;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R1.block.CraftBlockState;
+import org.bukkit.craftbukkit.v1_7_R1.block.CraftHopper;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
@@ -235,16 +235,16 @@ public class ActionListener implements Listener {
 
                     // only private protections are blocked
                     if (protection.isPublic()) {
-                        if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                        if (block.getType().equals(Material.WOODEN_DOOR)) {
                             this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                             Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                            if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                            if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                             }
-                        } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                        } else if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
                             this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                             Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                            if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                            if (bl != null && bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                             }
                         }
@@ -272,16 +272,16 @@ public class ActionListener implements Listener {
                     for (ISubProtection subProtection : holder.getProtections()) {
                         // only private protections are blocked
                         if (subProtection.getParent().isPublic()) {
-                            if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                            if (block.getType().equals(Material.WOODEN_DOOR)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                                if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                                if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
                                     this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                                 }
-                            } else if (block.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                            } else if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                                if (bl != null && bl.getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                                if (bl != null && bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                     this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                                 }
                             }
@@ -304,10 +304,10 @@ public class ActionListener implements Listener {
                     }
                 }
             } else {
-                if (block.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                if (block.getType().equals(Material.WOODEN_DOOR)) {
                     this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                     Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                    if (bl != null && bl.getTypeId() == Material.WOODEN_DOOR.getId()) {
+                    if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
                         this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                     }
                 }
@@ -349,7 +349,7 @@ public class ActionListener implements Listener {
 
                 BlockVector vector = result.getProtection().getVector();
                 CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
-                cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getTypeId(), vector.getLocation().getBlock().getData());
+                cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getType(), vector.getLocation().getBlock().getData());
             }
             if (result.isAbort()) {
                 return;
@@ -451,7 +451,7 @@ public class ActionListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        if (event.getChangedTypeId() == Material.TNT.getId()) {
+        if (event.getChangedType().equals(Material.TNT)) {
             // update the BlockVector & the ProtectionInfo
             this.vector.update(event.getBlock().getLocation());
             this.protectionInfo.update(this.vector);
@@ -742,7 +742,7 @@ public class ActionListener implements Listener {
         if (this.openedGiftChests.contains(player.getName())) {
             // get all needed vars
             ItemStack inSlot = event.getView().getItem(event.getRawSlot());
-            boolean slotNull = (inSlot == null || inSlot.getTypeId() == Material.AIR.getId());
+            boolean slotNull = (inSlot == null || inSlot.getType().equals(Material.AIR));
             boolean inChest = event.getRawSlot() <= event.getInventory().getSize() - 1;
             boolean shiftClick = event.isShiftClick();
 
@@ -1138,7 +1138,7 @@ public class ActionListener implements Listener {
 
     private void handleNormalInteract(PlayerInteractEvent event) {
         // ---------> WORKAROUND FOR CHESTS BEING ROTATED
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == Material.CHEST.getId()) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType().equals(Material.CHEST)) {
             Module module = this.moduleManager.getRegisteredModule(Material.CHEST.getId());
             if (module != null) {
                 EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()));
@@ -1148,7 +1148,7 @@ public class ActionListener implements Listener {
                     event.setUseItemInHand(Event.Result.DENY);
                     BlockVector vector = result.getProtection().getVector();
                     CraftPlayer cPlayer = (CraftPlayer) event.getPlayer();
-                    cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getTypeId(), vector.getLocation().getBlock().getData());
+                    cPlayer.sendBlockChange(vector.getLocation(), vector.getLocation().getBlock().getType(), vector.getLocation().getBlock().getData());
                 }
                 if (result.isAbort()) {
                     return;
@@ -1183,14 +1183,14 @@ public class ActionListener implements Listener {
 
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
-                if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
+                if (event.getClickedBlock().getType().equals(Material.WOODEN_DOOR)) {
                     if (this.protectionInfo.getProtection().isPrivate()) {
                         MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
-                } else if (event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId()) {
+                } else if (event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK)) {
                     if (this.protectionInfo.getProtection().isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
@@ -1207,8 +1207,8 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasSubProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             ISubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
-            boolean isWoodDoor = event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId();
-            boolean isIronDoor = event.getClickedBlock().getTypeId() == Material.IRON_DOOR_BLOCK.getId();
+            boolean isWoodDoor = event.getClickedBlock().getType().equals(Material.WOODEN_DOOR);
+            boolean isIronDoor = event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK);
             for (ISubProtection subProtection : holder.getProtections()) {
                 // is this protection private?
                 if (!subProtection.getParent().isPrivate()) {
@@ -1264,7 +1264,7 @@ public class ActionListener implements Listener {
 
         // toggle both doors
         if (event.getAction() != Action.PHYSICAL) {
-            if (event.getClickedBlock().getTypeId() == Material.WOODEN_DOOR.getId()) {
+            if (event.getClickedBlock().getType().equals(Material.WOODEN_DOOR)) {
                 DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
             }
         }
