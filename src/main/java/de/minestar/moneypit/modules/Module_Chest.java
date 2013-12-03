@@ -35,6 +35,7 @@ public class Module_Chest extends Module {
     public boolean addProtection(Protection protection, byte subData) {
         // search a second chest and add the subprotection, if found
         Chest secondChest = ChestHelper.isDoubleChest(protection.getVector().getLocation().getBlock());
+
         if (secondChest != null) {
             SubProtection subProtection = new SubProtection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);

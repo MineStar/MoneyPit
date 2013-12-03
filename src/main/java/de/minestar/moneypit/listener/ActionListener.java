@@ -451,13 +451,15 @@ public class ActionListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        if (event.getChangedType().equals(Material.TNT)) {
-            // update the BlockVector & the ProtectionInfo
-            this.vector.update(event.getBlock().getLocation());
-            this.protectionInfo.update(this.vector);
+        if (event.getChangedType() != null) {
+            if (event.getChangedType().equals(Material.TNT)) {
+                // update the BlockVector & the ProtectionInfo
+                this.vector.update(event.getBlock().getLocation());
+                this.protectionInfo.update(this.vector);
 
-            if (this.protectionInfo.hasAnyProtection()) {
-                event.setCancelled(true);
+                if (this.protectionInfo.hasAnyProtection()) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
