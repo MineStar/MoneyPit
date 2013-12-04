@@ -8,6 +8,7 @@ import com.bukkit.gemo.patchworking.BlockVector;
 
 import de.minestar.moneypit.MoneyPitCore;
 
+@SuppressWarnings("deprecation")
 public class DoorHelper {
     private final static BlockFace[] faceList = new BlockFace[]{BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH};
 
