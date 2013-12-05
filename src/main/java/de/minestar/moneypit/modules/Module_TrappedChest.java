@@ -14,6 +14,7 @@ import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.utils.ChestHelper;
 
 public class Module_TrappedChest extends Module {
@@ -65,20 +66,23 @@ public class Module_TrappedChest extends Module {
             return new EventResult(true, true, protection);
         }
 
-        BlockVector alreadyDoubleChest = ChestHelper.getDoubleTrappedChest(doubleChest);
-        if (alreadyDoubleChest == null) {
-            // add the SubProtection to the Protection
-            SubProtection subProtection = new SubProtection(vector, protection);
-            protection.addSubProtection(subProtection);
+        // IProtection thisProtection = MoneyPitCore.protectionManager.getProtection(vector);
+        // BlockVector alreadyDoubleChest = null;
+        // if (protection != null) {
+        // add the SubProtection to the Protection
+        SubProtection subProtection = new SubProtection(vector, protection);
+        protection.addSubProtection(subProtection);
 
-            // add the SubProtection to the ProtectionManager
-            MoneyPitCore.protectionManager.addSubProtection(subProtection);
-            // send info
-            PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
-            return new EventResult(false, false, null);
-        } else {
-            // return true to abort the event
-            return new EventResult(false, true, null);
-        }
+        // add the SubProtection to the ProtectionManager
+        MoneyPitCore.protectionManager.addSubProtection(subProtection);
+
+        // send info
+        PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
+        return new EventResult(false, true, null);
+        // }
+        // } else {
+        // // return true to abort the event
+        // return new EventResult(false, true, null);
+        // }
     }
 }
