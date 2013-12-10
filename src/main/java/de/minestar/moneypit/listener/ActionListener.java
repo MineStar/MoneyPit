@@ -15,6 +15,7 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.craftbukkit.v1_7_R1.block.CraftBlockState;
 import org.bukkit.craftbukkit.v1_7_R1.block.CraftHopper;
 import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
@@ -32,6 +33,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -611,6 +613,50 @@ public class ActionListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHangingDamage(EntityDamageByEntityEvent event) {
+        Entity entity = event.getEntity();
+        Entity damager = event.getDamager();
+
+        // only for players
+        if (!damager.getType().equals(EntityType.PLAYER)) {
+            return;
+        }
+
+        // get the player
+        Player player = (Player) damager;
+
+        // Only handle ItemFrames & Paintings
+        if (!entity.getType().equals(EntityType.ITEM_FRAME) && !entity.getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+
+        // get the module
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        if (entity.getType().equals(EntityType.PAINTING)) {
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+        }
+
+        // is the module registered?
+        if (module == null) {
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Module for '" + entity.getType().name() + "' is not registered!");
+            return;
+        }
+
+        // update the BlockVector & the ProtectionInfo
+        this.vector.update(entity.getLocation());
+        this.protectionInfo.update(this.vector);
+
+        // handle
+        PlayerInteractEntityEvent newEvent = new PlayerInteractEntityEvent(player, entity);
+        this.handleHangingInteract(newEvent, module);
+        if (newEvent.isCancelled()) {
+            event.setDamage(0d);
+            event.setCancelled(true);
+            return;
         }
     }
 
