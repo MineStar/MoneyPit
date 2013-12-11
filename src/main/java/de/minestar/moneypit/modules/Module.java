@@ -61,6 +61,10 @@ public abstract class Module {
         return autoLock;
     }
 
+    protected void setAutolock(boolean autoLock) {
+        this.autoLock = autoLock;
+    }
+
     protected ProtectionManager getProtectionManager() {
         return this.protectionManager;
     }

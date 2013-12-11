@@ -212,9 +212,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     Hanging entityHanging = null;
                     if (module == null) {
                         // search for an itemframe
-                        Collection<ItemFrame> frameList = location.getWorld().getEntitiesByClass(ItemFrame.class);
+                        Collection<ItemFrame> frames = location.getWorld().getEntitiesByClass(ItemFrame.class);
                         boolean found = false;
-                        for (ItemFrame frame : frameList) {
+                        for (ItemFrame frame : frames) {
                             BlockVector otherVector = new BlockVector(frame.getLocation());
                             if (vector.equals(otherVector)) {
                                 module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
@@ -225,8 +225,8 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         }
                         if (!found) {
                             // search for a painting
-                            Collection<Painting> paintList = location.getWorld().getEntitiesByClass(Painting.class);
-                            for (Painting paint : paintList) {
+                            Collection<Painting> paintings = location.getWorld().getEntitiesByClass(Painting.class);
+                            for (Painting paint : paintings) {
                                 BlockVector otherVector = new BlockVector(paint.getLocation());
                                 if (vector.equals(otherVector)) {
                                     module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING.getId());

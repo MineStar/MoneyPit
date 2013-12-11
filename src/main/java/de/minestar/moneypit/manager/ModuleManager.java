@@ -20,6 +20,7 @@ import de.minestar.moneypit.modules.Module_IronDoor;
 import de.minestar.moneypit.modules.Module_ItemFrame;
 import de.minestar.moneypit.modules.Module_Jukebox;
 import de.minestar.moneypit.modules.Module_Lever;
+import de.minestar.moneypit.modules.Module_Painting;
 import de.minestar.moneypit.modules.Module_SignPost;
 import de.minestar.moneypit.modules.Module_Skull;
 import de.minestar.moneypit.modules.Module_StoneButton;
@@ -91,6 +92,7 @@ public class ModuleManager {
             new Module_FurnaceBurning   (this, ymlFile);
             new Module_Jukebox          (this, ymlFile);
             new Module_ItemFrame        (this, ymlFile);
+            new Module_Painting         (this, ymlFile);
             new Module_Skull            (this, ymlFile);
             new Module_Hopper           (this, ymlFile);
             new Module_Dropper          (this, ymlFile);
@@ -131,6 +133,7 @@ public class ModuleManager {
             new Module_FurnaceBurning   (ymlFile);
             new Module_Jukebox          (ymlFile);
             new Module_ItemFrame        (ymlFile);
+            new Module_Painting         (ymlFile);
             new Module_Skull            (ymlFile);
             new Module_Hopper           (ymlFile);
             new Module_Dropper          (ymlFile);

@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -38,6 +39,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -573,6 +575,15 @@ public class ActionListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onHangingPlace(HangingPlaceEvent event) {
+        if (!event.getEntity().getType().equals(EntityType.PAINTING)) {
+            return;
+        }
+        Painting painting = (Painting) event.getEntity();
+        System.out.println("Placed painting : " + painting.getArt().getBlockWidth() + " / " + painting.getArt().getBlockHeight());
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
         // Only handle ItemFrames & Paintings
         if (!event.getEntity().getType().equals(EntityType.ITEM_FRAME) && !event.getEntity().getType().equals(EntityType.PAINTING)) {
@@ -621,13 +632,7 @@ public class ActionListener implements Listener {
         Entity entity = event.getEntity();
         Entity damager = event.getDamager();
 
-        // only for players
-        if (!damager.getType().equals(EntityType.PLAYER)) {
-            return;
-        }
-
         // get the player
-        Player player = (Player) damager;
 
         // Only handle ItemFrames & Paintings
         if (!entity.getType().equals(EntityType.ITEM_FRAME) && !entity.getType().equals(EntityType.PAINTING)) {
@@ -641,8 +646,7 @@ public class ActionListener implements Listener {
         }
 
         // is the module registered?
-        if (module == null) {
-            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Module for '" + entity.getType().name() + "' is not registered!");
+        if (module == null && !damager.getType().equals(EntityType.PLAYER)) {
             return;
         }
 
@@ -650,14 +654,32 @@ public class ActionListener implements Listener {
         this.vector.update(entity.getLocation());
         this.protectionInfo.update(this.vector);
 
-        // handle
-        PlayerInteractEntityEvent newEvent = new PlayerInteractEntityEvent(player, entity);
-        this.handleHangingInteract(newEvent, module);
-        if (newEvent.isCancelled()) {
-            event.setDamage(0d);
-            event.setCancelled(true);
+        if (damager.getType().equals(EntityType.PLAYER)) {
+            Player player = (Player) damager;
+            // handle players
+            if (module == null) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Module for '" + entity.getType().name() + "' is not registered!");
+                return;
+            }
+
+            PlayerInteractEntityEvent newEvent = new PlayerInteractEntityEvent(player, entity);
+            this.handleHangingInteract(newEvent, module);
+            if (newEvent.isCancelled()) {
+                event.setDamage(0d);
+                event.setCancelled(true);
+            }
+            return;
+        } else {
+            // handle other entities
+            HangingBreakByEntityEvent newEvent = new HangingBreakByEntityEvent((Hanging) event.getEntity(), damager);
+            this.onHangingBreakByEntity(newEvent);
+            if (newEvent.isCancelled()) {
+                event.setDamage(0d);
+                event.setCancelled(true);
+            }
             return;
         }
+
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -1359,14 +1381,13 @@ public class ActionListener implements Listener {
                 AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PRIVATE, (byte) entity.getAttachedFace().ordinal());
                 this.queueManager.addQueue(queue);
             } else if (state == PlayerState.PROTECTION_ADD_PUBLIC) {
-                // create a public protection
-
-                // queue the event for later use in MonitorListener
-                AddProtectionQueue queue = new AddProtectionQueue(event.getPlayer(), module, tempVector, ProtectionType.PUBLIC, (byte) entity.getAttachedFace().ordinal());
-                this.queueManager.addQueue(queue);
+                // create protection
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This cannot be a public protection!");
+                event.setCancelled(true);
+                return;
             } else if (state == PlayerState.PROTECTION_ADD_GIFT) {
                 // create protection
-                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This block cannot be a gift protection!");
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This cannot be a gift protection!");
                 event.setCancelled(true);
                 return;
             }

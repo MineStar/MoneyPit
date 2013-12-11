@@ -17,11 +17,13 @@ public class Module_ItemFrame extends Module {
 
     public Module_ItemFrame(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
+        this.setAutolock(false);
     }
 
     public Module_ItemFrame(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
         this.init(moduleManager, ymlFile, Material.ITEM_FRAME.getId(), NAME);
+        this.setAutolock(false);
     }
 
     @Override
