@@ -14,6 +14,7 @@ public class ProtectionInfo implements IProtectionInfo {
     private ISubProtectionHolder subProtections;
 
     private final ProtectionManager protectionManager;
+    private BlockVector origin = new BlockVector("", 0, 0, 0);
 
     public ProtectionInfo() {
         this(false, false, false, null, null);
@@ -26,6 +27,10 @@ public class ProtectionInfo implements IProtectionInfo {
         this.hasAnyProtection = hasAnyProtection;
         this.protection = protection;
         this.subProtections = subProtections;
+    }
+
+    public BlockVector getOrigin() {
+        return origin;
     }
 
     /*
@@ -43,6 +48,7 @@ public class ProtectionInfo implements IProtectionInfo {
      * @see de.minestar.moneypit.data.protection.IProtectionInfo#update(de.minestar.moneypit.data.BlockVector)
      */
     public void update(BlockVector vector) {
+        this.origin.update(vector.getLocation());
         this.protection = this.protectionManager.getProtection(vector);
         this.subProtections = this.protectionManager.getSubProtectionHolder(vector);
         this.hasProtection = (this.protection != null);
