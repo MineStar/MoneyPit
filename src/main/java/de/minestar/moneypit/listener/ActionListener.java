@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,7 +19,6 @@ import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
-import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -36,11 +36,9 @@ import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
-import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -73,7 +71,6 @@ import de.minestar.moneypit.queues.AddProtectionQueue;
 import de.minestar.moneypit.queues.RemoveProtectionQueue;
 import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 import de.minestar.moneypit.utils.DoorHelper;
-import de.minestar.moneypit.utils.HangingHelper;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
@@ -1016,6 +1013,24 @@ public class ActionListener implements Listener {
             // handle mainprotections
             String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
             int moduleID = this.protectionInfo.getProtection().getModuleID();
+            if (moduleID < 1) {
+                Chunk chunk = this.protectionInfo.getProtection().getVector().getLocation().getBlock().getChunk();
+                Entity[] entities = chunk.getEntities();
+                for (Entity entity : entities) {
+                    if (!entity.getType().equals(EntityType.ITEM_FRAME) && !entity.getType().equals(EntityType.PAINTING)) {
+                        continue;
+                    }
+                    if (this.protectionInfo.getProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
+                        if (entity.getType().equals(EntityType.ITEM_FRAME)) {
+                            moduleID = Material.ITEM_FRAME.getId();
+                        } else {
+                            moduleID = Material.PAINTING.getId();
+                        }
+                        break;
+                    }
+                }
+                entities = null;
+            }
             String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
             PlayerUtils.sendInfo(player, message);
             return;
@@ -1024,12 +1039,29 @@ public class ActionListener implements Listener {
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
                 String pType = " " + this.protectionInfo.getFirstProtection().getType().toString() + " ";
                 int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
+                if (moduleID < 1) {
+                    Chunk chunk = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getChunk();
+                    Entity[] entities = chunk.getEntities();
+                    for (Entity entity : entities) {
+                        if (!entity.getType().equals(EntityType.ITEM_FRAME) && !entity.getType().equals(EntityType.PAINTING)) {
+                            continue;
+                        }
+                        if (this.protectionInfo.getFirstProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
+                            if (entity.getType().equals(EntityType.ITEM_FRAME)) {
+                                moduleID = Material.ITEM_FRAME.getId();
+                            } else {
+                                moduleID = Material.PAINTING.getId();
+                            }
+                            break;
+                        }
+                    }
+                    entities = null;
+                }
                 String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
-                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
-                String message = "This " + ChatColor.RED + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
+                String message = "This " + ChatColor.RED + "Block" + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
                 PlayerUtils.sendInfo(player, message);
                 return;
             }
