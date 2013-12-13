@@ -36,6 +36,7 @@ import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
@@ -72,6 +73,7 @@ import de.minestar.moneypit.queues.AddProtectionQueue;
 import de.minestar.moneypit.queues.RemoveProtectionQueue;
 import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 import de.minestar.moneypit.utils.DoorHelper;
+import de.minestar.moneypit.utils.HangingHelper;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
@@ -575,15 +577,6 @@ public class ActionListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onHangingPlace(HangingPlaceEvent event) {
-        if (!event.getEntity().getType().equals(EntityType.PAINTING)) {
-            return;
-        }
-        Painting painting = (Painting) event.getEntity();
-        System.out.println("Placed painting : " + painting.getArt().getBlockWidth() + " / " + painting.getArt().getBlockHeight());
-    }
-
-    @EventHandler(ignoreCancelled = true)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
         // Only handle ItemFrames & Paintings
         if (!event.getEntity().getType().equals(EntityType.ITEM_FRAME) && !event.getEntity().getType().equals(EntityType.PAINTING)) {
@@ -719,6 +712,7 @@ public class ActionListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         // Only handle Left- & Right-Click on a block
         Action action = event.getAction();
+
         if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
             return;
         }
@@ -786,7 +780,6 @@ public class ActionListener implements Listener {
             }
         }
     }
-
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         // handle inventory-events for gift-chests
