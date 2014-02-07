@@ -30,4 +30,7 @@ commands:
     usage: /cuninviteall
   ctoggle:
     description: Toggle the keepmode
-    usage: /ctoggle    
+    usage: /ctoggle
+  cautolock:
+    description: Toggle the autolock
+    usage: /cautolock    
