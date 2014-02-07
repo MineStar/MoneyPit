@@ -9,6 +9,7 @@ import de.minestar.moneypit.data.PlayerState;
 public class PlayerManager {
 
     private HashMap<String, PlayerData> playerList;
+    private HashSet<String> noAutoLock;
     private HashSet<String> keepMode;
     private HashMap<String, HashSet<String>> guestMap;
 
@@ -16,6 +17,7 @@ public class PlayerManager {
         this.playerList = new HashMap<String, PlayerData>(64);
         this.guestMap = new HashMap<String, HashSet<String>>(64);
         this.keepMode = new HashSet<String>();
+        this.noAutoLock = new HashSet<String>();
     }
 
     public PlayerData getData(String playerName) {
@@ -44,6 +46,18 @@ public class PlayerManager {
 
     public void setKeepMode(String playerName) {
         this.keepMode.add(playerName);
+    }
+
+    public boolean noAutoLock(String playerName) {
+        return this.noAutoLock.contains(playerName);
+    }
+
+    public void removeNoAutoLock(String playerName) {
+        this.noAutoLock.remove(playerName);
+    }
+
+    public void setNoAutoLock(String playerName) {
+        this.noAutoLock.add(playerName);
     }
 
     public PlayerState getState(String playerName) {

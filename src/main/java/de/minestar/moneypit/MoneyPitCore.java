@@ -42,6 +42,7 @@ import de.minestar.moneypit.commands.cmd_cremove;
 import de.minestar.moneypit.commands.cmd_ctoggle;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
+import de.minestar.moneypit.commands.cmd_noLock;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
@@ -193,7 +194,8 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
                 new cmd_cinvite         ("/cinvite",        "<Player> [ ... Player n]", "moneypit.commands.cinvite"),
                 new cmd_cuninvite       ("/cuninvite",      "<Player> [ ... Player n]", "moneypit.commands.cuninvite"),
                 new cmd_cuninviteall    ("/cuninviteall",   "",                         "moneypit.commands.cuninvite"),
-                new cmd_ctoggle         ("/ctoggle",        "",                         "moneypit.commands.cinfo")
+                new cmd_ctoggle         ("/ctoggle",        "",                         "moneypit.commands.cinfo"),
+                new cmd_noLock          ("/cautolock",      "",                         "moneypit.commands.cinfo")
          );
         //@formatter:on;
         return true;

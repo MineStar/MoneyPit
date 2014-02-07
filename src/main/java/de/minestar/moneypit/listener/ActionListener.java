@@ -360,7 +360,7 @@ public class ActionListener implements Listener {
         }
 
         // only act, if the module is in autolockmode
-        if (!module.isAutoLock()) {
+        if (!module.isAutoLock() || this.playerManager.noAutoLock(event.getPlayer().getName())) {
             return;
         }
 
