@@ -14,7 +14,6 @@ import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
-import de.minestar.moneypit.manager.ProtectionManager;
 import de.minestar.moneypit.utils.ChestHelper;
 
 public class Module_TrappedChest extends Module {

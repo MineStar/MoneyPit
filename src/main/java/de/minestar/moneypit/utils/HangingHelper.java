@@ -1,7 +1,6 @@
 package de.minestar.moneypit.utils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.bukkit.Art;
 import org.bukkit.entity.Painting;

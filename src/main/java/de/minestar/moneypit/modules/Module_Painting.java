@@ -9,7 +9,6 @@ import org.bukkit.entity.Painting;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 
-import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
