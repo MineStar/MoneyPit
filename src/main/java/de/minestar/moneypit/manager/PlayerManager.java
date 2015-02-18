@@ -1,5 +1,6 @@
 package de.minestar.moneypit.manager;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -64,8 +65,12 @@ public class PlayerManager {
         return this.getData(playerName).getState();
     }
 
-    public void setGuestList(String playerName, HashSet<String> guestList) {
-        this.guestMap.put(playerName, guestList);
+    public void setGuestList(String playerName, Collection<String> guestList) {
+        HashSet<String> guestSet = new HashSet<String>();
+        for(String guest : guestList) {
+            guestSet.add(guest);
+        }
+        this.guestMap.put(playerName, guestSet);
     }
 
     public HashSet<String> getGuestList(String playerName) {

@@ -15,7 +15,7 @@ import com.bukkit.gemo.utils.UtilPermissions;
 public class Protection implements IProtection {
     private final int ID;
     private final BlockVector vector;
-    private final String owner;
+    private final String ownerUUID;
     private ProtectionType type;
     private HashSet<String> guestList;
     private HashMap<BlockVector, ISubProtection> subProtections;
@@ -23,13 +23,13 @@ public class Protection implements IProtection {
     /**
      * Constructor
      * 
-     * @param owner
+     * @param ownerUUID
      * @param type
      */
-    public Protection(int ID, BlockVector vector, String owner, ProtectionType type) {
+    public Protection(int ID, BlockVector vector, String ownerUUID, ProtectionType type) {
         this.ID = ID;
         this.vector = vector;
-        this.owner = owner;
+        this.ownerUUID = ownerUUID;
         this.type = type;
         this.guestList = null;
         this.subProtections = null;
@@ -58,6 +58,7 @@ public class Protection implements IProtection {
      * 
      * @see de.minestar.moneypit.data.protection.IProtection#getModuleID()
      */
+    @SuppressWarnings("deprecation")
     public int getModuleID() {
         return this.vector.getLocation().getBlock().getTypeId();
     }
@@ -68,7 +69,7 @@ public class Protection implements IProtection {
      * @see de.minestar.moneypit.data.protection.IProtection#getOwner()
      */
     public String getOwner() {
-        return owner;
+        return ownerUUID;
     }
 
     /*
@@ -112,11 +113,11 @@ public class Protection implements IProtection {
      * 
      * @see de.minestar.moneypit.data.protection.IProtection#addGuest(java.lang.String)
      */
-    public void addGuest(String guest) {
+    public void addGuest(String guestUUID) {
         if (this.guestList == null) {
             this.guestList = new HashSet<String>();
         }
-        this.guestList.add(guest.toLowerCase());
+        this.guestList.add(guestUUID);
     }
 
     /*
@@ -124,9 +125,9 @@ public class Protection implements IProtection {
      * 
      * @see de.minestar.moneypit.data.protection.IProtection#removeGuest(java.lang.String)
      */
-    public void removeGuest(String guest) {
+    public void removeGuest(String guestUUID) {
         if (this.guestList != null) {
-            this.guestList.remove(guest.toLowerCase());
+            this.guestList.remove(guestUUID);
         }
         if (this.guestList.size() < 1) {
             this.guestList = null;
@@ -168,9 +169,17 @@ public class Protection implements IProtection {
      * 
      * @see de.minestar.moneypit.data.protection.IProtection#isGuest(java.lang.String)
      */
-    public boolean isGuest(String guest) {
+    public boolean isGuest(Player guest) {
         if (this.guestList != null) {
-            return this.guestList.contains(guest.toLowerCase());
+            return this.guestList.contains(guest.getUniqueId().toString().replaceAll("-", ""));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isGuest(String uuid) {
+        if (this.guestList != null) {
+            return this.guestList.contains(uuid.toString());
         }
         return false;
     }
@@ -180,8 +189,17 @@ public class Protection implements IProtection {
      * 
      * @see de.minestar.moneypit.data.protection.IProtection#isOwner(java.lang.String)
      */
-    public boolean isOwner(String otherName) {
-        return this.owner.equalsIgnoreCase(otherName);
+    public boolean isOwner(Player player) {
+        return this.ownerUUID.equalsIgnoreCase(player.getUniqueId().toString().replaceAll("-", ""));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.minestar.moneypit.data.protection.IProtection#isOwner(java.lang.String)
+     */
+    public boolean isOwnerUUID(String ownerUUID) {
+        return this.ownerUUID.equalsIgnoreCase(ownerUUID);
     }
 
     /*
@@ -260,7 +278,7 @@ public class Protection implements IProtection {
      * @see de.minestar.moneypit.data.protection.IProtection#canEdit(org.bukkit.entity.Player)
      */
     public boolean canEdit(Player player) {
-        return this.isOwner(player.getName()) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
+        return this.isOwner(player) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
     }
 
     /*
@@ -269,16 +287,7 @@ public class Protection implements IProtection {
      * @see de.minestar.moneypit.data.protection.IProtection#canAccess(org.bukkit.entity.Player)
      */
     public boolean canAccess(Player player) {
-        return this.isPublic() || this.isGift() || this.isOwner(player.getName()) || this.isGuest(player.getName()) || this.canEdit(player);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.minestar.moneypit.data.protection.IProtection#canAccess(java.lang.String)
-     */
-    public boolean canAccess(String playerName) {
-        return this.isPublic() || this.isGift() || this.isOwner(playerName) || this.isGuest(playerName);
+        return this.isPublic() || this.isGift() || this.isOwner(player) || this.isGuest(player) || this.canEdit(player);
     }
 
     /*
@@ -297,6 +306,6 @@ public class Protection implements IProtection {
      */
     @Override
     public String toString() {
-        return "Protection={ ID:" + this.ID + " ; Type:" + this.type.name() + " ; Owner:" + this.owner + " ; " + this.vector.toString() + " }";
+        return "Protection={ ID:" + this.ID + " ; Type:" + this.type.name() + " ; Owner:" + this.ownerUUID + " ; " + this.vector.toString() + " }";
     }
 }

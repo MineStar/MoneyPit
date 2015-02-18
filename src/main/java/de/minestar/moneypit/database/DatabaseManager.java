@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +19,7 @@ import com.bukkit.gemo.patchworking.ProtectionType;
 
 import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
+import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.modules.Module;
@@ -25,7 +27,7 @@ import de.minestar.moneypit.utils.ListHelper;
 
 public class DatabaseManager extends AbstractSQLiteHandler {
 
-    private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition;
+    private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition, updateOwner;
     private PreparedStatement loadAllProtections;
 
     public DatabaseManager(String pluginName, File SQLConfigFile) {
@@ -88,6 +90,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.addProtection              = con.prepareStatement("INSERT INTO `tbl_protections` (owner, protectionType, blockWorld, blockX, blockY, blockZ, guestList) VALUES (?, ?, ?, ?, ?, ?, ?);");
         this.removeProtection           = con.prepareStatement("DELETE FROM `tbl_protections` WHERE ID=?;");
         this.updateGuestList            = con.prepareStatement("UPDATE `tbl_protections` SET guestList=? WHERE ID=?;");
+        this.updateOwner                = con.prepareStatement("UPDATE `tbl_protections` SET owner=? WHERE ID=?;");        
         this.getProtectionAtPosition    = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
         this.loadAllProtections         = con.prepareStatement("SELECT * FROM `tbl_protections` ORDER BY ID ASC");
         //@formatter:on;
@@ -168,6 +171,25 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     }
 
     /**
+     * Update the guestlist of a protection
+     * 
+     * @param protection
+     * @param guestList
+     * @return <b>true</b> if the update was successful, otherwise <b>false</b>
+     */
+    private boolean updateOwner(int protectionID, String uuid) {
+        try {
+            this.updateOwner.setString(1, uuid);
+            this.updateOwner.setInt(2, protectionID);
+            this.updateOwner.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't update owner in database! ID=" + protectionID);
+            return false;
+        }
+    }
+
+    /**
      * Delete a given protection
      * 
      * @param protection
@@ -194,6 +216,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      */
     private void loadAllProtections() {
         try {
+            // update UUIDs
+            this.updateUUIDs();
+
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
             int noProtectionCount = 0;
@@ -267,6 +292,34 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             }
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
+        }
+    }
+
+    private void updateUUIDs() {
+        try {
+            ResultSet results = this.loadAllProtections.executeQuery();
+            while (results.next()) {
+                BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
+
+                int protectionID = results.getInt("ID");
+                String ownerName = results.getString("owner");
+                String ownerUUID = PlayerUtils.getCurrentUUIDFromMojang(ownerName);
+                if (ownerUUID != null) {
+                    Protection protection = new Protection(protectionID, vector, ownerUUID, ProtectionType.byID(results.getInt("protectionType")));
+                    HashSet<String> guestNames = ListHelper.toList(results.getString("guestList"));
+                    HashSet<String> guestUUIDs = new HashSet<String>();
+                    for (String guestName : guestNames) {
+                        String uuid = PlayerUtils.getCurrentUUIDFromMojang(guestName);
+                        if (uuid != null) {
+                            guestUUIDs.add(uuid);
+                        }
+                    }
+                    updateOwner(protectionID, ownerUUID);
+                    updateGuestList(protection, ListHelper.toString(guestUUIDs));
+                }
+            }
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't update guestlists!");
         }
     }
 }

@@ -63,8 +63,8 @@ public class SubProtection implements ISubProtection {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#addGuest(java.lang.String)
      */
-    public void addGuest(String guest) {
-        this.parent.addGuest(guest);
+    public void addGuest(String guestUUID) {
+        this.parent.addGuest(guestUUID);
     }
 
     /*
@@ -72,8 +72,8 @@ public class SubProtection implements ISubProtection {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#removeGuest(java.lang.String)
      */
-    public void removeGuest(String guest) {
-        this.parent.removeGuest(guest);
+    public void removeGuest(String guestUUID) {
+        this.parent.removeGuest(guestUUID);
     }
 
     /*
@@ -81,7 +81,7 @@ public class SubProtection implements ISubProtection {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isGuest(java.lang.String)
      */
-    public boolean isGuest(String guest) {
+    public boolean isGuest(Player guest) {
         return this.parent.isGuest(guest);
     }
 
@@ -99,7 +99,7 @@ public class SubProtection implements ISubProtection {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#getOwner()
      */
-    public String getOwner() {
+    public String getOwnerUUID() {
         return this.parent.getOwner();
     }
 
@@ -108,8 +108,17 @@ public class SubProtection implements ISubProtection {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtection#isOwner(java.lang.String)
      */
-    public boolean isOwner(String otherName) {
-        return this.getOwner().equalsIgnoreCase(otherName);
+    public boolean isOwner(Player player) {
+        return this.parent.isOwner(player);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.minestar.moneypit.data.subprotection.ISubProtection#isOwner(java.lang.String)
+     */
+    public boolean isOwnerUUID(String ownerUUID) {
+        return this.parent.isOwnerUUID(ownerUUID);
     }
 
     /*
@@ -164,15 +173,6 @@ public class SubProtection implements ISubProtection {
      */
     public boolean canAccess(Player player) {
         return this.parent.canAccess(player);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.minestar.moneypit.data.subprotection.ISubProtection#canAccess(java.lang.String)
-     */
-    public boolean canAccess(String playerName) {
-        return this.parent.canAccess(playerName);
     }
 
     /*

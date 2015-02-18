@@ -1,6 +1,7 @@
 package de.minestar.moneypit.commands;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,29 +18,28 @@ public class cmd_cinvite extends AbstractExtendedCommand {
         this.description = "Invite players to a private protection.";
     }
 
-    public static HashSet<String> parseGuestList(String[] args) {
+    public static HashMap<String, String> parseGuestList(String[] args) {
         // create guestList
-        HashSet<String> guestList = new HashSet<String>();
+        HashMap<String, String> guestList = new HashMap<String, String>();
         for (String name : args) {
-            String correctName = PlayerUtils.getCorrectPlayerName(name);
-            if (correctName == null) {
-                correctName = name;
+            String correctName = PlayerUtils.getPlayerUUID(name);
+            if (correctName != null) {
+                guestList.put(name, correctName);
             }
-            guestList.add(correctName);
         }
         return guestList;
     }
 
     public void execute(String[] args, Player player) {
         // create guestList
-        HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
+        HashMap<String, String> guestList = cmd_cinvite.parseGuestList(args);
 
         // send info
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to invite the following people:");
         String infoMessage = "";
         int i = 0;
-        for (String name : guestList) {
-            infoMessage += name;
+        for (Entry<String, String> entry : guestList.entrySet()) {
+            infoMessage += entry.getKey();
             ++i;
             if (i < guestList.size()) {
                 infoMessage += ", ";
@@ -48,7 +48,7 @@ public class cmd_cinvite extends AbstractExtendedCommand {
         PlayerUtils.sendInfo(player, infoMessage);
 
         // set states
-        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList);
+        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList.values());
         MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
     }
 }

@@ -45,7 +45,7 @@ public class AddProtectionQueue implements Queue {
         if (player.isOnline()) {
             // handle giftprotections
             if (this.protectionType == ProtectionType.GIFT) {
-                if (MoneyPitCore.protectionManager.hasGiftProtection(player.getName())) {
+                if (MoneyPitCore.protectionManager.hasGiftProtection(player.getUniqueId().toString().replaceAll("-", ""))) {
                     PlayerUtils.sendError(player, MoneyPitCore.NAME, "You can only have one gift protection.");
                     return false;
                 }

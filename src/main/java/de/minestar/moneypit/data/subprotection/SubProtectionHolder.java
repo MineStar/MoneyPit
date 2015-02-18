@@ -115,22 +115,6 @@ public class SubProtectionHolder implements ISubProtectionHolder {
     /*
      * (non-Javadoc)
      * 
-     * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canAccessAll(java.lang.String)
-     */
-    public boolean canAccessAll(String playerName) {
-        if (this.getSize() > 0) {
-            for (ISubProtection subProtection : this.protections) {
-                if (!subProtection.canAccess(playerName)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#canEditAll(org.bukkit.entity.Player)
      */
     public boolean canEditAll(Player player) {
