@@ -57,6 +57,7 @@ import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
+import de.minestar.minestarlibrary.events.PlayerChangedNameEvent;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.EventResult;
@@ -101,6 +102,18 @@ public class ActionListener implements Listener {
         this.protectionInfo = new ProtectionInfo();
         this.openedGiftChests = new HashSet<String>();
         this.wasPlayerInv = new HashMap<String, Boolean>();
+    }
+
+    @EventHandler
+    public void onPlayerChangeNick(PlayerChangedNameEvent event) {
+        MoneyPitCore.databaseManager.updateOwner(event.getOldName(), event.getNewName());
+
+        // init
+        MoneyPitCore.moduleManager.init();
+        MoneyPitCore.protectionManager.init();
+
+        // load data
+        MoneyPitCore.databaseManager.init();
     }
 
     public void closeInventories() {

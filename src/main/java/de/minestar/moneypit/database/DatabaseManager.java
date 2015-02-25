@@ -25,7 +25,7 @@ import de.minestar.moneypit.utils.ListHelper;
 
 public class DatabaseManager extends AbstractSQLiteHandler {
 
-    private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition;
+    private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition, updateOwner;
     private PreparedStatement loadAllProtections;
 
     public DatabaseManager(String pluginName, File SQLConfigFile) {
@@ -88,6 +88,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.addProtection              = con.prepareStatement("INSERT INTO `tbl_protections` (owner, protectionType, blockWorld, blockX, blockY, blockZ, guestList) VALUES (?, ?, ?, ?, ?, ?, ?);");
         this.removeProtection           = con.prepareStatement("DELETE FROM `tbl_protections` WHERE ID=?;");
         this.updateGuestList            = con.prepareStatement("UPDATE `tbl_protections` SET guestList=? WHERE ID=?;");
+        this.updateOwner                = con.prepareStatement("UPDATE `tbl_protections` SET owner=? WHERE owner=?;");       
         this.getProtectionAtPosition    = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
         this.loadAllProtections         = con.prepareStatement("SELECT * FROM `tbl_protections` ORDER BY ID ASC");
         //@formatter:on;
@@ -163,6 +164,18 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getID());
+            return false;
+        }
+    }
+
+    public boolean updateOwner(String oldName, String newName) {
+        try {
+            this.updateOwner.setString(1, newName);
+            this.updateOwner.setString(2, oldName);
+            this.updateOwner.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't update owner " + oldName + " to " + newName);
             return false;
         }
     }
