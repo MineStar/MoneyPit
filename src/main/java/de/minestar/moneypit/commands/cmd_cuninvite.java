@@ -1,7 +1,6 @@
 package de.minestar.moneypit.commands;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,14 +19,14 @@ public class cmd_cuninvite extends AbstractExtendedCommand {
 
     public void execute(String[] args, Player player) {
         // create guestList
-        HashMap<String, String> guestList = cmd_cinvite.parseGuestList(args);
+        HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
 
         // send info
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to uninvite the following people:");
         String infoMessage = "";
         int i = 0;
-        for (Entry<String, String> entry : guestList.entrySet()) {
-            infoMessage += entry.getKey();
+        for (String name : guestList) {
+            infoMessage += name;
             ++i;
             if (i < guestList.size()) {
                 infoMessage += ", ";
@@ -36,7 +35,7 @@ public class cmd_cuninvite extends AbstractExtendedCommand {
         PlayerUtils.sendInfo(player, infoMessage);
 
         // set states
-        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList.values());
+        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList);
         MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_UNINVITE);
     }
 }

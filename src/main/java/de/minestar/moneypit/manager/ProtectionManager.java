@@ -66,7 +66,7 @@ public class ProtectionManager {
                 return false;
             }
 
-            this.giftList.add(protection.getOwner());
+            this.giftList.add(protection.getOwner().toLowerCase());
         }
 
         // register the protection
@@ -208,8 +208,8 @@ public class ProtectionManager {
      * @param playerName
      * @return <b>true</b> if the player has one, otherwise <b>false</b>
      */
-    public boolean hasGiftProtection(String uuid) {
-        return this.giftList.contains(uuid);
+    public boolean hasGiftProtection(String playerName) {
+        return this.giftList.contains(playerName.toLowerCase());
     }
 
     /**
@@ -217,9 +217,9 @@ public class ProtectionManager {
      * 
      * @param playerName
      */
-    private void removeGiftProtection(String uuid) {
-        if (this.hasGiftProtection(uuid)) {
-            this.giftList.remove(uuid);
+    private void removeGiftProtection(String playerName) {
+        if (this.hasGiftProtection(playerName)) {
+            this.giftList.remove(playerName.toLowerCase());
         }
     }
 }

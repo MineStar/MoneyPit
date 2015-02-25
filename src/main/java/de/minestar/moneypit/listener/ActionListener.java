@@ -421,7 +421,7 @@ public class ActionListener implements Listener {
             IProtection protection = this.protectionInfo.getProtection();
 
             // check permission
-            boolean isOwner = protection.isOwner(event.getPlayer());
+            boolean isOwner = protection.isOwner(event.getPlayer().getName());
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             if (!isOwner && !isAdmin) {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to break this protected block.");
@@ -480,7 +480,7 @@ public class ActionListener implements Listener {
             IProtection protection = this.protectionInfo.getProtection();
 
             // check permission
-            boolean isOwner = protection.isOwner(player);
+            boolean isOwner = protection.isOwner(player.getName());
             boolean isAdmin = UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
             if (!isOwner && !isAdmin) {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to break this protected block.");
@@ -925,13 +925,13 @@ public class ActionListener implements Listener {
             boolean canEdit = this.protectionInfo.getProtection().canEdit(event.getPlayer());
             if (canEdit) {
                 // add people to guestlist
-                for (String guestUUID : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
                     if (add) {
-                        if (!this.protectionInfo.getProtection().isOwnerUUID(guestUUID)) {
-                            this.protectionInfo.getProtection().addGuest(guestUUID);
+                        if (!this.protectionInfo.getProtection().isOwner(guest)) {
+                            this.protectionInfo.getProtection().addGuest(guest);
                         }
                     } else {
-                        this.protectionInfo.getProtection().removeGuest(guestUUID);
+                        this.protectionInfo.getProtection().removeGuest(guest);
                     }
                 }
                 // send info
@@ -957,13 +957,13 @@ public class ActionListener implements Listener {
                 for (ISubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
                     if (subProtection.getParent().isPrivate()) {
                         // add people to guestlist
-                        for (String guestUUID : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                        for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
                             if (add) {
-                                if (!subProtection.isOwnerUUID(guestUUID)) {
-                                    subProtection.addGuest(guestUUID);
+                                if (!subProtection.isOwner(guest)) {
+                                    subProtection.addGuest(guest);
                                 }
                             } else {
-                                subProtection.removeGuest(guestUUID);
+                                subProtection.removeGuest(guest);
                             }
                         }
                     }
@@ -1306,7 +1306,7 @@ public class ActionListener implements Listener {
 
             // handle gift-protections
             if (this.protectionInfo.getProtection().isGift()) {
-                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer())) {
+                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer().getName())) {
                     this.openedGiftChests.add(event.getPlayer().getName());
                 }
             }
@@ -1363,7 +1363,7 @@ public class ActionListener implements Listener {
 
             // handle gift-protections
             if (this.protectionInfo.getFirstProtection().isGift()) {
-                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer())) {
+                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer().getName())) {
                     this.openedGiftChests.add(event.getPlayer().getName());
                 }
             }
@@ -1525,7 +1525,7 @@ public class ActionListener implements Listener {
 
             // handle gift-protections
             if (this.protectionInfo.getProtection().isGift()) {
-                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer())) {
+                if (!this.protectionInfo.getProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getProtection().isGuest(event.getPlayer().getName())) {
                     this.openedGiftChests.add(event.getPlayer().getName());
                 }
             }
@@ -1560,7 +1560,7 @@ public class ActionListener implements Listener {
 
             // handle gift-protections
             if (this.protectionInfo.getFirstProtection().isGift()) {
-                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer())) {
+                if (!this.protectionInfo.getFirstProtection().canEdit(event.getPlayer()) && !this.protectionInfo.getFirstProtection().isGuest(event.getPlayer().getName())) {
                     this.openedGiftChests.add(event.getPlayer().getName());
                 }
             }
