@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Location;
@@ -217,7 +218,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     private void loadAllProtections() {
         try {
             // update UUIDs
-            this.updateUUIDs();
+//            this.updateUUIDs();
 
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
@@ -295,6 +296,24 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         }
     }
 
+    private HashMap<String, String> cacheUUIDMap;
+
+    private String getUUID(String playerName) {
+        if (cacheUUIDMap == null) {
+            cacheUUIDMap = new HashMap<String, String>();
+        }
+
+        String uuid = cacheUUIDMap.get(playerName);
+        if (uuid == null) {
+            String UUID = PlayerUtils.getCurrentUUIDFromMojang(playerName);
+            if (UUID != null) {
+                uuid = UUID;
+                cacheUUIDMap.put(playerName, uuid);
+            }
+        }
+        return uuid;
+    }
+
     private void updateUUIDs() {
         try {
             ResultSet results = this.loadAllProtections.executeQuery();
@@ -303,13 +322,13 @@ public class DatabaseManager extends AbstractSQLiteHandler {
 
                 int protectionID = results.getInt("ID");
                 String ownerName = results.getString("owner");
-                String ownerUUID = PlayerUtils.getCurrentUUIDFromMojang(ownerName);
+                String ownerUUID = this.getUUID(ownerName);
                 if (ownerUUID != null) {
                     Protection protection = new Protection(protectionID, vector, ownerUUID, ProtectionType.byID(results.getInt("protectionType")));
                     HashSet<String> guestNames = ListHelper.toList(results.getString("guestList"));
                     HashSet<String> guestUUIDs = new HashSet<String>();
                     for (String guestName : guestNames) {
-                        String uuid = PlayerUtils.getCurrentUUIDFromMojang(guestName);
+                        String uuid = this.getUUID(guestName);
                         if (uuid != null) {
                             guestUUIDs.add(uuid);
                         }
