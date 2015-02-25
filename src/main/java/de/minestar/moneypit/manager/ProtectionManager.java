@@ -232,8 +232,10 @@ public class ProtectionManager {
 
         // update protections
         for (IProtection iProtect : this.protections.values()) {
-            Protection protection = (Protection) iProtect;
-            protection.setOwner(newPlayername);
+            if (iProtect.isOwner(oldPlayername)) {
+                Protection protection = (Protection) iProtect;
+                protection.setOwner(newPlayername);
+            }
         }
     }
 }
