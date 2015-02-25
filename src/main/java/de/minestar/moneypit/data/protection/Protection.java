@@ -15,7 +15,7 @@ import com.bukkit.gemo.utils.UtilPermissions;
 public class Protection implements IProtection {
     private final int ID;
     private final BlockVector vector;
-    private final String owner;
+    private String owner;
     private ProtectionType type;
     private HashSet<String> guestList;
     private HashMap<BlockVector, ISubProtection> subProtections;
@@ -33,6 +33,10 @@ public class Protection implements IProtection {
         this.type = type;
         this.guestList = null;
         this.subProtections = null;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /*

@@ -222,4 +222,18 @@ public class ProtectionManager {
             this.giftList.remove(playerName.toLowerCase());
         }
     }
+
+    public void transferProtections(String oldPlayername, String newPlayername) {
+        // update gift-protection
+        if (this.giftList.contains(oldPlayername.toLowerCase())) {
+            this.removeGiftProtection(oldPlayername);
+            this.giftList.add(newPlayername.toLowerCase());
+        }
+
+        // update protections
+        for (IProtection iProtect : this.protections.values()) {
+            Protection protection = (Protection) iProtect;
+            protection.setOwner(newPlayername);
+        }
+    }
 }

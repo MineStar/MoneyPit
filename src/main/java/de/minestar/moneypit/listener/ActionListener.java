@@ -107,13 +107,11 @@ public class ActionListener implements Listener {
     @EventHandler
     public void onPlayerChangeNick(PlayerChangedNameEvent event) {
         MoneyPitCore.databaseManager.updateOwner(event.getOldName(), event.getNewName());
-
-        // init
-        MoneyPitCore.moduleManager.init();
-        MoneyPitCore.protectionManager.init();
-
-        // load data
-        MoneyPitCore.databaseManager.init();
+        MoneyPitCore.protectionManager.transferProtections(event.getOldName(), event.getNewName());
+        Player player = PlayerUtils.getOnlinePlayer(event.getCommandSender());
+        if (player != null) {
+            PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Transfer complete.");
+        }
     }
 
     public void closeInventories() {
