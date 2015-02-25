@@ -228,14 +228,12 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         try {
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
-            int noProtectionCount = 0;
             Map<Integer, BlockVector> failedProtections = new HashMap<Integer, BlockVector>();
             while (results.next()) {
                 BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
                 try {
                     Location location = vector.getLocation();
                     if (location == null) {
-                        ++noProtectionCount;
                         failedProtections.put(results.getInt("ID"), vector);
                         continue;
                     }
@@ -270,7 +268,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                                 }
                             }
                             if (!found) {
-                                ++noProtectionCount;
                                 failedProtections.put(results.getInt("ID"), vector);
                                 continue;
                             }
@@ -283,7 +280,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         if (entityHanging != null) {
                             subData = (byte) entityHanging.getAttachedFace().ordinal();
                         } else {
-                            ++noProtectionCount;
                             failedProtections.put(results.getInt("ID"), vector);
                             continue;
                         }
@@ -291,7 +287,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     if (module.addProtection(protection, subData)) {
                         ++count;
                     } else {
-                        ++noProtectionCount;
                         failedProtections.put(results.getInt("ID"), vector);
                     }
                 } catch (Exception error) {
@@ -299,8 +294,8 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 }
             }
             ConsoleUtils.printInfo(MoneyPitCore.NAME, count + " protections loaded!");
-            if (noProtectionCount > 0) {
-                ConsoleUtils.printInfo(MoneyPitCore.NAME, noProtectionCount + " protections are NOT loaded due to missing blocks or locations!");
+            if (failedProtections.size() > 0) {
+                ConsoleUtils.printInfo(MoneyPitCore.NAME, failedProtections.size() + " protections are NOT loaded due to missing blocks or locations!");
                 // delete failed protections
                 for (Map.Entry<Integer, BlockVector> entry : failedProtections.entrySet()) {
                     this.deleteProtection(entry.getKey());
