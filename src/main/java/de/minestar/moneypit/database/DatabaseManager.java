@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -203,6 +205,23 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     }
 
     /**
+     * Delete a given protection
+     * 
+     * @param protection
+     * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
+     */
+    public boolean deleteProtection(int protectionID) {
+        try {
+            this.removeProtection.setInt(1, protectionID);
+            this.removeProtection.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete protection from database @ " + protectionID);
+            return false;
+        }
+    }
+
+    /**
      * Load all protections from the Database
      */
     private void loadAllProtections() {
@@ -210,12 +229,14 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
             int noProtectionCount = 0;
+            Map<Integer, BlockVector> failedProtections = new HashMap<Integer, BlockVector>();
             while (results.next()) {
                 BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
                 try {
                     Location location = vector.getLocation();
                     if (location == null) {
                         ++noProtectionCount;
+                        failedProtections.put(results.getInt("ID"), vector);
                         continue;
                     }
 
@@ -250,6 +271,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             }
                             if (!found) {
                                 ++noProtectionCount;
+                                failedProtections.put(results.getInt("ID"), vector);
                                 continue;
                             }
                         }
@@ -262,6 +284,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             subData = (byte) entityHanging.getAttachedFace().ordinal();
                         } else {
                             ++noProtectionCount;
+                            failedProtections.put(results.getInt("ID"), vector);
                             continue;
                         }
                     }
@@ -269,6 +292,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                         ++count;
                     } else {
                         ++noProtectionCount;
+                        failedProtections.put(results.getInt("ID"), vector);
                     }
                 } catch (Exception error) {
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
@@ -277,6 +301,10 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             ConsoleUtils.printInfo(MoneyPitCore.NAME, count + " protections loaded!");
             if (noProtectionCount > 0) {
                 ConsoleUtils.printInfo(MoneyPitCore.NAME, noProtectionCount + " protections are NOT loaded due to missing blocks or locations!");
+                // delete failed protections
+                for (Map.Entry<Integer, BlockVector> entry : failedProtections.entrySet()) {
+                    this.deleteProtection(entry.getKey());
+                }
             }
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
