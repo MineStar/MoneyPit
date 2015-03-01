@@ -4,9 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
 
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.PhysicsHelper;
@@ -36,7 +36,7 @@ public class Module_TrapDoor extends Module {
         BlockVector anchor = DoorHelper.getTrapDoorAnchor(protection.getVector(), subData);
 
         // protect the block below
-        SubProtection subProtection = new SubProtection(anchor, protection);
+        IProtection subProtection = new Protection(anchor, protection);
         protection.addSubProtection(subProtection);
 
         // fetch non-solid-blocks

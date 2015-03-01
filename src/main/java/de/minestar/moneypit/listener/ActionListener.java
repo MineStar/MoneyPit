@@ -52,7 +52,6 @@ import org.bukkit.inventory.ItemStack;
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.IProtectionInfo;
-import com.bukkit.gemo.patchworking.ISubProtection;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -283,9 +282,9 @@ public class ActionListener implements Listener {
                     // handle the redstone-event
                     int moduleID = 0;
                     ISubProtectionHolder holder = this.protectionInfo.getSubProtections();
-                    for (ISubProtection subProtection : holder.getProtections()) {
+                    for (IProtection subProtection : holder.getProtections()) {
                         // only private protections are blocked
-                        if (subProtection.getParent().isPublic()) {
+                        if (subProtection.isPublic()) {
                             if (block.getType().equals(Material.WOODEN_DOOR)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
@@ -303,7 +302,7 @@ public class ActionListener implements Listener {
                         }
 
                         // get the module
-                        moduleID = subProtection.getModuleID();
+                        moduleID = subProtection.getBlockTypeID();
                         module = this.moduleManager.getRegisteredModule(moduleID);
                         if (module == null) {
                             continue;
@@ -889,12 +888,12 @@ public class ActionListener implements Listener {
             if (canEdit) {
                 // for each SubProtection...
                 boolean result = true;
-                for (ISubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
-                    if (subProtection.getParent().isPrivate()) {
+                for (IProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
+                    if (subProtection.isPrivate()) {
                         // clear guestlist
-                        subProtection.getParent().clearGuestList();
+                        subProtection.clearGuestList();
                     }
-                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), ListHelper.toString(subProtection.getGuestList()))) {
                         result = false;
                     }
                 }
@@ -965,8 +964,8 @@ public class ActionListener implements Listener {
             if (canEdit) {
                 // for each SubProtection...
                 boolean result = true;
-                for (ISubProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
-                    if (subProtection.getParent().isPrivate()) {
+                for (IProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
+                    if (subProtection.isPrivate()) {
                         // add people to guestlist
                         for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
                             if (add) {
@@ -979,7 +978,7 @@ public class ActionListener implements Listener {
                         }
                     }
 
-                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getParent(), ListHelper.toString(subProtection.getParent().getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), ListHelper.toString(subProtection.getGuestList()))) {
                         result = false;
                     }
                 }
@@ -1023,7 +1022,7 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
             String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
-            int moduleID = this.protectionInfo.getProtection().getModuleID();
+            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();
             if (moduleID < 1) {
                 Chunk chunk = this.protectionInfo.getProtection().getVector().getLocation().getBlock().getChunk();
                 Entity[] entities = chunk.getEntities();
@@ -1098,7 +1097,7 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
             String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
-            int moduleID = this.protectionInfo.getProtection().getModuleID();
+            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();
             if (moduleID < 1) {
                 Chunk chunk = this.protectionInfo.getProtection().getVector().getLocation().getBlock().getChunk();
                 Entity[] entities = chunk.getEntities();
@@ -1350,9 +1349,9 @@ public class ActionListener implements Listener {
             ISubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
             boolean isWoodDoor = event.getClickedBlock().getType().equals(Material.WOODEN_DOOR);
             boolean isIronDoor = event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK);
-            for (ISubProtection subProtection : holder.getProtections()) {
+            for (IProtection subProtection : holder.getProtections()) {
                 // is this protection private?
-                if (!subProtection.getParent().isPrivate()) {
+                if (!subProtection.isPrivate()) {
                     continue;
                 }
 
@@ -1381,16 +1380,16 @@ public class ActionListener implements Listener {
 
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
-                ISubProtection subProtection = this.protectionInfo.getSubProtections().getProtection(0);
+                IProtection subProtection = this.protectionInfo.getSubProtections().getProtection(0);
                 if (isWoodDoor) {
-                    if (subProtection.getParent().isPrivate()) {
+                    if (subProtection.isPrivate()) {
                         MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 } else if (isIronDoor) {
-                    if (subProtection.getParent().isPrivate()) {
+                    if (subProtection.isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
@@ -1547,9 +1546,9 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasSubProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             ISubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
-            for (ISubProtection subProtection : holder.getProtections()) {
+            for (IProtection subProtection : holder.getProtections()) {
                 // is this protection private?
-                if (!subProtection.getParent().isPrivate()) {
+                if (!subProtection.isPrivate()) {
                     continue;
                 }
 

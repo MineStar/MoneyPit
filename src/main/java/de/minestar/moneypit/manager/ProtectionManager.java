@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
-import com.bukkit.gemo.patchworking.ISubProtection;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 import com.bukkit.gemo.patchworking.ProtectionType;
 
@@ -74,8 +73,8 @@ public class ProtectionManager {
 
         // register the subprotections
         if (protection.hasAnySubProtection()) {
-            Collection<ISubProtection> subs = protection.getSubProtections();
-            for (ISubProtection sub : subs) {
+            Collection<IProtection> subs = protection.getSubProtections();
+            for (IProtection sub : subs) {
                 this.addSubProtection(sub);
             }
         }
@@ -87,7 +86,7 @@ public class ProtectionManager {
      * 
      * @param subProtection
      */
-    public void addSubProtection(ISubProtection subProtection) {
+    public void addSubProtection(IProtection subProtection) {
         ISubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder == null) {
             holder = new SubProtectionHolder();
@@ -113,8 +112,8 @@ public class ProtectionManager {
             this.protections.remove(vector);
             // remove the subprotections
             if (protection.hasAnySubProtection()) {
-                Collection<ISubProtection> subs = protection.getSubProtections();
-                for (ISubProtection sub : subs) {
+                Collection<IProtection> subs = protection.getSubProtections();
+                for (IProtection sub : subs) {
                     this.removeSubProtection(sub);
                 }
             }
@@ -126,7 +125,7 @@ public class ProtectionManager {
      * 
      * @param subProtection
      */
-    private void removeSubProtection(ISubProtection subProtection) {
+    private void removeSubProtection(IProtection subProtection) {
         ISubProtectionHolder holder = this.getSubProtectionHolder(subProtection.getVector());
         if (holder != null) {
             holder.removeProtection(subProtection);

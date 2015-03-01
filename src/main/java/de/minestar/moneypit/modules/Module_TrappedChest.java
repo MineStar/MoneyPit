@@ -12,7 +12,6 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.ChestHelper;
 
@@ -36,7 +35,7 @@ public class Module_TrappedChest extends Module {
         Chest secondChest = ChestHelper.isDoubleTrappedChest(protection.getVector().getLocation().getBlock());
 
         if (secondChest != null) {
-            SubProtection subProtection = new SubProtection(new BlockVector(secondChest.getLocation()), protection);
+            IProtection subProtection = new Protection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);
         }
 
@@ -69,7 +68,7 @@ public class Module_TrappedChest extends Module {
         // BlockVector alreadyDoubleChest = null;
         // if (protection != null) {
         // add the SubProtection to the Protection
-        SubProtection subProtection = new SubProtection(vector, protection);
+        IProtection subProtection = new Protection(vector, protection);
         protection.addSubProtection(subProtection);
 
         // add the SubProtection to the ProtectionManager

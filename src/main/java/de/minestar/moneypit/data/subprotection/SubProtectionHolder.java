@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 
-import com.bukkit.gemo.patchworking.ISubProtection;
+import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 
 public class SubProtectionHolder implements ISubProtectionHolder {
-    private ArrayList<ISubProtection> protections = null;
+    private ArrayList<IProtection> protections = null;
 
     /*
      * (non-Javadoc)
@@ -27,7 +27,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtections()
      */
-    public ArrayList<ISubProtection> getProtections() {
+    public ArrayList<IProtection> getProtections() {
         return this.protections;
     }
 
@@ -36,9 +36,9 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#addProtection(de.minestar.moneypit.data.subprotection.SubProtection)
      */
-    public void addProtection(ISubProtection subProtection) {
+    public void addProtection(IProtection subProtection) {
         if (this.protections == null) {
-            this.protections = new ArrayList<ISubProtection>();
+            this.protections = new ArrayList<IProtection>();
         }
         if (!this.hasProtection(subProtection)) {
             this.protections.add(subProtection);
@@ -50,7 +50,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#removeProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
-    public void removeProtection(ISubProtection subProtection) {
+    public void removeProtection(IProtection subProtection) {
         if (this.protections != null) {
             for (int i = 0; i < this.protections.size(); i++) {
                 if (this.protections.get(i).equals(subProtection)) {
@@ -69,7 +69,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#hasProtection(de.minestar.moneypit.data.subprotection.ISubProtection)
      */
-    public boolean hasProtection(ISubProtection subProtection) {
+    public boolean hasProtection(IProtection subProtection) {
         if (this.protections != null) {
             for (int i = 0; i < this.protections.size(); i++) {
                 if (this.protections.get(i).equals(subProtection)) {
@@ -87,7 +87,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      */
     public boolean canAccessAll(Player player) {
         if (this.getSize() > 0) {
-            for (ISubProtection subProtection : this.protections) {
+            for (IProtection subProtection : this.protections) {
                 if (!subProtection.canAccess(player)) {
                     return false;
                 }
@@ -103,7 +103,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      */
     public boolean areAllPublic() {
         if (this.getSize() > 0) {
-            for (ISubProtection subProtection : this.protections) {
+            for (IProtection subProtection : this.protections) {
                 if (subProtection.isPrivate()) {
                     return false;
                 }
@@ -119,7 +119,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      */
     public boolean canAccessAll(String playerName) {
         if (this.getSize() > 0) {
-            for (ISubProtection subProtection : this.protections) {
+            for (IProtection subProtection : this.protections) {
                 if (!subProtection.canAccess(playerName)) {
                     return false;
                 }
@@ -135,7 +135,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      */
     public boolean canEditAll(Player player) {
         if (this.getSize() > 0) {
-            for (ISubProtection subProtection : this.protections) {
+            for (IProtection subProtection : this.protections) {
                 if (!subProtection.canEdit(player)) {
                     return false;
                 }
@@ -149,7 +149,7 @@ public class SubProtectionHolder implements ISubProtectionHolder {
      * 
      * @see de.minestar.moneypit.data.subprotection.ISubProtectionHolder#getProtection(int)
      */
-    public ISubProtection getProtection(int index) {
+    public IProtection getProtection(int index) {
         if (this.getSize() > 0) {
             return this.protections.get(index);
         }

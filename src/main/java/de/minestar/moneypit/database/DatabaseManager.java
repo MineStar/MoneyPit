@@ -161,11 +161,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     public boolean updateGuestList(IProtection protection, String guestList) {
         try {
             this.updateGuestList.setString(1, guestList);
-            this.updateGuestList.setInt(2, protection.getID());
+            this.updateGuestList.setInt(2, protection.getDatabaseID());
             this.updateGuestList.executeUpdate();
             return true;
         } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getID());
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getDatabaseID());
             return false;
         }
     }
@@ -192,7 +192,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         try {
             IProtection protection = this.getProtectionAtPosition(vector);
             if (protection != null) {
-                this.removeProtection.setInt(1, protection.getID());
+                this.removeProtection.setInt(1, protection.getDatabaseID());
                 this.removeProtection.executeUpdate();
                 return true;
             } else {

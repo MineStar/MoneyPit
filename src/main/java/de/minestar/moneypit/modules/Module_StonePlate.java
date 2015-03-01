@@ -4,9 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
 
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.PhysicsHelper;
 
@@ -29,7 +29,7 @@ public class Module_StonePlate extends Module {
         BlockVector anchor = protection.getVector().getRelative(0, -1, 0);
 
         // protect the block below
-        SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
+        IProtection subProtection = new Protection(protection.getVector().getRelative(0, -1, 0), protection);
         protection.addSubProtection(subProtection);
 
         // fetch non-solid-blocks

@@ -81,7 +81,7 @@ public class ProtectionInfo implements IProtectionInfo {
      */
     public IProtection getFirstProtection() {
         if (this.hasSubProtection) {
-            return this.subProtections.getProtection(0).getParent();
+            return this.subProtections.getProtection(0).getMainProtection();
         }
         return null;
     }

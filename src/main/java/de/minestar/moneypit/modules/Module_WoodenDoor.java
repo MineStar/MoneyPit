@@ -14,7 +14,6 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.data.subprotection.SubProtection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.PhysicsHelper;
@@ -42,11 +41,11 @@ public class Module_WoodenDoor extends Module {
     @Override
     public boolean addProtection(Protection protection, byte subData) {
         // protect the block above
-        SubProtection subProtection = new SubProtection(protection.getVector().getRelative(0, 1, 0), protection);
+        IProtection subProtection = new Protection(protection.getVector().getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
 
         // protect the block below
-        subProtection = new SubProtection(protection.getVector().getRelative(0, -1, 0), protection);
+        subProtection = new Protection(protection.getVector().getRelative(0, -1, 0), protection);
         protection.addSubProtection(subProtection);
 
         // fetch non-solid-blocks
@@ -58,15 +57,15 @@ public class Module_WoodenDoor extends Module {
             Block[] firstDoor = DoorHelper.getDoorBlocks(protection.getVector().getLocation().getBlock());
             if (DoorHelper.validateDoorBlocks(firstDoor, secondDoor)) {
                 // protect the upper block of the second door
-                subProtection = new SubProtection(new BlockVector(secondDoor[1].getLocation()), protection);
+                subProtection = new Protection(new BlockVector(secondDoor[1].getLocation()), protection);
                 protection.addSubProtection(subProtection);
 
                 // protect the lower block of the second door
-                subProtection = new SubProtection(new BlockVector(secondDoor[0].getLocation()), protection);
+                subProtection = new Protection(new BlockVector(secondDoor[0].getLocation()), protection);
                 protection.addSubProtection(subProtection);
 
                 // protect the block below
-                subProtection = new SubProtection(subProtection.getVector().getRelative(0, -1, 0), protection);
+                subProtection = new Protection(subProtection.getVector().getRelative(0, -1, 0), protection);
                 protection.addSubProtection(subProtection);
 
                 // fetch non-solid-blocks
@@ -103,23 +102,23 @@ public class Module_WoodenDoor extends Module {
         Block[] secondDoor = DoorHelper.getDoorBlocks(vector.getLocation().getBlock());
         if (secondDoor[0] != null && secondDoor[1] != null) {
             // protect the upper block of the second door
-            SubProtection subProtection = new SubProtection(new BlockVector(secondDoor[1].getLocation()), protection);
+            IProtection subProtection = new Protection(new BlockVector(secondDoor[1].getLocation()), protection);
             protection.addSubProtection(subProtection);
             MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // protect the lower block of the second door
-            subProtection = new SubProtection(new BlockVector(secondDoor[0].getLocation()), protection);
+            subProtection = new Protection(new BlockVector(secondDoor[0].getLocation()), protection);
             protection.addSubProtection(subProtection);
             MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // protect the block below
-            subProtection = new SubProtection(subProtection.getVector().getRelative(0, -1, 0), protection);
+            subProtection = new Protection(subProtection.getVector().getRelative(0, -1, 0), protection);
             protection.addSubProtection(subProtection);
             MoneyPitCore.protectionManager.addSubProtection(subProtection);
 
             // fetch non-solid-blocks
-            ArrayList<SubProtection> list = PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
-            for (SubProtection sub : list) {
+            ArrayList<IProtection> list = PhysicsHelper.protectNonSolidBlocks(protection, subProtection.getVector());
+            for (IProtection sub : list) {
                 MoneyPitCore.protectionManager.addSubProtection(sub);
             }
 

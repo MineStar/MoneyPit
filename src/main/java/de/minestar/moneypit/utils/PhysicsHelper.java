@@ -8,7 +8,7 @@ import java.util.Set;
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 
-import de.minestar.moneypit.data.subprotection.SubProtection;
+import de.minestar.moneypit.data.protection.Protection;
 
 @SuppressWarnings("deprecation")
 public class PhysicsHelper {
@@ -19,9 +19,9 @@ public class PhysicsHelper {
         return nonSolidStateBlocks.contains(ID);
     }
 
-    public static ArrayList<SubProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection) {
-        ArrayList<SubProtection> list = new ArrayList<SubProtection>();
-        SubProtection subProtection;
+    public static ArrayList<IProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection) {
+        ArrayList<IProtection> list = new ArrayList<IProtection>();
+        IProtection subProtection;
         BlockVector tempVector = vectorBelowProtection.getRelative(0, 0, 0);
         if (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
             int distance = 1;
@@ -35,7 +35,7 @@ public class PhysicsHelper {
             // finally protect the blocks
             for (int i = 0; i < distance; i++) {
                 // protect the blocks
-                subProtection = new SubProtection(vectorBelowProtection.getRelative(0, -(i + 1), 0), protection);
+                subProtection = new Protection(vectorBelowProtection.getRelative(0, -(i + 1), 0), protection);
                 protection.addSubProtection(subProtection);
                 list.add(subProtection);
             }
