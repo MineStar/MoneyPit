@@ -8,6 +8,7 @@ import java.util.Set;
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 
 @SuppressWarnings("deprecation")
@@ -19,13 +20,14 @@ public class PhysicsHelper {
         return nonSolidStateBlocks.contains(ID);
     }
 
-    public static ArrayList<IProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection) {
+    public static ArrayList<IProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection, boolean saveToDatabase) {
         ArrayList<IProtection> list = new ArrayList<IProtection>();
         IProtection subProtection;
         BlockVector tempVector = vectorBelowProtection.getRelative(0, 0, 0);
         if (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
             int distance = 1;
             tempVector = tempVector.getRelative(0, -1, 0);
+
             // search all needed blocks
             while (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
                 ++distance;
@@ -38,6 +40,7 @@ public class PhysicsHelper {
                 subProtection = new Protection(vectorBelowProtection.getRelative(0, -(i + 1), 0), protection);
                 protection.addSubProtection(subProtection);
                 list.add(subProtection);
+                MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
             }
         }
         return list;

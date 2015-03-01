@@ -4,8 +4,11 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -28,7 +31,8 @@ import de.minestar.moneypit.utils.ListHelper;
 public class DatabaseManager extends AbstractSQLiteHandler {
 
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition, updateOwner;
-    private PreparedStatement loadAllProtections;
+    private PreparedStatement addSubProtection, removeSubProtections, removeOneSubProtection;
+    private PreparedStatement loadAllProtections, loadSubprotections;
 
     public DatabaseManager(String pluginName, File SQLConfigFile) {
         super(pluginName, SQLConfigFile);
@@ -36,6 +40,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
 
     @Override
     protected void createStructure(String pluginName, Connection con) throws Exception {
+        // /////////////////////////////////////////
+        //
+        // MAIN-PROTECTIONS
+        //
+        // /////////////////////////////////////////
         StringBuilder builder = new StringBuilder();
 
         // open statement
@@ -82,6 +91,51 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         // clear
         statement = null;
         builder.setLength(0);
+
+        // /////////////////////////////////////////
+        //
+        // SUB-PROTECTIONS
+        //
+        // /////////////////////////////////////////
+
+        builder = new StringBuilder();
+
+        // open statement
+        builder.append("CREATE TABLE IF NOT EXISTS `tbl_subprotections` (");
+
+        // Unique ID
+        builder.append("`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT");
+        builder.append(", ");
+
+        // Protectionowner
+        builder.append("`parentID` INTEGER NOT NULL");
+        builder.append(", ");
+
+        // Worldname
+        builder.append("`blockWorld` TEXT NOT NULL");
+        builder.append(", ");
+
+        // BlockX
+        builder.append("`blockX` INTEGER NOT NULL");
+        builder.append(", ");
+
+        // BlockY
+        builder.append("`blockY` INTEGER NOT NULL");
+        builder.append(", ");
+
+        // BlockZ
+        builder.append("`blockZ` INTEGER NOT NULL");
+
+        // close statement
+        builder.append(");");
+
+        // execute statement
+        statement = con.prepareStatement(builder.toString());
+        statement.execute();
+
+        // clear
+        statement = null;
+        builder.setLength(0);
     }
 
     @Override
@@ -93,6 +147,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.updateOwner                = con.prepareStatement("UPDATE `tbl_protections` SET owner=? WHERE owner=?;");       
         this.getProtectionAtPosition    = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
         this.loadAllProtections         = con.prepareStatement("SELECT * FROM `tbl_protections` ORDER BY ID ASC");
+       
+        this.addSubProtection           = con.prepareStatement("INSERT INTO `tbl_subprotections` (parentID, blockWorld, blockX, blockY, blockZ) VALUES (?, ?, ?, ?, ?)");
+        this.removeSubProtections       = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=?");   
+        this.removeOneSubProtection     = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=? AND blockWorld=? AND blockX=? AND blockY=? AND blockZ=?");    
+        this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` WHERE parentID=?");        
         //@formatter:on;
     }
 
@@ -134,7 +193,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param type
      * @return the newly created Protection
      */
-    public Protection createProtection(BlockVector vector, String owner, ProtectionType type) {
+    public IProtection createProtection(BlockVector vector, String owner, ProtectionType type) {
         try {
             this.addProtection.setString(1, owner);
             this.addProtection.setInt(2, type.getID());
@@ -148,6 +207,87 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't create protection!");
             return null;
+        }
+    }
+
+    /**
+     * Create a new Protection
+     * 
+     * @param vector
+     * @param owner
+     * @param type
+     * @return the newly created Protection
+     */
+    public boolean createSubProtection(IProtection subProtection, boolean reallySave) {
+        if (!reallySave) {
+            return true;
+        }
+        try {
+            this.addSubProtection.setInt(1, subProtection.getMainProtection().getDatabaseID());
+            this.addSubProtection.setString(2, subProtection.getVector().getWorldName());
+            this.addSubProtection.setInt(3, subProtection.getVector().getX());
+            this.addSubProtection.setInt(4, subProtection.getVector().getY());
+            this.addSubProtection.setInt(5, subProtection.getVector().getZ());
+            this.addSubProtection.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't create subprotection! " + subProtection.toString());
+            return false;
+        }
+    }
+
+    /**
+     * Delete all given sunprotections
+     * 
+     * @param protection
+     * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
+     */
+    public boolean deleteSubProtections(IProtection mainProtection) {
+        try {
+            this.removeSubProtections.setInt(1, mainProtection.getDatabaseID());
+            this.removeSubProtections.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete subprotection from database @ " + mainProtection);
+            return false;
+        }
+    }
+
+    /**
+     * Delete all given sunprotections
+     * 
+     * @param protection
+     * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
+     */
+    public boolean deleteSubProtections(int mainProtectionID) {
+        try {
+            this.removeSubProtections.setInt(1, mainProtectionID);
+            this.removeSubProtections.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete subprotection from database @ " + mainProtectionID);
+            return false;
+        }
+    }
+
+    /**
+     * Delete a given subprotection
+     * 
+     * @param protection
+     * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
+     */
+    public boolean deleteOneSubProtection(IProtection subProtection) {
+        try {
+            this.removeOneSubProtection.setInt(1, subProtection.getDatabaseID());
+            this.removeOneSubProtection.setString(2, subProtection.getVector().getWorldName());
+            this.removeOneSubProtection.setInt(3, subProtection.getVector().getX());
+            this.removeOneSubProtection.setInt(4, subProtection.getVector().getY());
+            this.removeOneSubProtection.setInt(5, subProtection.getVector().getZ());
+            this.removeOneSubProtection.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete specific subprotection from database @ " + subProtection);
+            return false;
         }
     }
 
@@ -194,6 +334,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             if (protection != null) {
                 this.removeProtection.setInt(1, protection.getDatabaseID());
                 this.removeProtection.executeUpdate();
+                this.deleteSubProtections(protection);
                 return true;
             } else {
                 return false;
@@ -214,6 +355,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         try {
             this.removeProtection.setInt(1, protectionID);
             this.removeProtection.executeUpdate();
+            this.deleteSubProtections(protectionID);
             return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete protection from database @ " + protectionID);
@@ -224,7 +366,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     /**
      * Load all protections from the Database
      */
-    private void loadAllProtections() {
+    private void loadAllProtectionsOLD() {
         try {
             ResultSet results = this.loadAllProtections.executeQuery();
             int count = 0;
@@ -273,7 +415,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             }
                         }
                     }
-                    Protection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
+                    IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
                     byte subData = location.getBlock().getData();
                     if (module.getRegisteredTypeID() == Material.ITEM_FRAME.getId() || module.getRegisteredTypeID() == Material.PAINTING.getId()) {
@@ -284,7 +426,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                             continue;
                         }
                     }
-                    if (module.addProtection(protection, subData)) {
+                    if (module.addProtection(protection, subData, false)) {
                         ++count;
                     } else {
                         failedProtections.put(results.getInt("ID"), vector);
@@ -303,6 +445,58 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             }
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
+        }
+    }
+
+    /**
+     * Load all protections from the Database
+     */
+    private void loadAllProtections() {
+        try {
+            ResultSet results = this.loadAllProtections.executeQuery();
+            Map<Integer, BlockVector> failedProtections = new HashMap<Integer, BlockVector>();
+            List<IProtection> cachedProtections = new ArrayList<IProtection>();
+            while (results.next()) {
+                BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
+                try {
+                    Location location = vector.getLocation();
+                    if (location == null) {
+                        failedProtections.put(results.getInt("ID"), vector);
+                        continue;
+                    }
+
+                    IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
+                    protection.setGuestList(ListHelper.toList(results.getString("guestList")));
+                    cachedProtections.add(protection);
+                    this.loadSubProtections(protection);
+                } catch (Exception error) {
+                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
+                    failedProtections.put(results.getInt("ID"), vector);
+                    continue;
+                }
+            }
+            ConsoleUtils.printInfo(MoneyPitCore.NAME, cachedProtections.size() + " protections loaded!");
+            if (failedProtections.size() > 0) {
+                ConsoleUtils.printInfo(MoneyPitCore.NAME, failedProtections.size() + " protections are NOT loaded due to missing blocks or locations!");
+                // delete failed protections
+                for (Map.Entry<Integer, BlockVector> entry : failedProtections.entrySet()) {
+                    this.deleteProtection(entry.getKey());
+                }
+            }
+
+            MoneyPitCore.protectionManager.setCachedProtections(cachedProtections);
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
+        }
+    }
+
+    private void loadSubProtections(IProtection mainProtection) throws SQLException {
+        this.loadSubprotections.setInt(1, mainProtection.getDatabaseID());
+        ResultSet results = this.loadSubprotections.executeQuery();
+        while (results.next()) {
+            BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
+            IProtection subProtection = new Protection(vector, mainProtection);
+            mainProtection.addSubProtection(subProtection);
         }
     }
 }

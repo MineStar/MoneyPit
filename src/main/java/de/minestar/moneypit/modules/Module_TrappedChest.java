@@ -30,13 +30,14 @@ public class Module_TrappedChest extends Module {
     }
 
     @Override
-    public boolean addProtection(Protection protection, byte subData) {
+    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // search a second chest and add the subprotection, if found
         Chest secondChest = ChestHelper.isDoubleTrappedChest(protection.getVector().getLocation().getBlock());
 
         if (secondChest != null) {
             IProtection subProtection = new Protection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);
+            MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
         }
 
         // register the protection
@@ -64,23 +65,16 @@ public class Module_TrappedChest extends Module {
             return new EventResult(true, true, protection);
         }
 
-        // IProtection thisProtection = MoneyPitCore.protectionManager.getProtection(vector);
-        // BlockVector alreadyDoubleChest = null;
-        // if (protection != null) {
         // add the SubProtection to the Protection
         IProtection subProtection = new Protection(vector, protection);
         protection.addSubProtection(subProtection);
 
         // add the SubProtection to the ProtectionManager
         MoneyPitCore.protectionManager.addSubProtection(subProtection);
+        MoneyPitCore.databaseManager.createSubProtection(subProtection, true);
 
         // send info
         PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
         return new EventResult(false, true, null);
-        // }
-        // } else {
-        // // return true to abort the event
-        // return new EventResult(false, true, null);
-        // }
     }
 }

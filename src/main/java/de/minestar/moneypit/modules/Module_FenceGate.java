@@ -3,7 +3,8 @@ package de.minestar.moneypit.modules;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.minestar.moneypit.data.protection.Protection;
+import com.bukkit.gemo.patchworking.IProtection;
+
 import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_FenceGate extends Module {
@@ -26,7 +27,7 @@ public class Module_FenceGate extends Module {
     }
 
     @Override
-    public boolean addProtection(Protection protection, byte subData) {
+    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // register the protection
         return getProtectionManager().addProtection(protection);
     }

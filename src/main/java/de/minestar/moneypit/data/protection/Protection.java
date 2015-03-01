@@ -58,16 +58,12 @@ public class Protection implements IProtection {
         }
     }
 
-    public int getProtectionID() {
+    public int getDatabaseID() {
         if (this.isSubProtection) {
             return this.parent.getDatabaseID();
         } else {
-            return this.getDatabaseID();
+            return this.databaseID;
         }
-    }
-
-    public int getDatabaseID() {
-        return databaseID;
     }
 
     public BlockVector getVector() {
@@ -279,7 +275,7 @@ public class Protection implements IProtection {
 
     @Override
     public String toString() {
-        return "Protection={ ID:" + this.databaseID + " ; Type:" + this.type.name() + " ; Owner:" + this.owner + " ; " + this.vector.toString() + " }";
+        return "Protection={ ID:" + this.databaseID + " ; Type:" + this.type.name() + " ; Owner:" + this.owner + " ; SubProtection:" + this.isSubProtection + " ; " + this.vector.toString() + " }";
     }
 
 }

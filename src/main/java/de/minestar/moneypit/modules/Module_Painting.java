@@ -10,6 +10,7 @@ import org.bukkit.entity.Painting;
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.HangingHelper;
@@ -31,7 +32,7 @@ public class Module_Painting extends Module {
     }
 
     @Override
-    public boolean addProtection(Protection protection, byte subData) {
+    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // get the anchor
         BlockVector vector = protection.getVector();
         Collection<Painting> paintings = vector.getLocation().getWorld().getEntitiesByClass(Painting.class);
@@ -55,9 +56,10 @@ public class Module_Painting extends Module {
         for (BlockVector anchor : anchors) {
             IProtection subProtection = new Protection(anchor, protection);
             protection.addSubProtection(subProtection);
+            MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
 
             // fetch non-solid-blocks
-            PhysicsHelper.protectNonSolidBlocks(protection, anchor);
+            PhysicsHelper.protectNonSolidBlocks(protection, anchor, saveToDatabase);
         }
 
         // register the protection

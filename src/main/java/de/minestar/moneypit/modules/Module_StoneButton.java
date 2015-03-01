@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.ButtonHelper;
@@ -25,16 +26,17 @@ public class Module_StoneButton extends Module {
     }
 
     @Override
-    public boolean addProtection(Protection protection, byte subData) {
+    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // get the anchor
         BlockVector anchor = ButtonHelper.getAnchor(protection.getVector(), subData);
 
         // protect the block below
         IProtection subProtection = new Protection(anchor, protection);
         protection.addSubProtection(subProtection);
+        MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
 
         // fetch non-solid-blocks
-        PhysicsHelper.protectNonSolidBlocks(protection, anchor);
+        PhysicsHelper.protectNonSolidBlocks(protection, anchor, saveToDatabase);
 
         // register the protection
         return getProtectionManager().addProtection(protection);

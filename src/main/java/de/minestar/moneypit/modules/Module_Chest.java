@@ -31,13 +31,14 @@ public class Module_Chest extends Module {
     }
 
     @Override
-    public boolean addProtection(Protection protection, byte subData) {
+    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // search a second chest and add the subprotection, if found
         Chest secondChest = ChestHelper.isDoubleChest(protection.getVector().getLocation().getBlock());
 
         if (secondChest != null) {
             IProtection subProtection = new Protection(new BlockVector(secondChest.getLocation()), protection);
             protection.addSubProtection(subProtection);
+            MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
         }
 
         // register the protection
@@ -69,13 +70,18 @@ public class Module_Chest extends Module {
         if (alreadyDoubleChest == null) {
             // add the SubProtection to the Protection
             IProtection subProtection = new Protection(vector, protection);
-            protection.addSubProtection(subProtection);
+            if (MoneyPitCore.databaseManager.createSubProtection(subProtection, true)) {
+                protection.addSubProtection(subProtection);
 
-            // add the SubProtection to the ProtectionManager
-            MoneyPitCore.protectionManager.addSubProtection(subProtection);
-            // send info
-            PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
-            return new EventResult(false, false, null);
+                // add the SubProtection to the ProtectionManager
+                MoneyPitCore.protectionManager.addSubProtection(subProtection);
+                // send info
+                PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
+                return new EventResult(false, false, null);
+            } else {
+                // abort the event
+                return new EventResult(true, true, protection);
+            }
         } else {
             // return true to abort the event
             return new EventResult(false, true, null);

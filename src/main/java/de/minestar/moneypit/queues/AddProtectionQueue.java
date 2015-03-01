@@ -4,11 +4,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
-import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.modules.Module;
 
 public class AddProtectionQueue implements Queue {
@@ -52,14 +52,14 @@ public class AddProtectionQueue implements Queue {
             }
 
             // create protection
-            Protection protection = MoneyPitCore.databaseManager.createProtection(vector, player.getName(), this.protectionType);
+            IProtection protection = MoneyPitCore.databaseManager.createProtection(vector, player.getName(), this.protectionType);
             if (protection == null) {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "Could not save new protection!");
                 PlayerUtils.sendInfo(player, "Please contact an admin.");
                 return false;
             }
 
-            boolean result = module.addProtection(protection, data);
+            boolean result = module.addProtection(protection, data, true);
             if (this.protectionType == ProtectionType.PRIVATE && result) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");
             } else if (this.protectionType == ProtectionType.PUBLIC && result) {

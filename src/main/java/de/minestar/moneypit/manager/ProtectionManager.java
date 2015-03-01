@@ -3,20 +3,30 @@ package de.minestar.moneypit.manager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 import com.bukkit.gemo.patchworking.ProtectionType;
 
+import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.subprotection.SubProtectionHolder;
+import de.minestar.moneypit.modules.Module;
 
 public class ProtectionManager {
 
     private HashSet<String> giftList;
     private HashMap<BlockVector, IProtection> protections;
     private HashMap<BlockVector, ISubProtectionHolder> subProtections;
+    private HashMap<BlockVector, IProtection> cachedProtections;
 
     /**
      * Initialize the manager
@@ -24,7 +34,20 @@ public class ProtectionManager {
     public void init() {
         this.protections = new HashMap<BlockVector, IProtection>(512);
         this.subProtections = new HashMap<BlockVector, ISubProtectionHolder>(1024);
+        this.cachedProtections = new HashMap<BlockVector, IProtection>(512);
         this.giftList = new HashSet<String>(128);
+    }
+
+    public void setCachedProtections(List<IProtection> cachedProtections) {
+        this.cachedProtections = new HashMap<BlockVector, IProtection>(512);
+        for (IProtection protection : cachedProtections) {
+            this.cachedProtections.put(protection.getVector(), protection);
+            // cache subprotections
+            for (IProtection subProtection : protection.getSubProtections()) {
+                this.addSubProtection(subProtection);
+            }
+        }
+
     }
 
     // ////////////////////////////////////////////////////////////////
@@ -50,7 +73,81 @@ public class ProtectionManager {
      * @return the Protection
      */
     public IProtection getProtection(BlockVector vector) {
+        IProtection cachedProtection = this.cachedProtections.get(vector);
+        if (cachedProtection != null) {
+            // remove from cache
+            this.cachedProtections.remove(vector);
+
+            // check validity
+            // this will also add the protection to the real list, if the check succeeds
+            if (!this.checkCachedProtection(cachedProtection)) {
+                // remove subprotections
+                Collection<IProtection> subProtections = cachedProtection.getSubProtections();
+                for (IProtection subProtection : subProtections) {
+                    this.removeSubProtection(subProtection);
+                }
+
+                // return
+                return this.protections.get(vector);
+            }
+        }
         return this.protections.get(vector);
+    }
+
+    private boolean checkCachedProtection(IProtection protection) {
+        BlockVector vector = protection.getVector();
+        Location location = vector.getLocation();
+        if (location == null) {
+            return false;
+        }
+
+        // load chunk
+        location.getChunk().load(true);
+
+        // get module
+        Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
+
+        Hanging entityHanging = null;
+        if (module == null) {
+            // search for an itemframe
+            Collection<ItemFrame> frames = location.getWorld().getEntitiesByClass(ItemFrame.class);
+            boolean found = false;
+            for (ItemFrame frame : frames) {
+                BlockVector otherVector = new BlockVector(frame.getLocation());
+                if (vector.equals(otherVector)) {
+                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+                    entityHanging = frame;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // search for a painting
+                Collection<Painting> paintings = location.getWorld().getEntitiesByClass(Painting.class);
+                for (Painting paint : paintings) {
+                    BlockVector otherVector = new BlockVector(paint.getLocation());
+                    if (vector.equals(otherVector)) {
+                        module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+                        entityHanging = paint;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return false;
+                }
+            }
+        }
+
+        byte subData = location.getBlock().getData();
+        if (module.getRegisteredTypeID() == Material.ITEM_FRAME.getId() || module.getRegisteredTypeID() == Material.PAINTING.getId()) {
+            if (entityHanging != null) {
+                subData = (byte) entityHanging.getAttachedFace().ordinal();
+            } else {
+                return false;
+            }
+        }
+        return module.addProtection(protection, subData, false);
     }
 
     /**
@@ -58,7 +155,7 @@ public class ProtectionManager {
      * 
      * @param protection
      */
-    public boolean addProtection(Protection protection) {
+    public boolean addProtection(IProtection protection) {
         // is it a gift-protection?
         if (protection.getType().equals(ProtectionType.GIFT)) {
             if (this.hasGiftProtection(protection.getOwner())) {
@@ -101,7 +198,7 @@ public class ProtectionManager {
      * @param vector
      */
     public void removeProtection(BlockVector vector) {
-        IProtection protection = this.protections.get(vector);
+        IProtection protection = this.getProtection(vector);
         if (protection != null) {
             // check if it is a giftprotection
             if (protection.isGift()) {
@@ -143,7 +240,7 @@ public class ProtectionManager {
      * @return <b>true</b> if the block is protected, otherwise <b>false</b>
      */
     public boolean hasProtection(BlockVector vector) {
-        return this.protections.containsKey(vector);
+        return this.getProtection(vector) != null;
     }
 
     // ////////////////////////////////////////////////////////////////

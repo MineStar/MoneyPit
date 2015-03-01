@@ -4,10 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.IProtection;
 
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.EventResult;
-import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.ProtectionManager;
 
@@ -103,5 +103,5 @@ public abstract class Module {
         return new EventResult(false, false, null);
     }
 
-    public abstract boolean addProtection(Protection protection, byte subData);
+    public abstract boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase);
 }
