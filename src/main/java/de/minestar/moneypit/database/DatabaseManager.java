@@ -151,7 +151,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.addSubProtection           = con.prepareStatement("INSERT INTO `tbl_subprotections` (parentID, blockWorld, blockX, blockY, blockZ) VALUES (?, ?, ?, ?, ?)");
         this.removeSubProtections       = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=?");   
         this.removeOneSubProtection     = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=? AND blockWorld=? AND blockX=? AND blockY=? AND blockZ=?");    
-        this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` WHERE parentID=?");        
+        this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` ORDER BY ID ASC");        
         //@formatter:on;
     }
 
@@ -468,13 +468,17 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
                     cachedProtections.add(protection);
-                    this.loadSubProtections(protection);
                 } catch (Exception error) {
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
                     failedProtections.put(results.getInt("ID"), vector);
                     continue;
                 }
             }
+            
+            // load subprotections
+            this.loadSubProtections(cachedProtections);
+
+            // print info
             ConsoleUtils.printInfo(MoneyPitCore.NAME, cachedProtections.size() + " protections loaded!");
             if (failedProtections.size() > 0) {
                 ConsoleUtils.printInfo(MoneyPitCore.NAME, failedProtections.size() + " protections are NOT loaded due to missing blocks or locations!");
@@ -484,19 +488,31 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 }
             }
 
+            // set cached protections
             MoneyPitCore.protectionManager.setCachedProtections(cachedProtections);
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
         }
     }
 
-    private void loadSubProtections(IProtection mainProtection) throws SQLException {
-        this.loadSubprotections.setInt(1, mainProtection.getDatabaseID());
+    private void loadSubProtections(List<IProtection> cachedProtections) throws SQLException {
         ResultSet results = this.loadSubprotections.executeQuery();
         while (results.next()) {
-            BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
-            IProtection subProtection = new Protection(vector, mainProtection);
-            mainProtection.addSubProtection(subProtection);
+            IProtection mainProtection = this.getProtection(results.getInt("parentID"), cachedProtections);
+            if (mainProtection != null) {
+                BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
+                IProtection subProtection = new Protection(vector, mainProtection);
+                mainProtection.addSubProtection(subProtection);
+            }
         }
+    }
+
+    private IProtection getProtection(int databaseID, List<IProtection> cachedProtections) {
+        for (IProtection protection : cachedProtections) {
+            if (protection.getDatabaseID() == databaseID) {
+                return protection;
+            }
+        }
+        return null;
     }
 }
