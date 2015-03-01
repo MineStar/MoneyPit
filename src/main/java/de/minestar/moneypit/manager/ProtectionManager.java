@@ -3,7 +3,6 @@ package de.minestar.moneypit.manager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,6 +41,9 @@ public class ProtectionManager {
         this.cachedProtections = new HashMap<BlockVector, IProtection>(512);
         this.subProtections = new HashMap<BlockVector, ISubProtectionHolder>(1024);
         for (IProtection protection : cachedProtections.values()) {
+            if (protection == null) {
+                continue;
+            }
             this.cachedProtections.put(protection.getVector(), protection);
             // cache subprotections
             if (protection.getSubProtections() != null) {

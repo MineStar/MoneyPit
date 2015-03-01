@@ -199,7 +199,7 @@ public class Protection implements IProtection {
             if (this.subProtections != null) {
                 return this.subProtections.values();
             }
-            return null;
+            return new HashMap<BlockVector, IProtection>().values();
         }
     }
 
