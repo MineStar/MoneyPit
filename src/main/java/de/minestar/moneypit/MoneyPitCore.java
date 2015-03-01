@@ -94,12 +94,13 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
         protectionManager = new ProtectionManager();
         queueManager = new QueueManager();
 
+        protectionManager.init();
+
         // database
         databaseManager = new DatabaseManager(MoneyPitCore.NAME, new File(getDataFolder(), "sqlconfig.yml"));
 
         // init
         moduleManager.init();
-        protectionManager.init();
 
         // load data
         databaseManager.init();

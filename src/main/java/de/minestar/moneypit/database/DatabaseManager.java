@@ -5,10 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -455,7 +453,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         try {
             ResultSet results = this.loadAllProtections.executeQuery();
             Map<Integer, BlockVector> failedProtections = new HashMap<Integer, BlockVector>();
-            List<IProtection> cachedProtections = new ArrayList<IProtection>();
+            HashMap<Integer, IProtection> cachedProtections = new HashMap<Integer, IProtection>();
             while (results.next()) {
                 BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
                 try {
@@ -467,14 +465,14 @@ public class DatabaseManager extends AbstractSQLiteHandler {
 
                     IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
-                    cachedProtections.add(protection);
+                    cachedProtections.put(protection.getDatabaseID(), protection);
                 } catch (Exception error) {
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
                     failedProtections.put(results.getInt("ID"), vector);
                     continue;
                 }
             }
-            
+
             // load subprotections
             this.loadSubProtections(cachedProtections);
 
@@ -495,7 +493,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         }
     }
 
-    private void loadSubProtections(List<IProtection> cachedProtections) throws SQLException {
+    private void loadSubProtections(HashMap<Integer, IProtection> cachedProtections) throws SQLException {
         ResultSet results = this.loadSubprotections.executeQuery();
         while (results.next()) {
             IProtection mainProtection = this.getProtection(results.getInt("parentID"), cachedProtections);
@@ -507,12 +505,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         }
     }
 
-    private IProtection getProtection(int databaseID, List<IProtection> cachedProtections) {
-        for (IProtection protection : cachedProtections) {
-            if (protection.getDatabaseID() == databaseID) {
-                return protection;
-            }
-        }
-        return null;
+    private IProtection getProtection(int databaseID, HashMap<Integer, IProtection> cachedProtections) {
+        return cachedProtections.get(databaseID);
     }
 }

@@ -38,16 +38,18 @@ public class ProtectionManager {
         this.giftList = new HashSet<String>(128);
     }
 
-    public void setCachedProtections(List<IProtection> cachedProtections) {
+    public void setCachedProtections(HashMap<Integer, IProtection> cachedProtections) {
         this.cachedProtections = new HashMap<BlockVector, IProtection>(512);
-        for (IProtection protection : cachedProtections) {
+        this.subProtections = new HashMap<BlockVector, ISubProtectionHolder>(1024);
+        for (IProtection protection : cachedProtections.values()) {
             this.cachedProtections.put(protection.getVector(), protection);
             // cache subprotections
-            for (IProtection subProtection : protection.getSubProtections()) {
-                this.addSubProtection(subProtection);
+            if (protection.getSubProtections() != null) {
+                for (IProtection subProtection : protection.getSubProtections()) {
+                    this.addSubProtection(subProtection);
+                }
             }
         }
-
     }
 
     // ////////////////////////////////////////////////////////////////
