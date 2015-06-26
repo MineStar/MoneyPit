@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
+import com.bukkit.gemo.patchworking.ISubProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
@@ -214,6 +215,7 @@ public class Protection implements IProtection {
         }
     }
 
+    @Override
     public void addSubProtection(IProtection subProtection) {
         if (this.isSubProtection) {
             this.parent.addSubProtection(subProtection);
@@ -277,5 +279,4 @@ public class Protection implements IProtection {
     public String toString() {
         return "Protection={ ID:" + this.databaseID + " ; Type:" + this.type.name() + " ; Owner:" + this.owner + " ; SubProtection:" + this.isSubProtection + " ; " + this.vector.toString() + " }";
     }
-
 }
