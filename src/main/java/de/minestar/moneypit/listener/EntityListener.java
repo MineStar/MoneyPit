@@ -1,35 +1,31 @@
 package de.minestar.moneypit.listener;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
 import de.minestar.moneypit.data.protection.EntityProtection;
-import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.entitymodules.EntityModule;
 import de.minestar.moneypit.manager.EntityModuleManager;
 import de.minestar.moneypit.manager.EntityProtectionManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.QueueManager;
+import de.minestar.moneypit.queues.entity.AddEntityProtectionQueue;
 import de.minestar.moneypit.queues.entity.RemoveEntityProtectionQueue;
-import de.minestar.moneypit.utils.DoorHelper;
 
 public class EntityListener implements Listener {
 
@@ -46,64 +42,76 @@ public class EntityListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Entity interactedEntity = event.getRightClicked();
-        Player player = event.getPlayer();
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        Entity interactedEntity = event.getEntity();
+        Entity damager = event.getDamager();
+        if (damager.getType().equals(EntityType.PLAYER)) {
+            Player player = (Player) damager;
 
-        // we need an entity and a player
-        if (interactedEntity == null || player == null) {
-            return;
-        }
-
-        // get PlayerState
-        final PlayerState state = this.playerManager.getState(event.getPlayer().getName());
-
-        switch (state) {
-            case PROTECTION_INFO : {
-                // handle info
-                this.handleInfoInteract(player, interactedEntity);
-                event.setCancelled(true);
-                break;
+            // we need an entity and a player
+            if (interactedEntity == null || player == null) {
+                return;
             }
-            case PROTECTION_REMOVE : {
-                // handle remove
-                this.handleRemoveInteract(player, interactedEntity);
-                break;
-            }
-            case PROTECTION_ADD_PRIVATE :
-            case PROTECTION_ADD_PUBLIC : {
-                // the module must be registered
-                EntityModule module = this.entityModuleManager.getRegisteredModule(interactedEntity.getType());
-                if (module == null) {
-                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for entity '" + interactedEntity.getType() + "' is not registered!");
-                    return;
+
+            // get PlayerState
+            final PlayerState state = this.playerManager.getState(player.getName());
+
+            switch (state) {
+                case PROTECTION_INFO : {
+                    // handle info
+                    this.handleInfoInteract(player, interactedEntity);
+                    event.setCancelled(true);
+                    break;
                 }
+                case PROTECTION_REMOVE : {
+                    // handle remove
+                    this.handleRemoveInteract(player, interactedEntity);
+                    break;
+                }
+                case PROTECTION_ADD_PRIVATE :
+                case PROTECTION_ADD_PUBLIC : {
+                    // the module must be registered
+                    EntityModule module = this.entityModuleManager.getRegisteredModule(interactedEntity.getType());
+                    if (module == null) {
+                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Module for entity '" + interactedEntity.getType() + "' is not registered!");
+                        return;
+                    }
 
-                // handle add
-                this.handleAddInteract(player, interactedEntity, module, state);
-                break;
+                    // handle add
+                    this.handleAddInteract(event, player, interactedEntity, module, state);
+                    break;
+                }
+                case PROTECTION_INVITE : {
+                    this.handleInviteInteract(player, interactedEntity);
+                    break;
+                }
+                case PROTECTION_UNINVITE : {
+                    this.handleUninviteInteract(player, interactedEntity);
+                    break;
+                }
+                case PROTECTION_UNINVITEALL : {
+                    this.handleUninviteAllInteract(player, interactedEntity);
+                    break;
+                }
+                default : {
+                    // handle normal interact
+                    this.handleNormalInteract(event, player, interactedEntity);
+                    break;
+                }
             }
-            case PROTECTION_INVITE : {
-                this.handleInviteInteract(player, interactedEntity);
-                break;
+        } else {
+            if (!this.entityModuleManager.isModuleRegistered(event.getEntityType())) {
+                return;
             }
-            case PROTECTION_UNINVITE : {
-                this.handleUninviteInteract(player, interactedEntity);
-                break;
-            }
-            case PROTECTION_UNINVITEALL : {
-                this.handleUninviteAllInteract(player, interactedEntity);
-                break;
-            }
-            default : {
-                // handle normal interact
-                this.handleNormalInteract(event, player, interactedEntity);
-                break;
+
+            if (this.entityProtectionManager.hasProtection(event.getEntity().getUniqueId())) {
+                event.setDamage(0d);
+                event.setCancelled(true);
             }
         }
     }
 
-    private void handleNormalInteract(PlayerInteractEntityEvent event, Player player, Entity interactedEntity) {
+    private void handleNormalInteract(EntityDamageByEntityEvent event, Player player, Entity interactedEntity) {
         // we need a protection to show some information about it
         EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId());
         if (protectedEntity == null) {
@@ -114,7 +122,7 @@ public class EntityListener implements Listener {
         // is this protection private?
         if (!protectedEntity.canAccess(player)) {
             // show information about the protection
-            this.showInformation(event.getPlayer(), interactedEntity, false);
+            this.showInformation((Player) event.getDamager(), interactedEntity, false);
             // cancel the event
             event.setCancelled(true);
             return;
@@ -125,7 +133,12 @@ public class EntityListener implements Listener {
             this.showInformation(player, interactedEntity, false);
         }
 
-        return;
+        LivingEntity livingEntity = (LivingEntity) interactedEntity;
+        if (event.getDamage() >= livingEntity.getHealth()) {
+            // queue the event for later use in MonitorListener
+            RemoveEntityProtectionQueue queue = new RemoveEntityProtectionQueue(player, protectedEntity);
+            this.queueManager.addEntityQueue(queue);
+        }
     }
 
     private void handleUninviteInteract(Player player, Entity interactedEntity) {
@@ -143,9 +156,41 @@ public class EntityListener implements Listener {
 
     }
 
-    private void handleAddInteract(Player player, Entity interactedEntity, EntityModule module, PlayerState state) {
-        // TODO Auto-generated method stub
+    private void handleAddInteract(EntityDamageByEntityEvent event, Player player, Entity interactedEntity, EntityModule module, PlayerState state) {
+        // return to normalmode
+        if (!this.playerManager.keepsMode(player.getName())) {
+            this.playerManager.setState(player.getName(), PlayerState.NORMAL);
+        }
 
+        // check permissions
+        if (!UtilPermissions.playerCanUseCommand(player, "moneypit.protect." + module.getEntityType()) && !UtilPermissions.playerCanUseCommand(player, "moneypit.admin")) {
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to protect this entity!");
+            return;
+        }
+
+        // add protection, if it isn't protected yet
+        if (!this.entityProtectionManager.hasProtection(interactedEntity.getUniqueId())) {
+            if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
+                // create a private protection
+                // queue the event for later use in MonitorListener
+                AddEntityProtectionQueue queue = new AddEntityProtectionQueue((Player) event.getDamager(), interactedEntity, ProtectionType.PRIVATE);
+                this.queueManager.addEntityQueue(interactedEntity, queue);
+            } else if (state == PlayerState.PROTECTION_ADD_PUBLIC) {
+                // create a public protection
+                // queue the event for later use in MonitorListener
+                AddEntityProtectionQueue queue = new AddEntityProtectionQueue((Player) event.getDamager(), interactedEntity, ProtectionType.PUBLIC);
+                this.queueManager.addEntityQueue(interactedEntity, queue);
+            } else {
+                event.setCancelled(true);
+            }
+        } else {
+            // Send errormessage
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Cannot create protection!");
+            event.setCancelled(true);
+
+            // show information about the protection
+            this.showInformation(player, interactedEntity, false);
+        }
     }
 
     private void handleRemoveInteract(Player player, Entity interactedEntity) {

@@ -10,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.entitymodules.EntityModule;
+import de.minestar.moneypit.entitymodules.EntityModule_ArmorStand;
 
 public class EntityModuleManager {
 
@@ -66,16 +67,11 @@ public class EntityModuleManager {
     private void initModules(boolean withInstance, YamlConfiguration ymlFile) {
         // @formatter:off
         if (withInstance) {
-            // LOAD MODULES            
-            // TODO: ArmorStand
-            
-            //new Module_SignPost         (this, ymlFile);
-            
+            // LOAD MODULES 
+            new EntityModule_ArmorStand(ymlFile, true);            
         } else {
             // CREATE DEFAULT CONFIGS
-            
-            // TODO: ArmorStand
-//            new Module_SignPost         (ymlFile);
+            new EntityModule_ArmorStand(ymlFile, false);
         }
         // @formatter:on
     }

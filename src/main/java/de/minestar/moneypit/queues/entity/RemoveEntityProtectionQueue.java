@@ -19,10 +19,9 @@ public class RemoveEntityProtectionQueue implements EntityQueue {
     @Override
     public boolean execute() {
         // try to delete the protection in the database
-        // TODO: remove from EntityDatabase
-        if (MoneyPitCore.databaseManager.deleteEntityProtection(this.protectedEntity.getUuid())) {
-            // remove protection from ingamehandler
-            // TODO: remove from EntityProtectionManager
+        // remove from EntityDatabase
+        if (MoneyPitCore.databaseManager.deleteEntityProtection(this.protectedEntity)) {
+            // remove from EntityProtectionManager
             MoneyPitCore.entityProtectionManager.removeProtection(this.protectedEntity.getUuid());
 
             // send info

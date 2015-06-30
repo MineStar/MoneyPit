@@ -3,6 +3,8 @@ package de.minestar.moneypit.manager;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.entity.Entity;
+
 import com.bukkit.gemo.patchworking.BlockVector;
 
 import de.minestar.moneypit.queues.Queue;
@@ -25,6 +27,10 @@ public class QueueManager {
 
     public void addEntityQueue(EntityQueue queue) {
         this.entityEvents.put(queue.getProtection().getUuid(), queue);
+    }
+
+    public void addEntityQueue(Entity entity, EntityQueue queue) {
+        this.entityEvents.put(entity.getUniqueId(), queue);
     }
 
     public EntityQueue getAndRemoveEntityQueue(UUID uuid) {

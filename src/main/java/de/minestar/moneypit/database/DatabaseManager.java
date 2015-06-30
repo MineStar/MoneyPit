@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
@@ -17,6 +19,7 @@ import com.bukkit.gemo.patchworking.ProtectionType;
 import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
+import de.minestar.moneypit.data.protection.EntityProtection;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.utils.ListHelper;
 
@@ -25,6 +28,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition, updateOwner;
     private PreparedStatement addSubProtection, removeSubProtections, removeOneSubProtection;
     private PreparedStatement loadAllProtections, loadSubprotections;
+    private PreparedStatement loadAllEntityProtections, removeEntityProtection, addEntityProtection, updateGuestListEntityProtection, getEntityProtectionByUuid;
 
     public DatabaseManager(String pluginName, File SQLConfigFile) {
         super(pluginName, SQLConfigFile);
@@ -128,6 +132,51 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         // clear
         statement = null;
         builder.setLength(0);
+
+        // /////////////////////////////////////////
+        //
+        // ENTITY-PROTECTIONS
+        //
+        // /////////////////////////////////////////
+
+        builder = new StringBuilder();
+
+        // open statement
+        builder.append("CREATE TABLE IF NOT EXISTS `tbl_entityprotections` (");
+
+        // Unique ID
+        builder.append("`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT");
+        builder.append(", ");
+
+        // Protectionowner
+        builder.append("`owner` TEXT NOT NULL");
+        builder.append(", ");
+
+        // ProtectionType as Integer
+        builder.append("`entityType` TEXT NOT NULL");
+        builder.append(", ");
+
+        // ProtectionType as Integer
+        builder.append("`protectionType` INTEGER NOT NULL");
+        builder.append(", ");
+
+        // UUID of protected entity
+        builder.append("`entityUuid` TEXT NOT NULL");
+        builder.append(", ");
+
+        // GuestList - Format : GUEST;GUEST;GUEST
+        builder.append("`guestList` TEXT NOT NULL");
+
+        // close statement
+        builder.append(");");
+
+        // execute statement
+        statement = con.prepareStatement(builder.toString());
+        statement.execute();
+
+        // clear
+        statement = null;
+        builder.setLength(0);
     }
 
     @Override
@@ -144,6 +193,13 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.removeSubProtections       = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=?");   
         this.removeOneSubProtection     = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=? AND blockWorld=? AND blockX=? AND blockY=? AND blockZ=?");    
         this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` ORDER BY ID ASC");        
+       
+        this.loadAllEntityProtections       = con.prepareStatement("SELECT * FROM `tbl_entityprotections` ORDER BY ID ASC");
+        this.removeEntityProtection         = con.prepareStatement("DELETE FROM `tbl_entityprotections` WHERE ID=?;");
+        this.addEntityProtection                = con.prepareStatement("INSERT INTO `tbl_entityprotections` (owner, entityType, protectionType, entityuuid, guestList) VALUES (?, ?, ?, ?, ?);");       
+        this.updateGuestListEntityProtection    = con.prepareStatement("UPDATE `tbl_entityprotections` SET guestList=? WHERE ID=?;");
+        this.getEntityProtectionByUuid          = con.prepareStatement("SELECT * FROM `tbl_entityprotections` WHERE entityuuid=? LIMIT 1;");
+        
         //@formatter:on;
     }
 
@@ -152,6 +208,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      */
     public void init() {
         this.loadAllProtections();
+        this.loadAllEntityProtections();
     }
 
     /**
@@ -198,6 +255,49 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             return this.getProtectionAtPosition(vector);
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't create protection!");
+            return null;
+        }
+    }
+
+    /**
+     * Create a new EntityProtection
+     * 
+     * @param vector
+     * @param owner
+     * @param type
+     * @return the newly created EntityProtection
+     */
+    public EntityProtection createEntityProtection(String owner, UUID uuid, EntityType type, ProtectionType protectionType) {
+        try {
+            this.addEntityProtection.setString(1, owner);
+            this.addEntityProtection.setString(2, type.name());
+            this.addEntityProtection.setInt(3, protectionType.getID());
+            this.addEntityProtection.setString(4, uuid.toString());
+            this.addEntityProtection.setString(5, "");
+            this.addEntityProtection.executeUpdate();
+            return this.getEntityProtectionByUuid(uuid);
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't create protection!");
+            return null;
+        }
+    }
+
+    /**
+     * Get the EntityProtection of a certain UUID
+     * 
+     * @param uuid
+     * @return the EntityProtection
+     */
+    public EntityProtection getEntityProtectionByUuid(UUID uuid) {
+        try {
+            this.getEntityProtectionByUuid.setString(1, uuid.toString());
+            ResultSet results = this.getEntityProtectionByUuid.executeQuery();
+            while (results.next()) {
+                return new EntityProtection(results.getInt("ID"), results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
+            }
+            return null;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't get the protection for uuid: " + uuid.toString() + "!");
             return null;
         }
     }
@@ -320,6 +420,23 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param protection
      * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
      */
+    public boolean deleteEntityProtection(EntityProtection protectedEntity) {
+        try {
+            this.removeEntityProtection.setInt(1, protectedEntity.getDatabaseId());
+            this.removeEntityProtection.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete entityprotection from database @ " + protectedEntity.getDatabaseId());
+            return false;
+        }
+    }
+
+    /**
+     * Delete a given protection
+     * 
+     * @param protection
+     * @return <b>true</b> if the deletion was successful, otherwise <b>false</b>
+     */
     public boolean deleteProtection(BlockVector vector) {
         try {
             IProtection protection = this.getProtectionAtPosition(vector);
@@ -352,6 +469,30 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete protection from database @ " + protectionID);
             return false;
+        }
+    }
+
+    /**
+     * Load all protections from the Database
+     */
+    private void loadAllEntityProtections() {
+        try {
+            ResultSet results = this.loadAllEntityProtections.executeQuery();
+            int loaded = 0;
+            while (results.next()) {
+                try {
+                    EntityProtection protectedEntity = new EntityProtection(results.getInt("ID"), results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
+                    protectedEntity.setGuestList(ListHelper.toList(results.getString("guestList")));
+                    MoneyPitCore.entityProtectionManager.addProtection(protectedEntity);
+                    loaded++;
+                } catch (Exception error) {
+                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load entityprotection: ID=" + results.getInt("ID") + " -> " + results.getString("entityUuid"));
+                    continue;
+                }
+            }
+            ConsoleUtils.printInfo(MoneyPitCore.NAME, loaded + " entityprotections loaded!");
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
         }
     }
 
