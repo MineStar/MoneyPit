@@ -1,4 +1,4 @@
-package de.minestar.moneypit.modules;
+package de.minestar.moneypit.modules.trapdoor;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -8,6 +8,7 @@ import com.bukkit.gemo.patchworking.IProtection;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.PhysicsHelper;
 

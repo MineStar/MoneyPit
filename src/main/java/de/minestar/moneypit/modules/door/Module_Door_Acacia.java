@@ -1,4 +1,4 @@
-package de.minestar.moneypit.modules;
+package de.minestar.moneypit.modules.door;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;

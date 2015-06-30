@@ -1,10 +1,11 @@
-package de.minestar.moneypit.modules;
+package de.minestar.moneypit.modules.fencegate;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.IProtection;
 
 import de.minestar.moneypit.manager.ModuleManager;
+import de.minestar.moneypit.modules.Module;
 
 public abstract class Module_FenceGate_Abstract extends Module {
 

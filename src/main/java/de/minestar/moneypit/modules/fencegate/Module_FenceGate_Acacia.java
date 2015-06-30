@@ -1,4 +1,4 @@
-package de.minestar.moneypit.modules;
+package de.minestar.moneypit.modules.fencegate;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
