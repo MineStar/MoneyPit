@@ -46,7 +46,10 @@ import de.minestar.moneypit.commands.cmd_noLock;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
+import de.minestar.moneypit.listener.EntityListener;
 import de.minestar.moneypit.listener.MonitorListener;
+import de.minestar.moneypit.manager.EntityModuleManager;
+import de.minestar.moneypit.manager.EntityProtectionManager;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -60,11 +63,14 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
 
     /** LISTENER */
     public static ActionListener actionListener;
+    public static EntityListener entityListener;
     public static MonitorListener monitorListener;
 
     /** MANAGER */
     public static ModuleManager moduleManager;
+    public static EntityModuleManager entityModuleManager;
     public static ProtectionManager protectionManager;
+    public static EntityProtectionManager entityProtectionManager;
     public static PlayerManager playerManager;
     public static QueueManager queueManager;
 
@@ -90,17 +96,21 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
 
         // create
         moduleManager = new ModuleManager();
+        entityModuleManager = new EntityModuleManager();
         playerManager = new PlayerManager();
         protectionManager = new ProtectionManager();
+        entityProtectionManager = new EntityProtectionManager();
         queueManager = new QueueManager();
 
         protectionManager.init();
+        entityProtectionManager.init();
 
         // database
         databaseManager = new DatabaseManager(MoneyPitCore.NAME, new File(getDataFolder(), "sqlconfig.yml"));
 
         // init
         moduleManager.init();
+        entityModuleManager.init();
 
         // load data
         databaseManager.init();
@@ -161,6 +171,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
     @Override
     protected boolean createListener() {
         actionListener = new ActionListener();
+        entityListener = new EntityListener();
         monitorListener = new MonitorListener();
         return true;
     }
@@ -179,6 +190,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
     @Override
     protected boolean registerEvents(PluginManager pm) {
         pm.registerEvents(actionListener, this);
+        pm.registerEvents(entityListener, this);
         pm.registerEvents(monitorListener, this);
         return true;
     }

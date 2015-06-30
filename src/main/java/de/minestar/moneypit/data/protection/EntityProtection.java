@@ -11,21 +11,21 @@ import com.bukkit.gemo.utils.UtilPermissions;
 
 public class EntityProtection {
     private final UUID uuid;
-    private final String ownerUUID;
+    private final String owner;
     private final EntityType entityType;
     private final HashSet<String> guestList;
     private final ProtectionType protectionType;
 
-    public EntityProtection(String ownerUuid, UUID uuid, EntityType type, ProtectionType protectionType) {
-        this.ownerUUID = ownerUuid;
+    public EntityProtection(String owner, UUID uuid, EntityType type, ProtectionType protectionType) {
+        this.owner = owner;
         this.uuid = uuid;
         this.entityType = type;
         this.protectionType = protectionType;
         this.guestList = new HashSet<String>(1);
     }
 
-    public String getOwnerUUID() {
-        return ownerUUID;
+    public String getOwner() {
+        return owner;
     }
 
     public UUID getUuid() {
@@ -41,7 +41,7 @@ public class EntityProtection {
     }
 
     public boolean canAccess(Player player) {
-        return this.isPublic() || this.canEdit(player) || this.guestList.contains(player.getUniqueId().toString());
+        return this.isPublic() || this.canEdit(player) || this.guestList.contains(player.getName().toString());
     }
 
     public boolean canEdit(Player player) {
@@ -49,7 +49,7 @@ public class EntityProtection {
     }
 
     public boolean isOwner(Player player) {
-        return this.ownerUUID.equalsIgnoreCase(player.getUniqueId().toString());
+        return this.owner.equalsIgnoreCase(player.getName());
     }
 
     public HashSet<String> getGuestList() {

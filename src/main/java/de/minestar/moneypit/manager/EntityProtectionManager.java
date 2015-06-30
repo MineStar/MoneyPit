@@ -48,7 +48,7 @@ public class EntityProtectionManager {
      * @param vector
      */
     public void removeProtection(UUID uuid) {
-       this.protections.remove(uuid);
+        this.protections.remove(uuid);
     }
 
     /**

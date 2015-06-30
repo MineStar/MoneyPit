@@ -1,5 +1,6 @@
 package de.minestar.moneypit.listener;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.ChatColor;
@@ -21,6 +22,7 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
 import de.minestar.moneypit.data.protection.EntityProtection;
+import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.entitymodules.EntityModule;
 import de.minestar.moneypit.manager.EntityModuleManager;
 import de.minestar.moneypit.manager.EntityProtectionManager;
@@ -35,6 +37,13 @@ public class EntityListener implements Listener {
     private EntityModuleManager entityModuleManager;
     private PlayerManager playerManager;
     private QueueManager queueManager;
+
+    public EntityListener() {
+        this.entityModuleManager = MoneyPitCore.entityModuleManager;
+        this.playerManager = MoneyPitCore.playerManager;
+        this.entityProtectionManager = MoneyPitCore.entityProtectionManager;
+        this.queueManager = MoneyPitCore.queueManager;
+    }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -105,7 +114,7 @@ public class EntityListener implements Listener {
         // is this protection private?
         if (!protectedEntity.canAccess(player)) {
             // show information about the protection
-            this.showInformation(event.getPlayer(), protectedEntity, false);
+            this.showInformation(event.getPlayer(), interactedEntity, false);
             // cancel the event
             event.setCancelled(true);
             return;
@@ -113,7 +122,7 @@ public class EntityListener implements Listener {
 
         if (isAdmin) {
             // show information about the protection
-            this.showInformation(player, protectedEntity, false);
+            this.showInformation(player, interactedEntity, false);
         }
 
         return;
@@ -183,7 +192,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        String message = "This " + ChatColor.RED + protectedEntity.getProtectionType() + " " + protectedEntity.getEntityType() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + protectedEntity.getOwnerUUID() + ".";
+        String message = "This " + ChatColor.RED + protectedEntity.getProtectionType() + " " + protectedEntity.getEntityType() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + protectedEntity.getOwner() + ".";
         PlayerUtils.sendInfo(player, message);
         return;
 
@@ -197,7 +206,7 @@ public class EntityListener implements Listener {
             return;
         }
 
-        String message = "This " + ChatColor.RED + protectedEntity.getProtectionType() + " " + protectedEntity.getEntityType() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + protectedEntity.getOwnerUUID() + ".";
+        String message = "This " + ChatColor.RED + protectedEntity.getProtectionType() + " " + protectedEntity.getEntityType() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + protectedEntity.getOwner() + ".";
         PlayerUtils.sendInfo(player, message);
 
         if (protectedEntity.canAccess(player)) {
