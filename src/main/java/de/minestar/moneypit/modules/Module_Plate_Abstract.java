@@ -1,6 +1,5 @@
 package de.minestar.moneypit.modules;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
@@ -11,21 +10,23 @@ import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.PhysicsHelper;
 
-public class Module_StonePlate extends Module {
+public class Module_Plate_Abstract extends Module {
 
-    private final String NAME = "stoneplate";
+    private final String _name;
 
-    public Module_StonePlate(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig(NAME, ymlFile);
+    public Module_Plate_Abstract(YamlConfiguration ymlFile, String name) {
+        _name = name;
+        this.writeDefaultConfig(_name, ymlFile);
     }
 
-    public Module_StonePlate(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+    public Module_Plate_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
         super();
-        this.init(moduleManager, ymlFile, Material.STONE_PLATE.getId(), NAME);
+        _name = name;
+        this.init(moduleManager, ymlFile, typeId, _name);
     }
 
     @Override
-    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
+    public final boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // get the anchor
         BlockVector anchor = protection.getVector().getRelative(0, -1, 0);
 

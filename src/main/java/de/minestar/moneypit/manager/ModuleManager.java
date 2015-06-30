@@ -32,10 +32,13 @@ import de.minestar.moneypit.modules.Module_ItemFrame;
 import de.minestar.moneypit.modules.Module_Jukebox;
 import de.minestar.moneypit.modules.Module_Lever;
 import de.minestar.moneypit.modules.Module_Painting;
+import de.minestar.moneypit.modules.Module_Plate_Golden;
+import de.minestar.moneypit.modules.Module_Plate_Iron;
+import de.minestar.moneypit.modules.Module_Plate_Stone;
+import de.minestar.moneypit.modules.Module_Plate_Wooden;
 import de.minestar.moneypit.modules.Module_SignPost;
 import de.minestar.moneypit.modules.Module_Skull;
 import de.minestar.moneypit.modules.Module_StoneButton;
-import de.minestar.moneypit.modules.Module_StonePlate;
 import de.minestar.moneypit.modules.Module_TrapDoor_Iron;
 import de.minestar.moneypit.modules.Module_TrapDoor_Wooden;
 import de.minestar.moneypit.modules.Module_TrappedChest;
@@ -96,10 +99,11 @@ public class ModuleManager {
     private void initModules(boolean withInstance, YamlConfiguration ymlFile) {
         // @formatter:off
         if (withInstance) {
-         // SAVE MODULES
-            new Module_Chest            (this, ymlFile);
+            // LOAD MODULES            
+            // signs
             new Module_SignPost         (this, ymlFile);
             new Module_WallSign         (this, ymlFile);
+            // doors
             new Module_Door_Acacia      (this, ymlFile);
             new Module_Door_Birch       (this, ymlFile);
             new Module_Door_DarkOak     (this, ymlFile);
@@ -107,32 +111,41 @@ public class ModuleManager {
             new Module_Door_Jungle      (this, ymlFile);
             new Module_Door_Spruce      (this, ymlFile);
             new Module_Door_Wooden      (this, ymlFile);
+            // trapdoors
             new Module_TrapDoor_Iron    (this, ymlFile);
             new Module_TrapDoor_Wooden  (this, ymlFile);
-            new Module_StoneButton      (this, ymlFile);
-            new Module_Lever            (this, ymlFile);
+            // fencegates
             new Module_FenceGate_Acacia (this, ymlFile);
             new Module_FenceGate_Birch  (this, ymlFile);
             new Module_FenceGate_DarkOak(this, ymlFile);
             new Module_FenceGate_Jungle (this, ymlFile);
             new Module_FenceGate_Spruce (this, ymlFile);
             new Module_FenceGate_Wooden (this, ymlFile);
-            new Module_StonePlate       (this, ymlFile);
+            // plates
+            new Module_Plate_Golden     (this, ymlFile);
+            new Module_Plate_Iron       (this, ymlFile);
+            new Module_Plate_Stone      (this, ymlFile);
+            new Module_Plate_Wooden     (this, ymlFile);            
+            // other stuff
+            new Module_Chest            (this, ymlFile);
             new Module_Dispenser        (this, ymlFile);
+            new Module_Dropper          (this, ymlFile);   
             new Module_Furnace          (this, ymlFile); 
             new Module_FurnaceBurning   (this, ymlFile);
-            new Module_Jukebox          (this, ymlFile);
+            new Module_Hopper           (this, ymlFile);
             new Module_ItemFrame        (this, ymlFile);
+            new Module_Jukebox          (this, ymlFile);
+            new Module_Lever            (this, ymlFile);
             new Module_Painting         (this, ymlFile);
             new Module_Skull            (this, ymlFile);
-            new Module_Hopper           (this, ymlFile);
-            new Module_Dropper          (this, ymlFile);
-            new Module_TrappedChest     (this, ymlFile);
+            new Module_StoneButton      (this, ymlFile);
+            new Module_TrappedChest     (this, ymlFile); 
         } else {
-            // SAVE MODULES
-            new Module_Chest            (ymlFile);
+            // CREATE DEFAULT CONFIGS
+            // signs
             new Module_SignPost         (ymlFile);
             new Module_WallSign         (ymlFile);
+            // doors
             new Module_Door_Acacia      (ymlFile);
             new Module_Door_Birch       (ymlFile);
             new Module_Door_DarkOak     (ymlFile);
@@ -140,27 +153,35 @@ public class ModuleManager {
             new Module_Door_Jungle      (ymlFile);
             new Module_Door_Spruce      (ymlFile);
             new Module_Door_Wooden      (ymlFile);
+            // trapdoors
             new Module_TrapDoor_Iron    (ymlFile);
             new Module_TrapDoor_Wooden  (ymlFile);
-            new Module_StoneButton      (ymlFile);
-            new Module_Lever            (ymlFile);
+            // fencegates
             new Module_FenceGate_Acacia (ymlFile);
             new Module_FenceGate_Birch  (ymlFile);
             new Module_FenceGate_DarkOak(ymlFile);
             new Module_FenceGate_Jungle (ymlFile);
             new Module_FenceGate_Spruce (ymlFile);
             new Module_FenceGate_Wooden (ymlFile);
-            new Module_StonePlate       (ymlFile);
+            // plates
+            new Module_Plate_Golden     (ymlFile);
+            new Module_Plate_Iron       (ymlFile);
+            new Module_Plate_Stone      (ymlFile);
+            new Module_Plate_Wooden     (ymlFile);            
+            // other stuff
+            new Module_Chest            (ymlFile);
             new Module_Dispenser        (ymlFile);
+            new Module_Dropper          (ymlFile);   
             new Module_Furnace          (ymlFile); 
             new Module_FurnaceBurning   (ymlFile);
-            new Module_Jukebox          (ymlFile);
+            new Module_Hopper           (ymlFile);
             new Module_ItemFrame        (ymlFile);
+            new Module_Jukebox          (ymlFile);
+            new Module_Lever            (ymlFile);
             new Module_Painting         (ymlFile);
             new Module_Skull            (ymlFile);
-            new Module_Hopper           (ymlFile);
-            new Module_Dropper          (ymlFile);
-            new Module_TrappedChest     (ymlFile);
+            new Module_StoneButton      (ymlFile);
+            new Module_TrappedChest     (ymlFile);     
         }
         // @formatter:on
     }
