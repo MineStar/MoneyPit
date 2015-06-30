@@ -1,6 +1,5 @@
 package de.minestar.moneypit.modules;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
@@ -12,27 +11,29 @@ import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.PhysicsHelper;
 
-public class Module_TrapDoor extends Module {
+public abstract class Module_TrapDoor_Abstract extends Module {
 
-    private final String NAME = "trapdoor";
+    private final String _name;
 
-    public Module_TrapDoor(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig(NAME, ymlFile);
+    public Module_TrapDoor_Abstract(YamlConfiguration ymlFile, String name) {
+        _name = name;
+        this.writeDefaultConfig(name, ymlFile);
     }
 
-    public Module_TrapDoor(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+    public Module_TrapDoor_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
         super();
-        this.init(moduleManager, ymlFile, Material.TRAP_DOOR.getId(), NAME);
-        this.setBlockRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+        _name = name;
+        this.init(moduleManager, ymlFile, typeId, _name);
+        this.setBlockRedstone(ymlFile.getBoolean("protect." + _name + ".handleRedstone", true));
     }
 
     @Override
-    protected void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + NAME + ".handleRedstone", true);
+    protected final void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + _name + ".handleRedstone", true);
     }
 
     @Override
-    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
+    public final boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // get the anchor
         BlockVector anchor = DoorHelper.getTrapDoorAnchor(protection.getVector(), subData);
 

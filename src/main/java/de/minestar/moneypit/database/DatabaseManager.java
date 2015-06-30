@@ -5,15 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Painting;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
@@ -23,7 +18,6 @@ import de.minestar.minestarlibrary.database.AbstractSQLiteHandler;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.modules.Module;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class DatabaseManager extends AbstractSQLiteHandler {
@@ -358,91 +352,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete protection from database @ " + protectionID);
             return false;
-        }
-    }
-
-    /**
-     * Load all protections from the Database
-     */
-    private void loadAllProtectionsOLD() {
-        try {
-            ResultSet results = this.loadAllProtections.executeQuery();
-            int count = 0;
-            Map<Integer, BlockVector> failedProtections = new HashMap<Integer, BlockVector>();
-            while (results.next()) {
-                BlockVector vector = new BlockVector(results.getString("blockWorld"), results.getInt("blockX"), results.getInt("blockY"), results.getInt("blockZ"));
-                try {
-                    Location location = vector.getLocation();
-                    if (location == null) {
-                        failedProtections.put(results.getInt("ID"), vector);
-                        continue;
-                    }
-
-                    location.getChunk().load(true);
-                    Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
-
-                    Hanging entityHanging = null;
-                    if (module == null) {
-                        // search for an itemframe
-                        Collection<ItemFrame> frames = location.getWorld().getEntitiesByClass(ItemFrame.class);
-                        boolean found = false;
-                        for (ItemFrame frame : frames) {
-                            BlockVector otherVector = new BlockVector(frame.getLocation());
-                            if (vector.equals(otherVector)) {
-                                module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
-                                entityHanging = frame;
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            // search for a painting
-                            Collection<Painting> paintings = location.getWorld().getEntitiesByClass(Painting.class);
-                            for (Painting paint : paintings) {
-                                BlockVector otherVector = new BlockVector(paint.getLocation());
-                                if (vector.equals(otherVector)) {
-                                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING.getId());
-                                    entityHanging = paint;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                failedProtections.put(results.getInt("ID"), vector);
-                                continue;
-                            }
-                        }
-                    }
-                    IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
-                    protection.setGuestList(ListHelper.toList(results.getString("guestList")));
-                    byte subData = location.getBlock().getData();
-                    if (module.getRegisteredTypeID() == Material.ITEM_FRAME.getId() || module.getRegisteredTypeID() == Material.PAINTING.getId()) {
-                        if (entityHanging != null) {
-                            subData = (byte) entityHanging.getAttachedFace().ordinal();
-                        } else {
-                            failedProtections.put(results.getInt("ID"), vector);
-                            continue;
-                        }
-                    }
-                    if (module.addProtection(protection, subData, false)) {
-                        ++count;
-                    } else {
-                        failedProtections.put(results.getInt("ID"), vector);
-                    }
-                } catch (Exception error) {
-                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
-                }
-            }
-            ConsoleUtils.printInfo(MoneyPitCore.NAME, count + " protections loaded!");
-            if (failedProtections.size() > 0) {
-                ConsoleUtils.printInfo(MoneyPitCore.NAME, failedProtections.size() + " protections are NOT loaded due to missing blocks or locations!");
-                // delete failed protections
-                for (Map.Entry<Integer, BlockVector> entry : failedProtections.entrySet()) {
-                    this.deleteProtection(entry.getKey());
-                }
-            }
-        } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load protections!");
         }
     }
 

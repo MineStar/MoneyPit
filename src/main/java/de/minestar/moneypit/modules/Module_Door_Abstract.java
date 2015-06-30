@@ -2,7 +2,6 @@ package de.minestar.moneypit.modules;
 
 import java.util.ArrayList;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -18,31 +17,34 @@ import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.utils.DoorHelper;
 import de.minestar.moneypit.utils.PhysicsHelper;
 
-public class Module_WoodenDoor extends Module {
+public abstract class Module_Door_Abstract extends Module {
 
-    private final String NAME = "wooddoor";
+    private final String _name;
 
-    public Module_WoodenDoor(YamlConfiguration ymlFile) {
-        this.writeDefaultConfig(NAME, ymlFile);
+    public Module_Door_Abstract(YamlConfiguration ymlFile, String name, int typeId) {
+        _name = name;
+        this.writeDefaultConfig(name, ymlFile);
     }
 
-    public Module_WoodenDoor(ModuleManager moduleManager, YamlConfiguration ymlFile) {
+    public Module_Door_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
         super();
-        this.init(moduleManager, ymlFile, Material.WOODEN_DOOR.getId(), NAME);
+        _name = name;
+        this.init(moduleManager, ymlFile, typeId, name);
         this.setDoNeighbourCheck(true);
-        this.setBlockRedstone(ymlFile.getBoolean("protect." + NAME + ".handleRedstone", true));
+        this.setBlockRedstone(ymlFile.getBoolean("protect." + _name + ".handleRedstone", true));
     }
 
     @Override
-    protected void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + NAME + ".handleRedstone", true);
+    protected final void writeExtraConfig(String moduleName, YamlConfiguration ymlFile) {
+        ymlFile.set("protect." + _name + ".handleRedstone", true);
     }
 
     @Override
-    public boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
+    public final boolean addProtection(IProtection protection, byte subData, boolean saveToDatabase) {
         // protect the block above
         IProtection subProtection = new Protection(protection.getVector().getRelative(0, 1, 0), protection);
         protection.addSubProtection(subProtection);
+        MoneyPitCore.databaseManager.createSubProtection(subProtection, saveToDatabase);
 
         // protect the block below
         subProtection = new Protection(protection.getVector().getRelative(0, -1, 0), protection);
@@ -82,9 +84,9 @@ public class Module_WoodenDoor extends Module {
     }
 
     @Override
-    public EventResult onPlace(Player player, BlockVector vector) {
+    public final EventResult onPlace(Player player, BlockVector vector) {
         // search a second chest
-        BlockVector doubleDoor = DoorHelper.getSecondWoodDoor(vector);
+        BlockVector doubleDoor = DoorHelper.getSecondDoor(vector, this.getRegisteredTypeID());
         if (doubleDoor == null) {
             return new EventResult(false, false, null);
         }
@@ -131,6 +133,7 @@ public class Module_WoodenDoor extends Module {
 
             // send info
             PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Subprotection created.");
+
         }
 
         // return true to abort the event

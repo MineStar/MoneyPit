@@ -1,5 +1,8 @@
 package de.minestar.moneypit.utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,24 +15,27 @@ import de.minestar.moneypit.MoneyPitCore;
 public class DoorHelper {
     private final static BlockFace[] faceList = new BlockFace[]{BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH};
 
-    public static BlockVector getSecondWoodDoor(BlockVector vector) {
-        Block door = vector.getLocation().getBlock();
-        Block dDoor;
-        for (BlockFace face : faceList) {
-            dDoor = door.getRelative(face);
-            if (dDoor.getType().equals(Material.WOODEN_DOOR)) {
-                return new BlockVector(dDoor.getLocation());
-            }
-        }
-        return null;
-    }
+    private final static Set<Integer> doorIDs = new HashSet<Integer>() {
 
-    public static BlockVector getSecondIronDoor(BlockVector vector) {
+        private static final long serialVersionUID = 9110227043191218219L;
+
+        {
+            add(Material.WOODEN_DOOR.getId());
+            add(Material.IRON_DOOR_BLOCK.getId());
+            add(Material.SPRUCE_DOOR.getId());
+            add(Material.BIRCH_DOOR.getId());
+            add(Material.JUNGLE_DOOR.getId());
+            add(Material.ACACIA_DOOR.getId());
+            add(Material.DARK_OAK_DOOR.getId());
+        }
+    };
+
+    public static BlockVector getSecondDoor(BlockVector vector, int typeId) {
         Block door = vector.getLocation().getBlock();
         Block dDoor;
         for (BlockFace face : faceList) {
             dDoor = door.getRelative(face);
-            if (dDoor.getType().equals(Material.IRON_DOOR_BLOCK)) {
+            if (dDoor.getType().getId() == typeId) {
                 return new BlockVector(dDoor.getLocation());
             }
         }
@@ -83,7 +89,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (!doorIDs.contains(block.getType().getId()))
             return null;
 
         if (block.getData() < 8) {
@@ -97,7 +103,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (!doorIDs.contains(block.getType().getId()))
             return null;
 
         if (block.getData() < 8) {
@@ -180,7 +186,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!block.getType().equals(Material.WOODEN_DOOR) && !block.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (!doorIDs.contains(block.getType().getId()))
             return null;
 
         Block selfLower = DoorHelper.getLowerDoorPart(block);
@@ -249,7 +255,7 @@ public class DoorHelper {
         } else {
             Block lower = upper.getRelative(BlockFace.DOWN);
 
-            if (!lower.getType().equals(Material.WOODEN_DOOR) && !lower.getType().equals(Material.IRON_DOOR_BLOCK))
+            if (!doorIDs.contains(lower.getType().getId()))
                 return null;
 
             return lower;

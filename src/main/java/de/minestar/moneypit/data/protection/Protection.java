@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
-import com.bukkit.gemo.patchworking.ISubProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
