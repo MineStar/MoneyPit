@@ -9,7 +9,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.modules.Module;
-import de.minestar.moneypit.modules.Module_ArmorStand;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_Dispenser;
 import de.minestar.moneypit.modules.Module_Dropper;
@@ -128,7 +127,6 @@ public class ModuleManager {
             new Module_Plate_Stone      (this, ymlFile);
             new Module_Plate_Wooden     (this, ymlFile);            
             // other stuff
-            new Module_ArmorStand       (this, ymlFile);
             new Module_Chest            (this, ymlFile);
             new Module_Dispenser        (this, ymlFile);
             new Module_Dropper          (this, ymlFile);   
@@ -171,7 +169,6 @@ public class ModuleManager {
             new Module_Plate_Stone      (ymlFile);
             new Module_Plate_Wooden     (ymlFile);            
             // other stuff
-            new Module_ArmorStand       (ymlFile);
             new Module_Chest            (ymlFile);
             new Module_Dispenser        (ymlFile);
             new Module_Dropper          (ymlFile);   

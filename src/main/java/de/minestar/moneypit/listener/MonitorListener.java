@@ -1,6 +1,8 @@
 package de.minestar.moneypit.listener;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +20,7 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.Queue;
+import de.minestar.moneypit.queues.entity.EntityQueue;
 
 public class MonitorListener implements Listener {
 
@@ -167,4 +170,34 @@ public class MonitorListener implements Listener {
             }
         }
     }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Entity interactedEntity = event.getRightClicked();
+        Player player = event.getPlayer();
+
+        // we need an entity and a player
+        if (interactedEntity == null || player == null) {
+            return;
+        }
+
+        // get the queue
+        EntityQueue queue = this.queueManager.getAndRemoveEntityQueue(interactedEntity.getUniqueId());
+        if (queue != null) {
+            // execute the queue, if the event was not cancelled
+            if (!event.isCancelled()) {
+                // execute the event
+                if (!queue.execute()) {
+                    event.setCancelled(true);
+                }
+
+                // cancel the event
+                event.setCancelled(true);
+            } else {
+                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Could not complete your interact request!");
+                PlayerUtils.sendInfo(event.getPlayer(), "The event was cancelled by another plugin.");
+            }
+        }
+    }
+
 }

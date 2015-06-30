@@ -787,6 +787,7 @@ public class ActionListener implements Listener {
             }
         }
     }
+
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         // handle inventory-events for gift-chests
