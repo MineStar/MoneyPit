@@ -5,12 +5,12 @@ import java.util.HashSet;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -41,10 +41,49 @@ public class EntityListener implements Listener {
         this.queueManager = MoneyPitCore.queueManager;
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        Entity interactedEntity = event.getRightClicked();
+        Player player = (Player) event.getPlayer();
+        // we need an entity and a player
+        if (interactedEntity == null || player == null) {
+            return;
+        }
+
+        System.out.println("interact");
+
+        if (!entityModuleManager.isModuleRegistered(interactedEntity.getType())) {
+            return;
+        }
+
+        // we need a protection to show some information about it
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
+        if (protectedEntity == null) {
+            return;
+        }
+
+        boolean isAdmin = UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
+        // is this protection private?
+        if (!protectedEntity.canAccess(player)) {
+            // show information about the protection
+            this.showInformation(player, interactedEntity, false);
+            // cancel the event
+            return;
+        }
+
+        if (isAdmin) {
+            // show information about the protection
+            this.showInformation(player, interactedEntity, false);
+        }
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         Entity interactedEntity = event.getEntity();
         Entity damager = event.getDamager();
+
+        System.out.println("EntityDamageByEntityEvent");
+
         if (damager.getType().equals(EntityType.PLAYER)) {
             Player player = (Player) damager;
 
@@ -104,7 +143,7 @@ public class EntityListener implements Listener {
                 return;
             }
 
-            if (this.entityProtectionManager.hasProtection(event.getEntity().getUniqueId())) {
+            if (this.entityProtectionManager.hasProtection(event.getEntity().getUniqueId().toString())) {
                 event.setDamage(0d);
                 event.setCancelled(true);
             }
@@ -113,7 +152,7 @@ public class EntityListener implements Listener {
 
     private void handleNormalInteract(EntityDamageByEntityEvent event, Player player, Entity interactedEntity) {
         // we need a protection to show some information about it
-        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId());
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
             return;
         }
@@ -131,13 +170,7 @@ public class EntityListener implements Listener {
         if (isAdmin) {
             // show information about the protection
             this.showInformation(player, interactedEntity, false);
-        }
-
-        LivingEntity livingEntity = (LivingEntity) interactedEntity;
-        if (event.getDamage() >= livingEntity.getHealth()) {
-            // queue the event for later use in MonitorListener
-            RemoveEntityProtectionQueue queue = new RemoveEntityProtectionQueue(player, protectedEntity);
-            this.queueManager.addEntityQueue(interactedEntity, queue);
+            event.setCancelled(true);
         }
     }
 
@@ -169,7 +202,7 @@ public class EntityListener implements Listener {
         }
 
         // add protection, if it isn't protected yet
-        if (!this.entityProtectionManager.hasProtection(interactedEntity.getUniqueId())) {
+        if (!this.entityProtectionManager.hasProtection(interactedEntity.getUniqueId().toString())) {
             if (state == PlayerState.PROTECTION_ADD_PRIVATE) {
                 // create a private protection
                 // queue the event for later use in MonitorListener
@@ -200,7 +233,7 @@ public class EntityListener implements Listener {
         }
 
         // we need a protection to show some information about it
-        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId());
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
             PlayerUtils.sendError(player, MoneyPitCore.NAME, "This '" + interactedEntity.getType() + "' is not protected.");
             return;
@@ -229,7 +262,7 @@ public class EntityListener implements Listener {
 
     private void showInformation(Player player, Entity interactedEntity, boolean showErrorMessage) {
         // we need a protection to show some information about it
-        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId());
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
             if (showErrorMessage) {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "This '" + interactedEntity.getType() + "' is not protected.");
@@ -245,7 +278,7 @@ public class EntityListener implements Listener {
 
     private void showExtendedInformation(Player player, Entity interactedEntity) {
         // we need a protection to show some information about it
-        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId());
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
             PlayerUtils.sendError(player, MoneyPitCore.NAME, "This '" + interactedEntity.getType() + "' is not protected.");
             return;

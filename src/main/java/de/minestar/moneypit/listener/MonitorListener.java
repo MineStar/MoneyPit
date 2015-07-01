@@ -172,7 +172,7 @@ public class MonitorListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity interactedEntity = event.getEntity();
         if (event.getDamager().getType().equals(EntityType.PLAYER)) {
@@ -184,7 +184,7 @@ public class MonitorListener implements Listener {
             }
 
             // get the queue
-            EntityQueue queue = this.queueManager.getAndRemoveEntityQueue(interactedEntity.getUniqueId());
+            EntityQueue queue = this.queueManager.getAndRemoveEntityQueue(interactedEntity.getUniqueId().toString());
             if (queue != null) {
                 // execute the queue, if the event was not cancelled
                 if (!event.isCancelled()) {

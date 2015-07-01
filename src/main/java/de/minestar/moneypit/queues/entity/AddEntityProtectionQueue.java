@@ -31,7 +31,7 @@ public class AddEntityProtectionQueue implements EntityQueue {
                 PlayerUtils.sendInfo(player, "Please contact an admin.");
                 return false;
             }
-
+            MoneyPitCore.entityProtectionManager.addProtection(protection);
             if (this.protectionType == ProtectionType.PRIVATE) {
                 PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Private protection created.");
             } else if (this.protectionType == ProtectionType.PUBLIC) {

@@ -1,7 +1,6 @@
 package de.minestar.moneypit.manager;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.entity.Entity;
 
@@ -13,7 +12,7 @@ import de.minestar.moneypit.queues.entity.EntityQueue;
 public class QueueManager {
 
     private HashMap<BlockVector, Queue> events = new HashMap<BlockVector, Queue>();
-    private HashMap<UUID, EntityQueue> entityEvents = new HashMap<UUID, EntityQueue>();
+    private HashMap<String, EntityQueue> entityEvents = new HashMap<String, EntityQueue>();
 
     public void addQueue(Queue queue) {
         this.events.put(queue.getVector(), queue);
@@ -26,12 +25,12 @@ public class QueueManager {
     }
 
     public void addEntityQueue(Entity entity, EntityQueue queue) {
-        this.entityEvents.put(entity.getUniqueId(), queue);
+        this.entityEvents.put(entity.getUniqueId().toString(), queue);
     }
 
-    public EntityQueue getAndRemoveEntityQueue(UUID uuid) {
+    public EntityQueue getAndRemoveEntityQueue(String uuid) {
         EntityQueue queue = this.entityEvents.get(uuid);
-        this.events.remove(uuid);
+        this.events.remove(uuid.toString());
         return queue;
     }
 

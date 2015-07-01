@@ -1,19 +1,18 @@
 package de.minestar.moneypit.manager;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import de.minestar.moneypit.data.protection.EntityProtection;
 
 public class EntityProtectionManager {
 
-    private HashMap<UUID, EntityProtection> protections;
+    private HashMap<String, EntityProtection> protections;
 
     /**
      * Initialize the manager
      */
     public void init() {
-        this.protections = new HashMap<UUID, EntityProtection>(256);
+        this.protections = new HashMap<String, EntityProtection>(256);
     }
 
     // ////////////////////////////////////////////////////////////////
@@ -28,7 +27,7 @@ public class EntityProtectionManager {
      * @param uuid
      * @return the ProtectionEntity
      */
-    public EntityProtection getProtection(UUID uuid) {
+    public EntityProtection getProtection(String uuid) {
         return this.protections.get(uuid);
     }
 
@@ -38,7 +37,7 @@ public class EntityProtectionManager {
      * @param protectedEntity
      */
     public boolean addProtection(EntityProtection protectedEntity) {
-        this.protections.put(protectedEntity.getUuid(), protectedEntity);
+        this.protections.put(protectedEntity.getUuid().toString(), protectedEntity);
         return true;
     }
 
@@ -47,7 +46,7 @@ public class EntityProtectionManager {
      * 
      * @param vector
      */
-    public void removeProtection(UUID uuid) {
+    public void removeProtection(String uuid) {
         this.protections.remove(uuid);
     }
 
@@ -57,7 +56,7 @@ public class EntityProtectionManager {
      * @param vector
      * @return <b>true</b> if the uuid is protected, otherwise <b>false</b>
      */
-    public boolean hasProtection(UUID uuid) {
+    public boolean hasProtection(String uuid) {
         return this.protections.containsKey(uuid);
     }
 }

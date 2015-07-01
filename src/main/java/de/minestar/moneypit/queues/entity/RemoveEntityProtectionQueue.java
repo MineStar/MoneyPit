@@ -22,7 +22,7 @@ public class RemoveEntityProtectionQueue implements EntityQueue {
         // remove from EntityDatabase
         if (MoneyPitCore.databaseManager.deleteEntityProtection(this.protectedEntity)) {
             // remove from EntityProtectionManager
-            MoneyPitCore.entityProtectionManager.removeProtection(this.protectedEntity.getUuid());
+            MoneyPitCore.entityProtectionManager.removeProtection(this.protectedEntity.getUuid().toString());
 
             // send info
             PlayerUtils.sendSuccess(this.player, MoneyPitCore.NAME, "Protection removed.");

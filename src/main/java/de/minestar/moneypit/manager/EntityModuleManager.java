@@ -11,6 +11,7 @@ import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.entitymodules.EntityModule;
 import de.minestar.moneypit.entitymodules.EntityModule_ArmorStand;
+import de.minestar.moneypit.entitymodules.EntityModule_Horse;
 
 public class EntityModuleManager {
 
@@ -68,10 +69,12 @@ public class EntityModuleManager {
         // @formatter:off
         if (withInstance) {
             // LOAD MODULES 
-            new EntityModule_ArmorStand(ymlFile, true);            
+            new EntityModule_ArmorStand(ymlFile, true);  
+            new EntityModule_Horse(ymlFile, true);                 
         } else {
             // CREATE DEFAULT CONFIGS
             new EntityModule_ArmorStand(ymlFile, false);
+            new EntityModule_Horse(ymlFile, false);       
         }
         // @formatter:on
     }
