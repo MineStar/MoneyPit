@@ -33,10 +33,4 @@ public class RemoveEntityProtectionQueue implements EntityQueue {
             return false;
         }
     }
-
-    @Override
-    public EntityProtection getProtection() {
-        return this.protectedEntity;
-    }
-
 }

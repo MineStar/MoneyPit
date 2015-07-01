@@ -25,10 +25,6 @@ public class QueueManager {
         return queue;
     }
 
-    public void addEntityQueue(EntityQueue queue) {
-        this.entityEvents.put(queue.getProtection().getUuid(), queue);
-    }
-
     public void addEntityQueue(Entity entity, EntityQueue queue) {
         this.entityEvents.put(entity.getUniqueId(), queue);
     }

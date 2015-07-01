@@ -137,7 +137,7 @@ public class EntityListener implements Listener {
         if (event.getDamage() >= livingEntity.getHealth()) {
             // queue the event for later use in MonitorListener
             RemoveEntityProtectionQueue queue = new RemoveEntityProtectionQueue(player, protectedEntity);
-            this.queueManager.addEntityQueue(queue);
+            this.queueManager.addEntityQueue(interactedEntity, queue);
         }
     }
 
@@ -185,7 +185,7 @@ public class EntityListener implements Listener {
             }
         } else {
             // Send errormessage
-            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Cannot create protection!");
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Entity is already protected!");
             event.setCancelled(true);
 
             // show information about the protection
@@ -214,7 +214,7 @@ public class EntityListener implements Listener {
 
         // queue the event for later use in MonitorListener
         RemoveEntityProtectionQueue queue = new RemoveEntityProtectionQueue(player, protectedEntity);
-        this.queueManager.addEntityQueue(queue);
+        this.queueManager.addEntityQueue(interactedEntity, queue);
     }
 
     private void handleInfoInteract(Player player, Entity interactedEntity) {
