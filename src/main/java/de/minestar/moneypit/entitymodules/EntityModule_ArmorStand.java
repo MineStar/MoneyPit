@@ -6,7 +6,7 @@ import org.bukkit.entity.EntityType;
 public class EntityModule_ArmorStand extends EntityModule {
 
     public EntityModule_ArmorStand(YamlConfiguration ymlFile, boolean initialize) {
-        super(EntityType.ARMOR_STAND, ymlFile, initialize);
+        super(EntityType.ARMOR_STAND, ymlFile, initialize, true);
     }
 
 }
