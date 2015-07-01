@@ -10,24 +10,18 @@ import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
 public class EntityProtection {
-    private final int databaseId;
     private final UUID uuid;
     private final String owner;
     private final EntityType entityType;
     private final HashSet<String> guestList;
     private final ProtectionType protectionType;
 
-    public EntityProtection(int databaseId, String owner, UUID uuid, EntityType type, ProtectionType protectionType) {
-        this.databaseId = databaseId;
+    public EntityProtection(String owner, UUID uuid, EntityType type, ProtectionType protectionType) {
         this.owner = owner;
         this.uuid = uuid;
         this.entityType = type;
         this.protectionType = protectionType;
         this.guestList = new HashSet<String>(1);
-    }
-
-    public int getDatabaseId() {
-        return databaseId;
     }
 
     public String getOwner() {

@@ -144,10 +144,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         // open statement
         builder.append("CREATE TABLE IF NOT EXISTS `tbl_entityprotections` (");
 
-        // Unique ID
-        builder.append("`ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT");
-        builder.append(", ");
-
         // Protectionowner
         builder.append("`owner` TEXT NOT NULL");
         builder.append(", ");
@@ -161,7 +157,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         builder.append(", ");
 
         // UUID of protected entity
-        builder.append("`entityUuid` TEXT NOT NULL");
+        builder.append("`entityUuid` TEXT NOT NULL PRIMARY KEY");
         builder.append(", ");
 
         // GuestList - Format : GUEST;GUEST;GUEST
@@ -194,12 +190,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.removeOneSubProtection     = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=? AND blockWorld=? AND blockX=? AND blockY=? AND blockZ=?");    
         this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` ORDER BY ID ASC");        
        
-        this.loadAllEntityProtections       = con.prepareStatement("SELECT * FROM `tbl_entityprotections` ORDER BY ID ASC");
-        this.removeEntityProtection         = con.prepareStatement("DELETE FROM `tbl_entityprotections` WHERE ID=?;");
+        this.loadAllEntityProtections       = con.prepareStatement("SELECT * FROM `tbl_entityprotections`");
+        this.removeEntityProtection         = con.prepareStatement("DELETE FROM `tbl_entityprotections` WHERE entityuuid=?;");
         this.addEntityProtection                = con.prepareStatement("INSERT INTO `tbl_entityprotections` (owner, entityType, protectionType, entityuuid, guestList) VALUES (?, ?, ?, ?, ?);");       
-        this.updateGuestListEntityProtection    = con.prepareStatement("UPDATE `tbl_entityprotections` SET guestList=? WHERE ID=?;");
-        this.getEntityProtectionByUuid          = con.prepareStatement("SELECT * FROM `tbl_entityprotections` WHERE entityuuid=? LIMIT 1;");
-        
+        this.updateGuestListEntityProtection    = con.prepareStatement("UPDATE `tbl_entityprotections` SET guestList=? WHERE entityuuid=?;");
+        this.getEntityProtectionByUuid          = con.prepareStatement("SELECT * FROM `tbl_entityprotections` WHERE entityuuid=? LIMIT 1;");        
         //@formatter:on;
     }
 
@@ -293,7 +288,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             this.getEntityProtectionByUuid.setString(1, uuid.toString());
             ResultSet results = this.getEntityProtectionByUuid.executeQuery();
             while (results.next()) {
-                return new EntityProtection(results.getInt("ID"), results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
+                return new EntityProtection(results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
             }
             return null;
         } catch (Exception e) {
@@ -390,6 +385,25 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
+    public boolean updateEntityProtectionGuestList(EntityProtection protectedEntity, String guestList) {
+        try {
+            this.updateGuestListEntityProtection.setString(1, guestList);
+            this.updateGuestListEntityProtection.setString(2, protectedEntity.getUuid().toString());
+            this.updateGuestListEntityProtection.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList of entity in database! ID=" + protectedEntity.getUuid().toString());
+            return false;
+        }
+    }
+
+    /**
+     * Update the guestlist of a protection
+     * 
+     * @param protection
+     * @param guestList
+     * @return <b>true</b> if the update was successful, otherwise <b>false</b>
+     */
     public boolean updateGuestList(IProtection protection, String guestList) {
         try {
             this.updateGuestList.setString(1, guestList);
@@ -422,11 +436,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      */
     public boolean deleteEntityProtection(EntityProtection protectedEntity) {
         try {
-            this.removeEntityProtection.setInt(1, protectedEntity.getDatabaseId());
+            this.removeEntityProtection.setString(1, protectedEntity.getUuid().toString());
             this.removeEntityProtection.executeUpdate();
             return true;
         } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete entityprotection from database @ " + protectedEntity.getDatabaseId());
+            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete entityprotection from database @ " + protectedEntity.getUuid().toString());
             return false;
         }
     }
@@ -481,7 +495,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             int loaded = 0;
             while (results.next()) {
                 try {
-                    EntityProtection protectedEntity = new EntityProtection(results.getInt("ID"), results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
+                    EntityProtection protectedEntity = new EntityProtection(results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
                     protectedEntity.setGuestList(ListHelper.toList(results.getString("guestList")));
                     MoneyPitCore.entityProtectionManager.addProtection(protectedEntity);
                     loaded++;

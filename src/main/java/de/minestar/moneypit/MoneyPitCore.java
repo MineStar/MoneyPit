@@ -101,7 +101,6 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
         protectionManager = new ProtectionManager();
         entityProtectionManager = new EntityProtectionManager();
         queueManager = new QueueManager();
-
         protectionManager.init();
         entityProtectionManager.init();
 
