@@ -9,11 +9,11 @@ import de.minestar.moneypit.manager.EntityModuleManager;
 public abstract class EntityModule {
 
     private EntityType entityType = null;
-    private boolean reactOnInteractAt;
+    private boolean silentEntityDamage;
 
-    protected EntityModule(EntityType entityType, YamlConfiguration ymlFile, boolean initialize, boolean reactOnInteractAt) {
+    protected EntityModule(EntityType entityType, YamlConfiguration ymlFile, boolean initialize, boolean silentEntityDamage) {
         this.entityType = entityType;
-        this.reactOnInteractAt = reactOnInteractAt;
+        this.silentEntityDamage = silentEntityDamage;
         this.writeDefaultConfig(ymlFile);
         this.writeExtraConfig(ymlFile);
         if (initialize) {
@@ -25,8 +25,8 @@ public abstract class EntityModule {
         return entityType;
     }
 
-    public boolean isReactOnInteractAt() {
-        return reactOnInteractAt;
+    public boolean isEntityDamageSilent() {
+        return silentEntityDamage;
     }
 
     private void init(EntityModuleManager entityModuleManager, YamlConfiguration ymlFile, EntityType entityType) {

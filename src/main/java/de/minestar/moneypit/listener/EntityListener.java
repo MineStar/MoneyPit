@@ -44,16 +44,39 @@ public class EntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onEntityInteract(PlayerInteractAtEntityEvent event) {
 
-        System.out.println("PlayerInteractAtEntityEvent");
-
         Entity interactedEntity = event.getRightClicked();
         Player player = (Player) event.getPlayer();
-        if (handleEntityInteract(player, interactedEntity, true)) {
+        if (handleEntityInteract(player, interactedEntity, false)) {
             event.setCancelled(true);
         }
     }
 
-    private boolean handleEntityInteract(Player player, Entity interactedEntity, boolean isInteractEvent) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        Entity interactedEntity = event.getEntity();
+        Entity damager = event.getDamager();
+
+        if (damager.getType().equals(EntityType.PLAYER)) {
+            Player player = (Player) damager;
+            if (this.handleEntityInteract(player, interactedEntity, true)) {
+                event.setDamage(0d);
+                event.setCancelled(true);
+                return;
+            }
+        } else {
+            // always cancel damage by other entities
+            if (!this.entityModuleManager.isModuleRegistered(event.getEntityType())) {
+                return;
+            }
+
+            if (this.entityProtectionManager.hasProtection(event.getEntity().getUniqueId().toString())) {
+                event.setDamage(0d);
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    private boolean handleEntityInteract(Player player, Entity interactedEntity, boolean isDamageEvent) {
         // we need an entity and a player
         if (interactedEntity == null || player == null) {
             return false;
@@ -62,12 +85,6 @@ public class EntityListener implements Listener {
         if (!entityModuleManager.isModuleRegistered(interactedEntity.getType())) {
             return false;
         }
-
-        if (isInteractEvent && !entityModuleManager.getRegisteredModule(interactedEntity.getType()).isReactOnInteractAt()) {
-            return false;
-        }
-
-        System.out.println("handleEntityInteract");
 
         // get PlayerState
         final PlayerState state = this.playerManager.getState(player.getName());
@@ -105,38 +122,12 @@ public class EntityListener implements Listener {
             }
             default : {
                 // handle normal interact
-                return this.handleNormalInteract(isInteractEvent, player, interactedEntity);
+                return this.handleNormalInteract(isDamageEvent, player, interactedEntity);
             }
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
-        Entity interactedEntity = event.getEntity();
-        Entity damager = event.getDamager();
-
-        System.out.println("EntityDamageByEntityEvent");
-
-        if (damager.getType().equals(EntityType.PLAYER)) {
-            Player player = (Player) damager;
-            if (this.handleEntityInteract(player, interactedEntity, false)) {
-                event.setDamage(0d);
-                event.setCancelled(true);
-                return;
-            }
-        } else {
-            if (!this.entityModuleManager.isModuleRegistered(event.getEntityType())) {
-                return;
-            }
-
-            if (this.entityProtectionManager.hasProtection(event.getEntity().getUniqueId().toString())) {
-                event.setDamage(0d);
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    private boolean handleNormalInteract(boolean isInteractEevent, Player player, Entity interactedEntity) {
+    private boolean handleNormalInteract(boolean isDamageEvent, Player player, Entity interactedEntity) {
         // we need a protection to show some information about it
         EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
@@ -146,16 +137,20 @@ public class EntityListener implements Listener {
         boolean isAdmin = UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
         // is this protection private?
         if (!protectedEntity.canAccess(player)) {
-            // show information about the protection
-            this.showInformation(player, interactedEntity, false);
+            if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
+                // show information about the protection
+                this.showInformation(player, interactedEntity, false);
+            }
             // cancel the event
             return true;
         }
 
         if (isAdmin) {
-            // show information about the protection
-            this.showInformation(player, interactedEntity, false);
-            if (!isInteractEevent) {
+            if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
+                // show information about the protection
+                this.showInformation(player, interactedEntity, false);
+            }
+            if (isDamageEvent) {
                 return true;
             }
         }
