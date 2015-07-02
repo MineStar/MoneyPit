@@ -26,6 +26,7 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.entity.AddEntityProtectionQueue;
 import de.minestar.moneypit.queues.entity.RemoveEntityProtectionQueue;
+import de.minestar.moneypit.utils.ListHelper;
 
 public class EntityListener implements Listener {
 
@@ -112,10 +113,10 @@ public class EntityListener implements Listener {
                 return this.handleAddInteract(player, interactedEntity, module, state);
             }
             case PROTECTION_INVITE : {
-                this.handleInviteInteract(player, interactedEntity);
+                this.handleInviteInteract(player, interactedEntity, true);
             }
             case PROTECTION_UNINVITE : {
-                return this.handleUninviteInteract(player, interactedEntity);
+                return this.handleInviteInteract(player, interactedEntity, false);
             }
             case PROTECTION_UNINVITEALL : {
                 return this.handleUninviteAllInteract(player, interactedEntity);
@@ -139,7 +140,7 @@ public class EntityListener implements Listener {
         if (!protectedEntity.canAccess(player)) {
             if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
                 // show information about the protection
-                this.showInformation(player, interactedEntity, false);
+                this.showInformation(player, interactedEntity);
             }
             // cancel the event
             return true;
@@ -148,7 +149,7 @@ public class EntityListener implements Listener {
         if (isAdmin) {
             if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
                 // show information about the protection
-                this.showInformation(player, interactedEntity, false);
+                this.showInformation(player, interactedEntity);
             }
             if (isDamageEvent) {
                 return true;
@@ -158,19 +159,95 @@ public class EntityListener implements Listener {
         return false;
     }
 
-    private boolean handleUninviteInteract(Player player, Entity interactedEntity) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
     private boolean handleUninviteAllInteract(Player player, Entity interactedEntity) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+        // return to normalmode
+        if (!this.playerManager.keepsMode(player.getName())) {
+            this.playerManager.setState(player.getName(), PlayerState.NORMAL);
+        }
 
-    private boolean handleInviteInteract(Player player, Entity interactedEntity) {
-        // TODO Auto-generated method stub
-        return false;
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
+        if (protectedEntity != null) {
+            // MainProtection
+
+            if (protectedEntity.isPublic()) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You must click on a private protection.");
+                this.showInformation(player, interactedEntity);
+                return true;
+            }
+
+            if (protectedEntity.canEdit(player)) {
+                // clear guestlist
+                protectedEntity.clearGuestList();
+
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                    // send info
+                    PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "The guestlist has been cleared.");
+                } else {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(player, "Please contact an admin.");
+                }
+            } else {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
+                this.showInformation(player, interactedEntity);
+            }
+        } else {
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "This Entity is not protected.");
+        }
+        if (!this.playerManager.keepsMode(player.getName())) {
+            this.playerManager.setState(player.getName(), PlayerState.NORMAL);
+        }
+        return true;
+    }
+    private boolean handleInviteInteract(Player player, Entity interactedEntity, boolean addGuests) {
+        // return to normalmode
+        if (!this.playerManager.keepsMode(player.getName())) {
+            this.playerManager.setState(player.getName(), PlayerState.NORMAL);
+        }
+
+        EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
+        if (protectedEntity != null) {
+            if (protectedEntity.isPublic()) {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You must click on a private protection.");
+                this.showInformation(player, interactedEntity);
+                return true;
+            }
+
+            boolean canEdit = protectedEntity.canEdit(player);
+            if (canEdit) {
+                // add people to guestlist
+                for (String guest : this.playerManager.getGuestList(player.getName())) {
+                    if (addGuests) {
+                        if (!protectedEntity.isOwner(guest)) {
+                            protectedEntity.addGuest(guest);
+                        }
+                    } else {
+                        protectedEntity.removeGuest(guest);
+                    }
+                }
+                // send info
+
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                    if (addGuests)
+                        PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
+                    else
+                        PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been removed from the guestlist.");
+                } else {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(player, "Please contact an admin.");
+                }
+            } else {
+                PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
+                this.showInformation(player, interactedEntity);
+            }
+        } else {
+            PlayerUtils.sendError(player, MoneyPitCore.NAME, "This Entity is not protected.");
+        }
+
+        // clear guestlist
+        if (!this.playerManager.keepsMode(player.getName())) {
+            this.playerManager.clearGuestList(player.getName());
+        }
+        return true;
     }
 
     private boolean handleAddInteract(Player player, Entity interactedEntity, EntityModule module, PlayerState state) {
@@ -204,7 +281,7 @@ public class EntityListener implements Listener {
             PlayerUtils.sendError(player, MoneyPitCore.NAME, "Entity is already protected!");
 
             // show information about the protection
-            this.showInformation(player, interactedEntity, false);
+            this.showInformation(player, interactedEntity);
             return true;
         }
     }
@@ -244,13 +321,10 @@ public class EntityListener implements Listener {
         this.showExtendedInformation(player, interactedEntity);
     }
 
-    private void showInformation(Player player, Entity interactedEntity, boolean showErrorMessage) {
+    private void showInformation(Player player, Entity interactedEntity) {
         // we need a protection to show some information about it
         EntityProtection protectedEntity = entityProtectionManager.getProtection(interactedEntity.getUniqueId().toString());
         if (protectedEntity == null) {
-            if (showErrorMessage) {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "This '" + interactedEntity.getType() + "' is not protected.");
-            }
             return;
         }
 

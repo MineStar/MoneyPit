@@ -45,15 +45,21 @@ public class EntityProtection {
     }
 
     public boolean canEdit(Player player) {
-        return this.isOwner(player) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
+        return this.isOwner(player.getName()) || UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
     }
 
-    public boolean isOwner(Player player) {
-        return this.owner.equalsIgnoreCase(player.getName());
+    public boolean isOwner(String playerName) {
+        return this.owner.equalsIgnoreCase(playerName);
     }
 
     public void addGuest(String guest) {
         this.guestList.add(guest);
+    }
+
+    public void removeGuest(String guest) {
+        if (this.guestList != null) {
+            this.guestList.remove(guest.toLowerCase());
+        }
     }
 
     public void setGuestList(HashSet<String> list) {
@@ -70,6 +76,10 @@ public class EntityProtection {
 
     public boolean isPrivate() {
         return this.protectionType == ProtectionType.PRIVATE;
+    }
+
+    public void clearGuestList() {
+        this.guestList.clear();
     }
 
 }
