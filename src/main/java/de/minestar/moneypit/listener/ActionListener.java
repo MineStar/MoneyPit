@@ -248,16 +248,16 @@ public class ActionListener implements Listener {
 
                     // only private protections are blocked
                     if (protection.isPublic()) {
-                        if (block.getType().equals(Material.WOODEN_DOOR)) {
-                            this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
-                            Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                            if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
-                                this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
-                            }
-                        } else if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
+                        if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
                             this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                             Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                             if (bl != null && bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
+                                this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
+                            }
+                        } else if (DoorHelper.isDoor(block.getType())) {
+                            this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                            Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                            if (bl != null && DoorHelper.isDoor(bl.getType()) && !bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                             }
                         }
@@ -285,16 +285,16 @@ public class ActionListener implements Listener {
                     for (IProtection subProtection : holder.getProtections()) {
                         // only private protections are blocked
                         if (subProtection.isPublic()) {
-                            if (block.getType().equals(Material.WOODEN_DOOR)) {
-                                this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
-                                Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                                if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
-                                    this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
-                                }
-                            } else if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
+                            if (block.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                 this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                                 Block bl = DoorHelper.getOppositeLowerDoorPart(block);
                                 if (bl != null && bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
+                                    this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
+                                }
+                            } else if (DoorHelper.isDoor(block.getType())) {
+                                this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
+                                Block bl = DoorHelper.getOppositeLowerDoorPart(block);
+                                if (bl != null && DoorHelper.isDoor(bl.getType()) && !bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
                                     this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                                 }
                             }
@@ -317,10 +317,10 @@ public class ActionListener implements Listener {
                     }
                 }
             } else {
-                if (block.getType().equals(Material.WOODEN_DOOR)) {
+                if (DoorHelper.isDoor(block.getType()) && !block.getType().equals(Material.IRON_DOOR_BLOCK)) {
                     this.redstoneQueuedDoors.add(new BlockVector(DoorHelper.getLowerDoorPart(block).getLocation()));
                     Block bl = DoorHelper.getOppositeLowerDoorPart(block);
-                    if (bl != null && bl.getType().equals(Material.WOODEN_DOOR)) {
+                    if (bl != null && DoorHelper.isDoor(bl.getType()) && !bl.getType().equals(Material.IRON_DOOR_BLOCK)) {
                         this.redstoneQueuedDoors.add(new BlockVector(bl.getLocation()));
                     }
                 }
@@ -1324,19 +1324,19 @@ public class ActionListener implements Listener {
 
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
-                if (event.getClickedBlock().getType().equals(Material.WOODEN_DOOR)) {
-                    if (this.protectionInfo.getProtection().isPrivate()) {
-                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
-                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
-                    } else {
-                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
-                    }
-                } else if (event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK)) {
+                if (event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK)) {
                     if (this.protectionInfo.getProtection().isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
+                    }
+                } else if (DoorHelper.isDoor(event.getClickedBlock().getType())) {
+                    if (this.protectionInfo.getProtection().isPrivate()) {
+                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
+                    } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 }
@@ -1348,8 +1348,6 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasSubProtection()) {
             boolean isAdmin = UtilPermissions.playerCanUseCommand(event.getPlayer(), "moneypit.admin");
             ISubProtectionHolder holder = this.protectionManager.getSubProtectionHolder(vector);
-            boolean isWoodDoor = event.getClickedBlock().getType().equals(Material.WOODEN_DOOR);
-            boolean isIronDoor = event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK);
             for (IProtection subProtection : holder.getProtections()) {
                 // is this protection private?
                 if (!subProtection.isPrivate()) {
@@ -1382,19 +1380,19 @@ public class ActionListener implements Listener {
             // toggle both doors
             if (event.getAction() != Action.PHYSICAL) {
                 IProtection subProtection = this.protectionInfo.getSubProtections().getProtection(0);
-                if (isWoodDoor) {
-                    if (subProtection.isPrivate()) {
-                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
-                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
-                    } else {
-                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
-                    }
-                } else if (isIronDoor) {
+                if (event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK)) {
                     if (subProtection.isPrivate()) {
                         DoorHelper.toggleDoor(event.getClickedBlock(), true);
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
                     } else {
                         DoorHelper.toggleDoor(event.getClickedBlock(), false);
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
+                    }
+                } else if (DoorHelper.isDoor(event.getClickedBlock().getType())) {
+                    if (subProtection.isPrivate()) {
+                        MoneyPitCore.autoCloseTask.queue(event.getClickedBlock());
+                        DoorHelper.toggleSecondDoor(event.getClickedBlock(), true);
+                    } else {
                         DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
                     }
                 }
@@ -1405,12 +1403,11 @@ public class ActionListener implements Listener {
 
         // toggle both doors
         if (event.getAction() != Action.PHYSICAL) {
-            if (event.getClickedBlock().getType().equals(Material.WOODEN_DOOR)) {
+            if (DoorHelper.isDoor(event.getClickedBlock().getType()) && !event.getClickedBlock().getType().equals(Material.IRON_DOOR_BLOCK)) {
                 DoorHelper.toggleSecondDoor(event.getClickedBlock(), false);
             }
         }
     }
-
     // //////////////////////////////////////////////////////////////////////
     //
     // FROM HERE ON: METHODS TO HANDLE THE HANGING ENTITIES

@@ -138,19 +138,19 @@ public class EntityListener implements Listener {
         boolean isAdmin = UtilPermissions.playerCanUseCommand(player, "moneypit.admin");
         // is this protection private?
         if (!protectedEntity.canAccess(player)) {
-            if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
-                // show information about the protection
-                this.showInformation(player, interactedEntity);
-            }
+            // if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
+            // show information about the protection
+            this.showInformation(player, interactedEntity);
+            // }
             // cancel the event
             return true;
         }
 
         if (isAdmin) {
-            if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
-                // show information about the protection
-                this.showInformation(player, interactedEntity);
-            }
+            // if (!isDamageEvent || !entityModuleManager.getRegisteredModule(protectedEntity.getEntityType()).isEntityDamageSilent()) {
+            // show information about the protection
+            this.showInformation(player, interactedEntity);
+            // }
             if (isDamageEvent) {
                 return true;
             }

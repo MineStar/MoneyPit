@@ -30,6 +30,24 @@ public class DoorHelper {
         }
     };
 
+    private final static Set<Integer> trapDoorIDs = new HashSet<Integer>() {
+
+        private static final long serialVersionUID = 9110227043191218219L;
+
+        {
+            add(Material.TRAP_DOOR.getId());
+            add(Material.IRON_TRAPDOOR.getId());
+        }
+    };
+
+    public static boolean isDoor(Material material) {
+        return doorIDs.contains(material.getId());
+    }
+
+    public static boolean isTrapDoor(Material material) {
+        return trapDoorIDs.contains(material.getId());
+    }
+
     public static BlockVector getSecondDoor(BlockVector vector, int typeId) {
         Block door = vector.getLocation().getBlock();
         Block dDoor;
@@ -89,7 +107,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!doorIDs.contains(block.getType().getId()))
+        if (!isDoor(block.getType()))
             return null;
 
         if (block.getData() < 8) {
@@ -103,7 +121,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!doorIDs.contains(block.getType().getId()))
+        if (!isDoor(block.getType()))
             return null;
 
         if (block.getData() < 8) {
@@ -186,7 +204,7 @@ public class DoorHelper {
         if (block == null)
             return null;
 
-        if (!doorIDs.contains(block.getType().getId()))
+        if (!isDoor(block.getType()))
             return null;
 
         Block selfLower = DoorHelper.getLowerDoorPart(block);
@@ -255,7 +273,7 @@ public class DoorHelper {
         } else {
             Block lower = upper.getRelative(BlockFace.DOWN);
 
-            if (!doorIDs.contains(lower.getType().getId()))
+            if (!isDoor(lower.getType()))
                 return null;
 
             return lower;

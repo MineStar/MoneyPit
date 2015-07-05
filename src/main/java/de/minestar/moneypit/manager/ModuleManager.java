@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.modules.Module;
+import de.minestar.moneypit.modules.Module_Banner_Hanging;
+import de.minestar.moneypit.modules.Module_Banner_Standing;
 import de.minestar.moneypit.modules.Module_Chest;
 import de.minestar.moneypit.modules.Module_Dispenser;
 import de.minestar.moneypit.modules.Module_Dropper;
@@ -91,6 +93,8 @@ public class ModuleManager {
             // INIT MODULES
             this.initModules(true, ymlFile);
 
+            // SAVE
+            ymlFile.save(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,6 +107,9 @@ public class ModuleManager {
             // signs
             new Module_SignPost         (this, ymlFile);
             new Module_WallSign         (this, ymlFile);
+            // banner
+            new Module_Banner_Hanging   (this, ymlFile);
+            new Module_Banner_Standing  (this, ymlFile);
             // doors
             new Module_Door_Acacia      (this, ymlFile);
             new Module_Door_Birch       (this, ymlFile);
@@ -145,6 +152,9 @@ public class ModuleManager {
             // signs
             new Module_SignPost         (ymlFile);
             new Module_WallSign         (ymlFile);
+            // banner
+            new Module_Banner_Hanging   (ymlFile);
+            new Module_Banner_Standing  (ymlFile);
             // doors
             new Module_Door_Acacia      (ymlFile);
             new Module_Door_Birch       (ymlFile);

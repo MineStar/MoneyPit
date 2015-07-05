@@ -77,6 +77,7 @@ public abstract class Module {
         if (isEnabled) {
             moduleManager.registerModule(this);
         }
+        this.writeDefaultConfig(this.getModuleName(), ymlFile);
     }
 
     protected void writeDefaultConfig(String moduleName, YamlConfiguration ymlFile) {

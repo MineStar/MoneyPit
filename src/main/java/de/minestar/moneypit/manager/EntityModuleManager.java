@@ -60,6 +60,9 @@ public class EntityModuleManager {
             // INIT MODULES
             this.initModules(true, ymlFile);
 
+            // save file
+            ymlFile.save(file);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

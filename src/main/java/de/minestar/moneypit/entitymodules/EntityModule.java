@@ -14,8 +14,6 @@ public abstract class EntityModule {
     protected EntityModule(EntityType entityType, YamlConfiguration ymlFile, boolean initialize, boolean silentEntityDamage) {
         this.entityType = entityType;
         this.silentEntityDamage = silentEntityDamage;
-        this.writeDefaultConfig(ymlFile);
-        this.writeExtraConfig(ymlFile);
         if (initialize) {
             this.init(MoneyPitCore.entityModuleManager, ymlFile, entityType);
         }
@@ -34,6 +32,7 @@ public abstract class EntityModule {
         if (isEnabled) {
             entityModuleManager.registerModule(this);
         }
+        this.writeDefaultConfig(ymlFile);
     }
 
     private void writeDefaultConfig(YamlConfiguration ymlFile) {
