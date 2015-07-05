@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 
 import de.minestar.moneypit.MoneyPitCore;
+import de.minestar.moneypit.data.protection.EntityProtection;
 import de.minestar.moneypit.manager.EntityModuleManager;
 
 public abstract class EntityModule {
@@ -41,6 +42,9 @@ public abstract class EntityModule {
     }
 
     protected void writeExtraConfig(YamlConfiguration ymlFile) {
+    }
+    
+    public void onAddProtection(EntityProtection protection) {        
     }
 
 }

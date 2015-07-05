@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -172,11 +173,42 @@ public class MonitorListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity interactedEntity = event.getEntity();
         if (event.getDamager().getType().equals(EntityType.PLAYER)) {
             Player player = (Player) event.getDamager();
+
+            // we need an entity and a player
+            if (interactedEntity == null || player == null) {
+                return;
+            }
+
+            // get the queue
+            EntityQueue queue = this.queueManager.getAndRemoveEntityQueue(interactedEntity.getUniqueId().toString());
+            if (queue != null) {
+                // execute the queue, if the event was not cancelled
+                if (!event.isCancelled()) {
+                    // execute the event
+                    if (!queue.execute()) {
+                        event.setCancelled(true);
+                    }
+
+                    // cancel the event
+                    event.setCancelled(true);
+                } else {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Could not complete your interact request!");
+                    PlayerUtils.sendInfo(player, "The event was cancelled by another plugin.");
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityInteractAt(PlayerInteractAtEntityEvent event) {
+        Entity interactedEntity = event.getRightClicked();
+        if (event.getPlayer().getType().equals(EntityType.PLAYER)) {
+            Player player = (Player) event.getPlayer();
 
             // we need an entity and a player
             if (interactedEntity == null || player == null) {

@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -43,12 +44,24 @@ public class EntityListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onEntityInteract(PlayerInteractAtEntityEvent event) {
-
+    public void onEntityInteractAt(PlayerInteractAtEntityEvent event) {
         Entity interactedEntity = event.getRightClicked();
         Player player = (Player) event.getPlayer();
-        if (handleEntityInteract(player, interactedEntity, false)) {
-            event.setCancelled(true);
+        if (interactedEntity != null && interactedEntity.getType().equals(EntityType.ARMOR_STAND)) {
+            if (handleEntityInteract(player, interactedEntity, false)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        Entity interactedEntity = event.getRightClicked();
+        if (interactedEntity != null && !interactedEntity.getType().equals(EntityType.ARMOR_STAND)) {
+            Player player = (Player) event.getPlayer();
+            if (handleEntityInteract(player, interactedEntity, false)) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -98,7 +111,8 @@ public class EntityListener implements Listener {
             }
             case PROTECTION_REMOVE : {
                 // handle remove
-                return this.handleRemoveInteract(player, interactedEntity);
+                this.handleRemoveInteract(player, interactedEntity);
+                return false;
             }
             case PROTECTION_ADD_PRIVATE :
             case PROTECTION_ADD_PUBLIC : {
@@ -113,7 +127,7 @@ public class EntityListener implements Listener {
                 return this.handleAddInteract(player, interactedEntity, module, state);
             }
             case PROTECTION_INVITE : {
-                this.handleInviteInteract(player, interactedEntity, true);
+                return this.handleInviteInteract(player, interactedEntity, true);
             }
             case PROTECTION_UNINVITE : {
                 return this.handleInviteInteract(player, interactedEntity, false);
@@ -198,6 +212,7 @@ public class EntityListener implements Listener {
         }
         return true;
     }
+
     private boolean handleInviteInteract(Player player, Entity interactedEntity, boolean addGuests) {
         // return to normalmode
         if (!this.playerManager.keepsMode(player.getName())) {
@@ -275,7 +290,7 @@ public class EntityListener implements Listener {
                 AddEntityProtectionQueue queue = new AddEntityProtectionQueue(player, interactedEntity, ProtectionType.PUBLIC);
                 this.queueManager.addEntityQueue(interactedEntity, queue);
             }
-            return true;
+            return false;
         } else {
             // Send errormessage
             PlayerUtils.sendError(player, MoneyPitCore.NAME, "Entity is already protected!");
@@ -308,7 +323,7 @@ public class EntityListener implements Listener {
         // queue the event for later use in MonitorListener
         RemoveEntityProtectionQueue queue = new RemoveEntityProtectionQueue(player, protectedEntity);
         this.queueManager.addEntityQueue(interactedEntity, queue);
-        return true;
+        return false;
     }
 
     private void handleInfoInteract(Player player, Entity interactedEntity) {

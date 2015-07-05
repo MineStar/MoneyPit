@@ -30,7 +30,7 @@ public class QueueManager {
 
     public EntityQueue getAndRemoveEntityQueue(String uuid) {
         EntityQueue queue = this.entityEvents.get(uuid);
-        this.events.remove(uuid.toString());
+        this.entityEvents.remove(uuid);
         return queue;
     }
 
