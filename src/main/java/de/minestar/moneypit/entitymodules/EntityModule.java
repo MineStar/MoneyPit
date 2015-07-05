@@ -10,6 +10,7 @@ import de.minestar.moneypit.manager.EntityModuleManager;
 public abstract class EntityModule {
 
     private EntityType entityType = null;
+    private boolean enabled = true;
     private boolean silentEntityDamage;
 
     protected EntityModule(EntityType entityType, YamlConfiguration ymlFile, boolean initialize, boolean silentEntityDamage) {
@@ -29,15 +30,15 @@ public abstract class EntityModule {
     }
 
     private void init(EntityModuleManager entityModuleManager, YamlConfiguration ymlFile, EntityType entityType) {
-        boolean isEnabled = ymlFile.getBoolean("protect." + this.entityType + ".enabled", true);
-        if (isEnabled) {
+        this.enabled = ymlFile.getBoolean("protect." + this.entityType + ".enabled", true);
+        if (this.enabled) {
             entityModuleManager.registerModule(this);
         }
         this.writeDefaultConfig(ymlFile);
     }
 
     private void writeDefaultConfig(YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + entityType + ".enabled", true);
+        ymlFile.set("protect." + entityType + ".enabled", this.enabled);
         this.writeExtraConfig(ymlFile);
     }
 

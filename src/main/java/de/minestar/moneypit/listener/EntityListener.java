@@ -89,6 +89,8 @@ public class EntityListener implements Listener {
             }
         }
     }
+    
+    
 
     private boolean handleEntityInteract(Player player, Entity interactedEntity, boolean isDamageEvent) {
         // we need an entity and a player

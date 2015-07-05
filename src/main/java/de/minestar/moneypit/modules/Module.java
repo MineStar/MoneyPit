@@ -16,6 +16,7 @@ public abstract class Module {
     private ProtectionManager protectionManager;
     private String moduleName = "UNKNOWN";
     private int registeredTypeID = -1;
+    private boolean enabled = true;
     private boolean autoLock = false;
     private boolean doNeighbourCheck = false;
     private boolean blockRedstone = false;
@@ -72,17 +73,17 @@ public abstract class Module {
     protected void init(ModuleManager moduleManager, YamlConfiguration ymlFile, int registeredTypeID, String moduleName) {
         this.registeredTypeID = registeredTypeID;
         this.moduleName = moduleName;
-        boolean isEnabled = ymlFile.getBoolean("protect." + this.getModuleName() + ".enabled", true);
+        this.enabled = ymlFile.getBoolean("protect." + this.getModuleName() + ".enabled", true);
         this.autoLock = ymlFile.getBoolean("protect." + this.getModuleName() + ".lockOnPlace", false);
-        if (isEnabled) {
+        if (this.enabled) {
             moduleManager.registerModule(this);
         }
         this.writeDefaultConfig(this.getModuleName(), ymlFile);
     }
 
     protected void writeDefaultConfig(String moduleName, YamlConfiguration ymlFile) {
-        ymlFile.set("protect." + moduleName + ".enabled", true);
-        ymlFile.set("protect." + moduleName + ".lockOnPlace", false);
+        ymlFile.set("protect." + moduleName + ".enabled", this.enabled);
+        ymlFile.set("protect." + moduleName + ".lockOnPlace", this.autoLock);
         this.writeExtraConfig(moduleName, ymlFile);
     }
 
