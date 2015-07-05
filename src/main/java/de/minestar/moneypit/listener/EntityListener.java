@@ -110,9 +110,8 @@ public class EntityListener implements Listener {
                 return true;
             }
             case PROTECTION_REMOVE : {
-                // handle remove
-                this.handleRemoveInteract(player, interactedEntity);
-                return false;
+                // handle remove                
+                return this.handleRemoveInteract(player, interactedEntity);
             }
             case PROTECTION_ADD_PRIVATE :
             case PROTECTION_ADD_PUBLIC : {
