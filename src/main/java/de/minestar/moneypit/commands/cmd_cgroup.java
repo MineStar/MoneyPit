@@ -74,8 +74,6 @@ public class cmd_cgroup extends AbstractExtendedCommand {
             if (groupIsNew) {
                 group = new GuestGroup(groupName, player.getName());
                 GroupManager.addGroup(group);
-            } else {
-                group.clear();
             }
 
             // create guestList
