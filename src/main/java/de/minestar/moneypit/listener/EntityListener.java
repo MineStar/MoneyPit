@@ -89,8 +89,6 @@ public class EntityListener implements Listener {
             }
         }
     }
-    
-    
 
     private boolean handleEntityInteract(Player player, Entity interactedEntity, boolean isDamageEvent) {
         // we need an entity and a player
@@ -112,7 +110,7 @@ public class EntityListener implements Listener {
                 return true;
             }
             case PROTECTION_REMOVE : {
-                // handle remove                
+                // handle remove
                 return this.handleRemoveInteract(player, interactedEntity);
             }
             case PROTECTION_ADD_PRIVATE :

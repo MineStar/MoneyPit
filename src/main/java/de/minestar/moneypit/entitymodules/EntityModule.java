@@ -44,8 +44,8 @@ public abstract class EntityModule {
 
     protected void writeExtraConfig(YamlConfiguration ymlFile) {
     }
-    
-    public void onAddProtection(EntityProtection protection) {        
+
+    public void onAddProtection(EntityProtection protection) {
     }
 
 }
