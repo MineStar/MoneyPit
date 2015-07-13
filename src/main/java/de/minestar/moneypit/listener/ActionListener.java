@@ -50,6 +50,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.IProtectionInfo;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
@@ -71,7 +72,6 @@ import de.minestar.moneypit.queues.AddProtectionQueue;
 import de.minestar.moneypit.queues.RemoveProtectionQueue;
 import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 import de.minestar.moneypit.utils.DoorHelper;
-import de.minestar.moneypit.utils.ListHelper;
 
 public class ActionListener implements Listener {
 
@@ -873,7 +873,7 @@ public class ActionListener implements Listener {
                 // clear guestlist
                 this.protectionInfo.getProtection().clearGuestList();
 
-                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
                     // send info
                     PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "The guestlist has been cleared.");
                 } else {
@@ -894,7 +894,7 @@ public class ActionListener implements Listener {
                         // clear guestlist
                         subProtection.clearGuestList();
                     }
-                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), ListHelper.toString(subProtection.getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), subProtection.getGuestList())) {
                         result = false;
                     }
                 }
@@ -947,7 +947,7 @@ public class ActionListener implements Listener {
                 }
                 // send info
 
-                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), ListHelper.toString(this.protectionInfo.getProtection().getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
                     if (add)
                         PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
                     else
@@ -979,7 +979,7 @@ public class ActionListener implements Listener {
                         }
                     }
 
-                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), ListHelper.toString(subProtection.getGuestList()))) {
+                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), subProtection.getGuestList())) {
                         result = false;
                     }
                 }
@@ -1079,10 +1079,15 @@ public class ActionListener implements Listener {
         }
     }
 
-    private void displayGuestList(Player player, HashSet<String> guestList) {
-        PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
+    private void displayGuestList(Player player, GuestGroup group) {
+        if (!group.isDefault()) {
+            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
+            PlayerUtils.sendMessage(player, ChatColor.AQUA, "Name: " + group.getName());
+            PlayerUtils.sendMessage(player, ChatColor.AQUA, "Owner: " + group.getOwner());
+            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
+        }
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
-        for (String name : guestList) {
+        for (String name : group.getAll()) {
             PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + name);
         }
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
@@ -1120,9 +1125,10 @@ public class ActionListener implements Listener {
             String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
 
             if (this.protectionInfo.getProtection().canAccess(player)) {
-                HashSet<String> guestList = this.protectionInfo.getProtection().getGuestList();
+                GuestGroup group = this.protectionInfo.getProtection().getGuestList();
+                HashSet<String> guestList = group.getAll();
                 if (guestList != null) {
-                    this.displayGuestList(player, guestList);
+                    this.displayGuestList(player, group);
                 }
             }
 
@@ -1155,10 +1161,7 @@ public class ActionListener implements Listener {
                 PlayerUtils.sendInfo(player, message);
 
                 if (this.protectionInfo.getFirstProtection().canAccess(player)) {
-                    HashSet<String> guestList = this.protectionInfo.getFirstProtection().getGuestList();
-                    if (guestList != null) {
-                        this.displayGuestList(player, guestList);
-                    }
+                    this.displayGuestList(player, this.protectionInfo.getFirstProtection().getGuestList());
                 }
 
                 return;
