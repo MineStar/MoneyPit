@@ -341,7 +341,7 @@ public class ProtectionManager {
         }
     }
 
-    public void cleanGroups(GuestGroup group) {
+    public void resetGuestList(GuestGroup group) {
         // transfer to map
         HashMap<BlockVector, IProtection> playerProtectionMap = this.protectionsByPlayer.get(group.getOwner().toLowerCase());
         if (playerProtectionMap != null) {

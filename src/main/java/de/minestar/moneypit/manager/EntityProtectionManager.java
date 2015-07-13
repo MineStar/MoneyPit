@@ -62,7 +62,7 @@ public class EntityProtectionManager {
         return this.protections.containsKey(uuid);
     }
 
-    public void cleanGroups(GuestGroup group) {
+    public void resetGuestList(GuestGroup group) {
         for (EntityProtection protection : protections.values()) {
             if (protection.isOwner(group.getOwner()) && protection.getGuestList().getName().equalsIgnoreCase(group.getName())) {
                 protection.defaultGuestList();
