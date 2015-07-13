@@ -2,6 +2,8 @@ package de.minestar.moneypit.manager;
 
 import java.util.HashMap;
 
+import com.bukkit.gemo.patchworking.GuestGroup;
+
 import de.minestar.moneypit.data.protection.EntityProtection;
 
 public class EntityProtectionManager {
@@ -58,5 +60,21 @@ public class EntityProtectionManager {
      */
     public boolean hasProtection(String uuid) {
         return this.protections.containsKey(uuid);
+    }
+
+    public void cleanGroups(GuestGroup group) {
+        for (EntityProtection protection : protections.values()) {
+            if (protection.isOwner(group.getOwner()) && protection.getGuestList().getName().equalsIgnoreCase(group.getName())) {
+                protection.defaultGuestList();
+            }
+        }
+    }
+
+    public void transferProtections(String oldPlayername, String newPlayername) {
+        for (EntityProtection protection : protections.values()) {
+            if (protection.isOwner(oldPlayername)) {
+                protection.setOwner(newPlayername);
+            }
+        }
     }
 }

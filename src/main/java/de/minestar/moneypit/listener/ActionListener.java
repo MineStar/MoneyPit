@@ -107,6 +107,7 @@ public class ActionListener implements Listener {
     public void onPlayerChangeNick(PlayerChangedNameEvent event) {
         MoneyPitCore.databaseManager.updateOwner(event.getOldName(), event.getNewName());
         MoneyPitCore.protectionManager.transferProtections(event.getOldName(), event.getNewName());
+        MoneyPitCore.entityProtectionManager.transferProtections(event.getOldName(), event.getNewName());
         Player player = PlayerUtils.getOnlinePlayer(event.getCommandSender());
         if (player != null) {
             PlayerUtils.sendInfo(player, MoneyPitCore.NAME, "Transfer complete.");
@@ -934,7 +935,6 @@ public class ActionListener implements Listener {
 
         if (this.protectionInfo.hasProtection()) {
             // MainProtection
-
             if (this.protectionInfo.getProtection().isPublic()) {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You must click on a private protection.");
                 this.showInformation(event.getPlayer());
@@ -975,7 +975,6 @@ public class ActionListener implements Listener {
         } else if (this.protectionInfo.hasSubProtection()) {
             boolean canEdit = this.protectionInfo.getSubProtections().canEditAll(event.getPlayer());
             if (canEdit) {
-
                 // for each SubProtection...
                 boolean result = true;
                 for (IProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
@@ -1100,7 +1099,6 @@ public class ActionListener implements Listener {
             PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
             PlayerUtils.sendMessage(player, ChatColor.AQUA, "Name: " + group.getName());
             PlayerUtils.sendMessage(player, ChatColor.AQUA, "Owner: " + group.getOwner());
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
         }
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
         for (String name : group.getAll()) {

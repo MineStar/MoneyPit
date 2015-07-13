@@ -10,6 +10,9 @@ commands:
   cinfo:
     description: Get some information about a protection
     usage: /cinfo
+  cgroup:
+    description: Add/edit/remove a group for invites.
+    usage: /cgroup   
   cprivate:
     description: Add a private protection
     usage: /cprivate

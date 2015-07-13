@@ -6,22 +6,23 @@ import java.util.UUID;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
 public class EntityProtection {
     private final UUID uuid;
-    private final String owner;
+    private String owner;
     private final EntityType entityType;
-    private final HashSet<String> guestList;
     private final ProtectionType protectionType;
+    private GuestGroup guests;
 
     public EntityProtection(String owner, UUID uuid, EntityType type, ProtectionType protectionType) {
         this.owner = owner;
         this.uuid = uuid;
         this.entityType = type;
         this.protectionType = protectionType;
-        this.guestList = new HashSet<String>(1);
+        this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
     }
 
     public String getOwner() {
@@ -41,7 +42,7 @@ public class EntityProtection {
     }
 
     public boolean canAccess(Player player) {
-        return this.isPublic() || this.canEdit(player) || this.guestList.contains(player.getName().toString());
+        return this.isPublic() || this.canEdit(player) || this.guests.contains(player.getName().toString());
     }
 
     public boolean canEdit(Player player) {
@@ -52,22 +53,24 @@ public class EntityProtection {
         return this.owner.equalsIgnoreCase(playerName);
     }
 
+    public void setOwner(String playerName) {
+        this.owner = playerName;
+    }
+
     public void addGuest(String guest) {
-        this.guestList.add(guest);
+        this.guests.add(guest);
     }
 
     public void removeGuest(String guest) {
-        if (this.guestList != null) {
-            this.guestList.remove(guest.toLowerCase());
-        }
+        this.guests.remove(guest.toLowerCase());
     }
 
     public void setGuestList(HashSet<String> list) {
-        this.guestList.addAll(list);
+        this.guests.add(list);
     }
 
-    public HashSet<String> getGuestList() {
-        return guestList;
+    public GuestGroup getGuestList() {
+        return guests;
     }
 
     public boolean isPublic() {
@@ -79,7 +82,11 @@ public class EntityProtection {
     }
 
     public void clearGuestList() {
-        this.guestList.clear();
+        this.guests.clear();
+    }
+
+    public void defaultGuestList() {
+        new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
     }
 
 }
