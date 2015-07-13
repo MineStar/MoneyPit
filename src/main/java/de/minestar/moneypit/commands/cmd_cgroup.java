@@ -91,7 +91,7 @@ public class cmd_cgroup extends AbstractExtendedCommand {
                     return;
                 }
             } else {
-                if (!MoneyPitCore.databaseManager.updateGuestList(null, group)) {
+                if (!MoneyPitCore.databaseManager.updateGroup(group)) {
                     PlayerUtils.sendError(player, MoneyPitCore.NAME, "Can't edit group. Please contact an admin.");
                     return;
                 }

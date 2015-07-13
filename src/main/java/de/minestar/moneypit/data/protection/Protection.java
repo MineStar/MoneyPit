@@ -161,6 +161,8 @@ public class Protection implements IProtection {
         } else {
             if (this.guests.isDefault()) {
                 this.guests.clear();
+            } else {
+                this.defaultGuestList();
             }
         }
     }
@@ -277,6 +279,10 @@ public class Protection implements IProtection {
     }
 
     public void defaultGuestList() {
-        this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
+        if (this.isSubProtection) {
+            ((Protection) this.parent).defaultGuestList();
+        } else {
+            this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
+        }
     }
 }

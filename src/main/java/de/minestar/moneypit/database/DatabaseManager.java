@@ -441,7 +441,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 this.updateGuestListEntityProtection.executeUpdate();
             } else {
                 // update the group, instead of the guestlist-value
-                this.updateGroup(group);
+                this.updateGuestListEntityProtection.setString(1, "[MONEYPIT GROUP][ ]" + group.getName());
+                this.updateGuestListEntityProtection.setString(2, protectedEntity.getUuid().toString());
+                this.updateGuestListEntityProtection.executeUpdate();
             }
             return true;
         } catch (Exception e) {
@@ -463,11 +465,13 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                 this.updateGuestList.setString(1, ListHelper.toString(group.getAll()));
                 this.updateGuestList.setInt(2, protection.getDatabaseID());
                 this.updateGuestList.executeUpdate();
+                return true;
             } else {
-                // update the group, instead of the guestlist-value
-                this.updateGroup(group);
+                this.updateGuestList.setString(1, "[MONEYPIT GROUP][ ]" + group.getName());
+                this.updateGuestList.setInt(2, protection.getDatabaseID());
+                this.updateGuestList.executeUpdate();
+                return true;
             }
-            return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getDatabaseID());
             return false;
@@ -510,7 +514,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param group
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    private boolean updateGroup(GuestGroup group) {
+    public boolean updateGroup(GuestGroup group) {
         try {
             // do not update default-groups
             if (!group.isDefault()) {
@@ -682,6 +686,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     }
 
                     IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
+
                     // fetch groups...
                     String guestListString = results.getString("guestList");
                     // format: [MONEYPIT GROUP][ ]groupname
