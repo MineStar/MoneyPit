@@ -433,16 +433,11 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    public boolean updateEntityProtectionGuestList(EntityProtection protectedEntity, GuestGroup group) {
+    public boolean updateEntityProtectionGuestList(EntityProtection protectedEntity, String guestList) {
         try {
-            if (group.isDefault()) {
-                this.updateGuestListEntityProtection.setString(1, ListHelper.toString(group.getAll()));
-                this.updateGuestListEntityProtection.setString(2, protectedEntity.getUuid().toString());
-                this.updateGuestListEntityProtection.executeUpdate();
-            } else {
-                // update the group, instead of the guestlist-value
-                this.updateGroup(group);
-            }
+            this.updateGuestListEntityProtection.setString(1, guestList);
+            this.updateGuestListEntityProtection.setString(2, protectedEntity.getUuid().toString());
+            this.updateGuestListEntityProtection.executeUpdate();
             return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList of entity in database! ID=" + protectedEntity.getUuid().toString());

@@ -160,7 +160,6 @@ public class Protection implements IProtection {
             this.parent.clearGuestList();
         } else {
             this.guests.clear();
-            this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
         }
     }
 
@@ -273,9 +272,5 @@ public class Protection implements IProtection {
     @Override
     public String toString() {
         return "Protection={ ID:" + this.databaseID + " ; Type:" + this.type.name() + " ; Owner:" + this.owner + " ; SubProtection:" + this.isSubProtection + " ; " + this.vector.toString() + " }";
-    }
-
-    public void defaultGuestList() {
-        new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
     }
 }

@@ -11,7 +11,6 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 
 import com.bukkit.gemo.patchworking.BlockVector;
-import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ISubProtectionHolder;
 import com.bukkit.gemo.patchworking.ProtectionType;
@@ -24,7 +23,6 @@ import de.minestar.moneypit.modules.Module;
 public class ProtectionManager {
 
     private HashSet<String> giftList;
-    private HashMap<String, HashMap<BlockVector, IProtection>> protectionsByPlayer;
     private HashMap<BlockVector, IProtection> protections;
     private HashMap<BlockVector, ISubProtectionHolder> subProtections;
     private HashMap<BlockVector, IProtection> cachedProtections;
@@ -33,7 +31,6 @@ public class ProtectionManager {
      * Initialize the manager
      */
     public void init() {
-        this.protectionsByPlayer = new HashMap<String, HashMap<BlockVector, IProtection>>(512);
         this.protections = new HashMap<BlockVector, IProtection>(512);
         this.subProtections = new HashMap<BlockVector, ISubProtectionHolder>(1024);
         this.cachedProtections = new HashMap<BlockVector, IProtection>(512);
@@ -175,14 +172,6 @@ public class ProtectionManager {
         // register the protection
         this.protections.put(protection.getVector(), protection);
 
-        // put to playerlist
-        HashMap<BlockVector, IProtection> playerProtections = this.protectionsByPlayer.get(protection.getOwner().toLowerCase());
-        if (playerProtections == null) {
-            playerProtections = new HashMap<BlockVector, IProtection>();
-            this.protectionsByPlayer.put(protection.getOwner().toLowerCase(), playerProtections);
-        }
-        playerProtections.put(protection.getVector(), protection);
-
         // register the subprotections
         if (protection.hasAnySubProtection()) {
             Collection<IProtection> subs = protection.getSubProtections();
@@ -222,13 +211,6 @@ public class ProtectionManager {
 
             // remove the protection
             this.protections.remove(vector);
-
-            // remove from playermap
-            HashMap<BlockVector, IProtection> playerProtections = this.protectionsByPlayer.get(protection.getOwner().toLowerCase());
-            if (playerProtections != null) {
-                playerProtections.remove(vector);
-            }
-
             // remove the subprotections
             if (protection.hasAnySubProtection()) {
                 Collection<IProtection> subs = protection.getSubProtections();
@@ -341,18 +323,6 @@ public class ProtectionManager {
         }
     }
 
-    public void cleanGroups(GuestGroup group) {
-        // transfer to map
-        HashMap<BlockVector, IProtection> playerProtectionMap = this.protectionsByPlayer.get(group.getOwner().toLowerCase());
-        if (playerProtectionMap != null) {
-            for (IProtection iProtect : playerProtectionMap.values()) {
-                if (iProtect.getGuestList().getName().equalsIgnoreCase(group.getName())) {
-                    ((Protection) iProtect).defaultGuestList();
-                }
-            }
-        }
-    }
-
     public void transferProtections(String oldPlayername, String newPlayername) {
         // update gift-protection
         if (this.giftList.contains(oldPlayername.toLowerCase())) {
@@ -361,24 +331,11 @@ public class ProtectionManager {
         }
 
         // update protections
-        HashMap<BlockVector, IProtection> oldProtectionMap = this.protectionsByPlayer.get(oldPlayername.toLowerCase());
-
-        // transfer to map
-        HashMap<BlockVector, IProtection> newProtectionMap = this.protectionsByPlayer.get(newPlayername.toLowerCase());
-        if (newProtectionMap == null) {
-            newProtectionMap = new HashMap<BlockVector, IProtection>();
-            this.protectionsByPlayer.put(newPlayername.toLowerCase(), newProtectionMap);
-        }
-
-        if (oldProtectionMap != null) {
-            for (IProtection iProtect : oldProtectionMap.values()) {
-                if (iProtect.isOwner(oldPlayername)) {
-                    newProtectionMap.put(iProtect.getVector(), iProtect);
-                    Protection protection = (Protection) iProtect;
-                    protection.setOwner(newPlayername);
-                }
+        for (IProtection iProtect : this.protections.values()) {
+            if (iProtect.isOwner(oldPlayername)) {
+                Protection protection = (Protection) iProtect;
+                protection.setOwner(newPlayername);
             }
         }
-        oldProtectionMap.clear();
     }
 }

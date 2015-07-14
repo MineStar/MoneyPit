@@ -1,5 +1,7 @@
 package de.minestar.moneypit.listener;
 
+import java.util.HashSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -11,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
@@ -26,6 +27,7 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.entity.AddEntityProtectionQueue;
 import de.minestar.moneypit.queues.entity.RemoveEntityProtectionQueue;
+import de.minestar.moneypit.utils.ListHelper;
 
 public class EntityListener implements Listener {
 
@@ -187,19 +189,15 @@ public class EntityListener implements Listener {
             }
 
             if (protectedEntity.canEdit(player)) {
-                if (protectedEntity.getGuestList().isDefault()) {
-                    // clear guestlist
-                    protectedEntity.clearGuestList();
+                // clear guestlist
+                protectedEntity.clearGuestList();
 
-                    if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                        // send info
-                        PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "The guestlist has been cleared.");
-                    } else {
-                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                        PlayerUtils.sendInfo(player, "Please contact an admin.");
-                    }
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                    // send info
+                    PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "The guestlist has been cleared.");
                 } else {
-                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(player, "Please contact an admin.");
                 }
             } else {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
@@ -230,30 +228,26 @@ public class EntityListener implements Listener {
 
             boolean canEdit = protectedEntity.canEdit(player);
             if (canEdit) {
-                if (protectedEntity.getGuestList().isDefault()) {
-                    // add people to guestlist
-                    for (String guest : this.playerManager.getGuestList(player.getName())) {
-                        if (addGuests) {
-                            if (!protectedEntity.isOwner(guest)) {
-                                protectedEntity.addGuest(guest);
-                            }
-                        } else {
-                            protectedEntity.removeGuest(guest);
+                // add people to guestlist
+                for (String guest : this.playerManager.getGuestList(player.getName())) {
+                    if (addGuests) {
+                        if (!protectedEntity.isOwner(guest)) {
+                            protectedEntity.addGuest(guest);
                         }
-                    }
-
-                    // send info
-                    if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                        if (addGuests)
-                            PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
-                        else
-                            PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                     } else {
-                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                        PlayerUtils.sendInfo(player, "Please contact an admin.");
+                        protectedEntity.removeGuest(guest);
                     }
+                }
+                // send info
+
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                    if (addGuests)
+                        PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
+                    else
+                        PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                 } else {
-                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                    PlayerUtils.sendInfo(player, "Please contact an admin.");
                 }
             } else {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
@@ -366,19 +360,17 @@ public class EntityListener implements Listener {
         PlayerUtils.sendInfo(player, message);
 
         if (protectedEntity.canAccess(player)) {
-            this.displayGuestList(player, protectedEntity.getGuestList());
+            HashSet<String> guestList = protectedEntity.getGuestList();
+            if (guestList != null) {
+                this.displayGuestList(player, guestList);
+            }
         }
     }
 
-    private void displayGuestList(Player player, GuestGroup group) {
-        if (!group.isDefault()) {
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
-            PlayerUtils.sendMessage(player, ChatColor.AQUA, "Name: " + group.getName());
-            PlayerUtils.sendMessage(player, ChatColor.AQUA, "Owner: " + group.getOwner());
-        }
+    private void displayGuestList(Player player, HashSet<String> guestList) {
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
-        for (String name : group.getAll()) {
+        for (String name : guestList) {
             PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + name);
         }
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
