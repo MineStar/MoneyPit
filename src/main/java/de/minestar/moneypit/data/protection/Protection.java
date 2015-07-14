@@ -7,7 +7,6 @@ import java.util.HashSet;
 import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
-import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
@@ -20,7 +19,7 @@ public class Protection implements IProtection {
     // main-protections only
     private String owner;
     private ProtectionType type;
-    private GuestGroup guests;
+    private HashSet<String> guestList;
     private HashMap<BlockVector, IProtection> subProtections;
 
     // sub-protections only
@@ -40,7 +39,7 @@ public class Protection implements IProtection {
         this.isSubProtection = false;
         this.owner = owner;
         this.type = type;
-        this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
+        this.guestList = null;
         this.subProtections = null;
     }
 
@@ -119,7 +118,10 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             this.parent.addGuest(guest);
         } else {
-            this.guests.add(guest);
+            if (this.guestList == null) {
+                this.guestList = new HashSet<String>();
+            }
+            this.guestList.add(guest.toLowerCase());
         }
     }
 
@@ -127,31 +129,28 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             this.parent.removeGuest(guest);
         } else {
-            this.guests.remove(guest);
+            if (this.guestList != null) {
+                this.guestList.remove(guest.toLowerCase());
+            }
+            if (this.guestList.size() < 1) {
+                this.guestList = null;
+            }
         }
     }
 
-    public GuestGroup getGuestList() {
+    public HashSet<String> getGuestList() {
         if (this.isSubProtection) {
             return this.parent.getGuestList();
         } else {
-            return this.guests;
+            return this.guestList;
         }
     }
 
-    public void setGuestList(GuestGroup group) {
+    public void setGuestList(HashSet<String> guestList) {
         if (this.isSubProtection) {
-            this.parent.setGuestList(group);
+            this.parent.setGuestList(guestList);
         } else {
-            this.guests = group;
-        }
-    }
-
-    public void addGuests(HashSet<String> guestList) {
-        if (this.isSubProtection) {
-            this.parent.addGuests(guestList);
-        } else {
-            this.guests.add(guestList);
+            this.guestList = guestList;
         }
     }
 
@@ -159,7 +158,10 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             this.parent.clearGuestList();
         } else {
-            this.guests.clear();
+            if (this.guestList != null) {
+                this.guestList.clear();
+                this.guestList = null;
+            }
         }
     }
 
@@ -167,7 +169,10 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             return this.parent.isGuest(guest);
         } else {
-            return this.guests.contains(guest);
+            if (this.guestList != null) {
+                return this.guestList.contains(guest.toLowerCase());
+            }
+            return false;
         }
     }
 

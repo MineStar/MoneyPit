@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import com.bukkit.gemo.patchworking.BlockVector;
-import com.bukkit.gemo.patchworking.GuestGroup;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 
@@ -22,7 +21,6 @@ import de.minestar.minestarlibrary.utils.ConsoleUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.EntityProtection;
 import de.minestar.moneypit.data.protection.Protection;
-import de.minestar.moneypit.manager.GroupManager;
 import de.minestar.moneypit.utils.ListHelper;
 
 public class DatabaseManager extends AbstractSQLiteHandler {
@@ -30,15 +28,14 @@ public class DatabaseManager extends AbstractSQLiteHandler {
     private PreparedStatement addProtection, removeProtection, updateGuestList, getProtectionAtPosition, updateOwner;
     private PreparedStatement addSubProtection, removeSubProtections, removeOneSubProtection;
     private PreparedStatement loadAllProtections, loadSubprotections;
-    private PreparedStatement loadGroups, updateGroup, removeGroup, addGroup, updateGroupOwner;
-    private PreparedStatement loadAllEntityProtections, updateEntityOwner, removeEntityProtection, addEntityProtection, updateGuestListEntityProtection, getEntityProtectionByUuid;
+    private PreparedStatement loadAllEntityProtections, removeEntityProtection, addEntityProtection, updateGuestListEntityProtection, getEntityProtectionByUuid;
 
     public DatabaseManager(String pluginName, File SQLConfigFile) {
         super(pluginName, SQLConfigFile);
     }
 
     @Override
-    protected void createStructure(String pluginName, Connection connection) throws Exception {
+    protected void createStructure(String pluginName, Connection con) throws Exception {
         // /////////////////////////////////////////
         //
         // MAIN-PROTECTIONS
@@ -84,7 +81,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         builder.append(");");
 
         // execute statement
-        PreparedStatement statement = connection.prepareStatement(builder.toString());
+        PreparedStatement statement = con.prepareStatement(builder.toString());
         statement.execute();
 
         // clear
@@ -129,7 +126,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         builder.append(");");
 
         // execute statement
-        statement = connection.prepareStatement(builder.toString());
+        statement = con.prepareStatement(builder.toString());
         statement.execute();
 
         // clear
@@ -170,49 +167,12 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         builder.append(");");
 
         // execute statement
-        statement = connection.prepareStatement(builder.toString());
+        statement = con.prepareStatement(builder.toString());
         statement.execute();
 
         // clear
         statement = null;
         builder.setLength(0);
-
-        // /////////////////////////////////////////
-        //
-        // GROUPS
-        //
-        // /////////////////////////////////////////
-        createGroupTable(connection);
-    }
-
-    private void createGroupTable(Connection connection) throws SQLException {
-        // /////////////////////////////////////////
-        //
-        // MAIN-PROTECTIONS
-        //
-        // /////////////////////////////////////////
-        StringBuilder builder = new StringBuilder();
-
-        // open statement
-        builder.append("CREATE TABLE IF NOT EXISTS `tbl_groups` (");
-
-        // Protectionowner
-        builder.append("`owner` TEXT NOT NULL");
-        builder.append(", ");
-
-        // ProtectionType as Integer
-        builder.append("`name` TEXT NOT NULL");
-        builder.append(", ");
-
-        // GuestList - Format : GUEST;GUEST;GUEST
-        builder.append("`guestList` TEXT NOT NULL");
-
-        // close statement
-        builder.append(");");
-
-        // execute statement
-        PreparedStatement statement = connection.prepareStatement(builder.toString());
-        statement.execute();
     }
 
     @Override
@@ -221,7 +181,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.addProtection              = con.prepareStatement("INSERT INTO `tbl_protections` (owner, protectionType, blockWorld, blockX, blockY, blockZ, guestList) VALUES (?, ?, ?, ?, ?, ?, ?);");
         this.removeProtection           = con.prepareStatement("DELETE FROM `tbl_protections` WHERE ID=?;");
         this.updateGuestList            = con.prepareStatement("UPDATE `tbl_protections` SET guestList=? WHERE ID=?;");
-        this.updateOwner                = con.prepareStatement("UPDATE `tbl_protections` SET owner=? WHERE owner=?;");    
+        this.updateOwner                = con.prepareStatement("UPDATE `tbl_protections` SET owner=? WHERE owner=?;");       
         this.getProtectionAtPosition    = con.prepareStatement("SELECT * FROM `tbl_protections` WHERE blockWorld=? AND blockX=? AND blockY=? AND blockZ=? LIMIT 1;");
         this.loadAllProtections         = con.prepareStatement("SELECT * FROM `tbl_protections` ORDER BY ID ASC");
        
@@ -230,14 +190,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         this.removeOneSubProtection     = con.prepareStatement("DELETE FROM `tbl_subprotections` WHERE parentID=? AND blockWorld=? AND blockX=? AND blockY=? AND blockZ=?");    
         this.loadSubprotections         = con.prepareStatement("SELECT * FROM `tbl_subprotections` ORDER BY ID ASC");        
        
-        this.loadGroups                 = con.prepareStatement("SELECT * FROM `tbl_groups`");  
-        this.updateGroupOwner           = con.prepareStatement("UPDATE `tbl_groups` SET owner=? WHERE owner=?;");      
-        this.addGroup                   = con.prepareStatement("INSERT INTO `tbl_groups` (name, owner, guestList) VALUES (?, ?, ?);");       
-        this.updateGroup                = con.prepareStatement("UPDATE `tbl_groups` SET guestList=? WHERE name=? AND owner=?;");
-        this.removeGroup                = con.prepareStatement("DELETE FROM `tbl_groups` WHERE name=? AND owner=?;");   
-        
         this.loadAllEntityProtections       = con.prepareStatement("SELECT * FROM `tbl_entityprotections`");
-        this.updateEntityOwner                = con.prepareStatement("UPDATE `tbl_entityprotections` SET owner=? WHERE owner=?;");      
         this.removeEntityProtection         = con.prepareStatement("DELETE FROM `tbl_entityprotections` WHERE entityuuid=?;");
         this.addEntityProtection                = con.prepareStatement("INSERT INTO `tbl_entityprotections` (owner, entityType, protectionType, entityuuid, guestList) VALUES (?, ?, ?, ?, ?);");       
         this.updateGuestListEntityProtection    = con.prepareStatement("UPDATE `tbl_entityprotections` SET guestList=? WHERE entityuuid=?;");
@@ -249,7 +202,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * Init this Manager
      */
     public void init() {
-        this.loadGroups();
         this.loadAllProtections();
         this.loadAllEntityProtections();
     }
@@ -452,71 +404,14 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    public boolean updateGuestList(IProtection protection, GuestGroup group) {
+    public boolean updateGuestList(IProtection protection, String guestList) {
         try {
-            if (group.isDefault()) {
-                this.updateGuestList.setString(1, ListHelper.toString(group.getAll()));
-                this.updateGuestList.setInt(2, protection.getDatabaseID());
-                this.updateGuestList.executeUpdate();
-            } else {
-                // update the group, instead of the guestlist-value
-                this.updateGroup(group);
-            }
+            this.updateGuestList.setString(1, guestList);
+            this.updateGuestList.setInt(2, protection.getDatabaseID());
+            this.updateGuestList.executeUpdate();
             return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save guestList in database! ID=" + protection.getDatabaseID());
-            return false;
-        }
-    }
-
-    public boolean createGroup(GuestGroup group) {
-        try {
-            // do not update default-groups
-            if (!group.isDefault()) {
-                this.addGroup.setString(1, group.getName());
-                this.addGroup.setString(2, group.getOwner());
-                this.addGroup.setString(3, ListHelper.toString(group.getAll()));
-                this.addGroup.executeUpdate();
-            }
-            return true;
-        } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't save group in database! Name=" + group.getName() + " -> Owner=" + group.getOwner());
-            return false;
-        }
-    }
-
-    public boolean deleteGroup(GuestGroup group) {
-        try {
-            if (!group.isDefault()) {
-                this.removeGroup.setString(1, group.getName());
-                this.removeGroup.setString(2, group.getOwner());
-                this.removeGroup.executeUpdate();
-            }
-            return true;
-        } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't delete group from database! Name=" + group.getName() + " -> Owner=" + group.getOwner());
-            return false;
-        }
-    }
-
-    /**
-     * Update the group
-     * 
-     * @param group
-     * @return <b>true</b> if the update was successful, otherwise <b>false</b>
-     */
-    private boolean updateGroup(GuestGroup group) {
-        try {
-            // do not update default-groups
-            if (!group.isDefault()) {
-                this.updateGroup.setString(1, ListHelper.toString(group.getAll()));
-                this.updateGroup.setString(2, group.getName());
-                this.updateGroup.setString(3, group.getOwner());
-                this.updateGroup.executeUpdate();
-            }
-            return true;
-        } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't update group in database! Name=" + group.getName() + " -> Owner=" + group.getOwner());
             return false;
         }
     }
@@ -526,15 +421,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             this.updateOwner.setString(1, newName);
             this.updateOwner.setString(2, oldName);
             this.updateOwner.executeUpdate();
-
-            this.updateGroupOwner.setString(1, newName);
-            this.updateGroupOwner.setString(2, oldName);
-            this.updateGroupOwner.executeUpdate();
-
-            this.updateEntityOwner.setString(1, newName);
-            this.updateEntityOwner.setString(2, oldName);
-            this.updateEntityOwner.executeUpdate();
-
             return true;
         } catch (Exception e) {
             ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't update owner " + oldName + " to " + newName);
@@ -624,26 +510,6 @@ public class DatabaseManager extends AbstractSQLiteHandler {
         }
     }
 
-    private void loadGroups() {
-        try {
-            ResultSet results = this.loadGroups.executeQuery();
-            while (results.next()) {
-                try {
-                    if (GroupManager.containsGroup(results.getString("owner"), results.getString("name"))) {
-                        ConsoleUtils.printWarning(MoneyPitCore.NAME, "Group already registered! " + results.getInt("name") + " -> " + results.getString("owner"));
-                        continue;
-                    }
-                    GuestGroup group = new GuestGroup(results.getString("name"), results.getString("owner"));
-                    group.add(ListHelper.toList(results.getString("guestList")));
-                    GroupManager.addGroup(group);
-                } catch (Exception e) {
-                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load Group=" + results.getInt("name") + " -> " + results.getString("owner"));
-                }
-            }
-        } catch (Exception e) {
-            ConsoleUtils.printException(e, MoneyPitCore.NAME, "Can't load groups!");
-        }
-    }
     /**
      * Load all protections from the Database
      */
@@ -662,20 +528,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     }
 
                     IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
-                    // TODO: implement groups...
-                    String guestListString = results.getString("guestList");
-                    // format: [MONEYPIT GROUP][ ]groupname
-                    if (guestListString.startsWith("[MONEYPIT GROUP][ ]")) {
-                        String[] split = guestListString.split("[ ]");
-                        if (split.length == 2) {
-                            GuestGroup group = GroupManager.getGroup(protection.getOwner(), split[1]);
-                            if (group != null) {
-                                protection.setGuestList(group);
-                            }
-                        }
-                    } else {
-                        protection.addGuests(ListHelper.toList(guestListString));
-                    }
+                    protection.setGuestList(ListHelper.toList(results.getString("guestList")));
                     cachedProtections.put(protection.getDatabaseID(), protection);
                 } catch (Exception error) {
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
