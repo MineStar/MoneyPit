@@ -214,7 +214,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
                 new cmd_cuninviteall    ("/cuninviteall",   "",                         "moneypit.commands.cuninvite"),
                 new cmd_ctoggle         ("/ctoggle",        "",                         "moneypit.commands.cinfo"),
                 new cmd_noLock          ("/cautolock",      "",                         "moneypit.commands.cinfo"),
-                new cmd_cgroup          ("/cgroup",         "<Name> <+|-|--> [Players ...]","moneypit.commands.cgroup")
+                new cmd_cgroup          ("/cgroup",         "[Name] [+|-|--] [Players ...]","moneypit.commands.cgroup")
          );
         //@formatter:on;
         return true;

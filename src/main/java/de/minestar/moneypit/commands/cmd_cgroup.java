@@ -37,7 +37,7 @@ public class cmd_cgroup extends AbstractExtendedCommand {
         String canonicalGroupName = "";
         String internalGroupName = "";
         if (args.length > 0) {
-            if (!args[0].matches("([a-zA-Z0-9_]).*")) {
+            if (!args[0].matches("([a-zA-Z0-9_])*")) {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "Groupnames can only contain ['a'-'Z', '0'-'9' and '_']!");
                 return;
             }

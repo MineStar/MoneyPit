@@ -584,6 +584,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     protection.setGuestList(ListHelper.toList(results.getString("guestList")));
                     cachedProtections.put(protection.getDatabaseID(), protection);
                 } catch (Exception error) {
+                    error.printStackTrace();
                     ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load protection: ID=" + results.getInt("ID") + " -> " + vector.toString());
                     failedProtections.put(results.getInt("ID"), vector);
                     continue;

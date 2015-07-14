@@ -372,6 +372,9 @@ public class EntityListener implements Listener {
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
         for (Guest guest : guestList) {
+            if (guest.getName().length() < 1) {
+                continue;
+            }
             if (guest.getName().startsWith(GuestHelper.GROUP_PREFIX)) {
                 PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + guest.getName().replaceFirst(GuestHelper.GROUP_PREFIX, "group: "));
             } else {

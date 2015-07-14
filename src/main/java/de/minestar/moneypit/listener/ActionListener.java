@@ -881,7 +881,7 @@ public class ActionListener implements Listener {
                 } else {
                     PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
-                }
+                }                
             } else {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -1085,6 +1085,9 @@ public class ActionListener implements Listener {
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
         for (Guest guest : guestList) {
+            if (guest.getName().length() < 1) {
+                continue;
+            }
             if (guest.getName().startsWith(GuestHelper.GROUP_PREFIX)) {
                 PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + guest.getName().replaceFirst(GuestHelper.GROUP_PREFIX, "group: "));
             } else {

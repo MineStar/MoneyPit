@@ -2,6 +2,7 @@ package de.minestar.moneypit.data.protection;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -145,6 +146,9 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             return this.parent.getGuestList();
         } else {
+            if (this.guestList == null) {
+                return new HashSet<Guest>();
+            }
             return this.guestList.values();
         }
     }
@@ -153,7 +157,9 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             this.parent.setGuestList(guestList);
         } else {
-            this.guestList.clear();
+            if (this.guestList != null) {
+                this.guestList.clear();
+            }
             for (String guest : guestList) {
                 this.addGuest(guest);
             }

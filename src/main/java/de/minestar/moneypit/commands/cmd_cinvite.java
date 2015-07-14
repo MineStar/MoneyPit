@@ -25,7 +25,7 @@ public class cmd_cinvite extends AbstractExtendedCommand {
         HashSet<String> guestList = new HashSet<String>();
         for (String name : args) {
             if (name.startsWith(GuestHelper.GROUP_PREFIX)) {
-                if (name.matches("(" + GuestHelper.GROUP_PREFIX + ")([a-zA-Z0-9_]).*")) {
+                if (name.matches("(" + GuestHelper.GROUP_PREFIX + ")([a-zA-Z0-9_])*")) {
                     Group group = GroupManager.getGroup(playerName, name);
                     if (group != null) {
                         guestList.add(group.getName());
