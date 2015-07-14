@@ -43,6 +43,7 @@ import de.minestar.moneypit.commands.cmd_ctoggle;
 import de.minestar.moneypit.commands.cmd_cuninvite;
 import de.minestar.moneypit.commands.cmd_cuninviteall;
 import de.minestar.moneypit.commands.cmd_noLock;
+import de.minestar.moneypit.data.guests.GroupManager;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
 import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
@@ -182,6 +183,10 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
         if (databaseManager.hasConnection()) {
             databaseManager.closeConnection();
         }
+
+        // clear groups
+        GroupManager.clear();
+
         timer.cancel();
         return true;
     }

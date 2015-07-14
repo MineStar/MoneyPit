@@ -1,6 +1,6 @@
 package de.minestar.moneypit.listener;
 
-import java.util.HashSet;
+import java.util.Collection;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -13,12 +13,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import com.bukkit.gemo.patchworking.Guest;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
 
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
+import de.minestar.moneypit.data.guests.GuestHelper;
 import de.minestar.moneypit.data.protection.EntityProtection;
 import de.minestar.moneypit.entitymodules.EntityModule;
 import de.minestar.moneypit.manager.EntityModuleManager;
@@ -27,7 +29,6 @@ import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.entity.AddEntityProtectionQueue;
 import de.minestar.moneypit.queues.entity.RemoveEntityProtectionQueue;
-import de.minestar.moneypit.utils.ListHelper;
 
 public class EntityListener implements Listener {
 
@@ -89,8 +90,6 @@ public class EntityListener implements Listener {
             }
         }
     }
-    
-    
 
     private boolean handleEntityInteract(Player player, Entity interactedEntity, boolean isDamageEvent) {
         // we need an entity and a player
@@ -112,7 +111,7 @@ public class EntityListener implements Listener {
                 return true;
             }
             case PROTECTION_REMOVE : {
-                // handle remove                
+                // handle remove
                 return this.handleRemoveInteract(player, interactedEntity);
             }
             case PROTECTION_ADD_PRIVATE :
@@ -194,7 +193,7 @@ public class EntityListener implements Listener {
                 // clear guestlist
                 protectedEntity.clearGuestList();
 
-                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
                     // send info
                     PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "The guestlist has been cleared.");
                 } else {
@@ -242,7 +241,7 @@ public class EntityListener implements Listener {
                 }
                 // send info
 
-                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, ListHelper.toString(protectedEntity.getGuestList()))) {
+                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
                     if (addGuests)
                         PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
                     else
@@ -362,18 +361,22 @@ public class EntityListener implements Listener {
         PlayerUtils.sendInfo(player, message);
 
         if (protectedEntity.canAccess(player)) {
-            HashSet<String> guestList = protectedEntity.getGuestList();
+            Collection<Guest> guestList = protectedEntity.getGuestList();
             if (guestList != null) {
                 this.displayGuestList(player, guestList);
             }
         }
     }
 
-    private void displayGuestList(Player player, HashSet<String> guestList) {
+    private void displayGuestList(Player player, Collection<Guest> guestList) {
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, "Guestlist:");
-        for (String name : guestList) {
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + name);
+        for (Guest guest : guestList) {
+            if (guest.getName().startsWith(GuestHelper.GROUP_PREFIX)) {
+                PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + guest.getName().replaceFirst(GuestHelper.GROUP_PREFIX, "group: "));
+            } else {
+                PlayerUtils.sendMessage(player, ChatColor.GRAY, " - " + guest.getName());
+            }
         }
         PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
     }

@@ -3,13 +3,17 @@ package de.minestar.moneypit.data.protection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.Guest;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 import com.bukkit.gemo.utils.UtilPermissions;
+
+import de.minestar.moneypit.data.guests.GuestHelper;
 
 public class Protection implements IProtection {
     // both protections
@@ -19,7 +23,7 @@ public class Protection implements IProtection {
     // main-protections only
     private String owner;
     private ProtectionType type;
-    private HashSet<String> guestList;
+    private Map<String, Guest> guestList;
     private HashMap<BlockVector, IProtection> subProtections;
 
     // sub-protections only
@@ -119,9 +123,9 @@ public class Protection implements IProtection {
             this.parent.addGuest(guest);
         } else {
             if (this.guestList == null) {
-                this.guestList = new HashSet<String>();
+                this.guestList = new HashMap<String, Guest>();
             }
-            this.guestList.add(guest.toLowerCase());
+            this.guestList.put(guest.toLowerCase(), GuestHelper.create(owner, guest));
         }
     }
 
@@ -138,11 +142,11 @@ public class Protection implements IProtection {
         }
     }
 
-    public HashSet<String> getGuestList() {
+    public Collection<Guest> getGuestList() {
         if (this.isSubProtection) {
             return this.parent.getGuestList();
         } else {
-            return this.guestList;
+            return this.guestList.values();
         }
     }
 
@@ -150,7 +154,10 @@ public class Protection implements IProtection {
         if (this.isSubProtection) {
             this.parent.setGuestList(guestList);
         } else {
-            this.guestList = guestList;
+            this.guestList.clear();
+            for (String guest : guestList) {
+                this.addGuest(guest);
+            }
         }
     }
 
@@ -165,12 +172,15 @@ public class Protection implements IProtection {
         }
     }
 
-    public boolean isGuest(String guest) {
+    public boolean isGuest(String guestName) {
         if (this.isSubProtection) {
-            return this.parent.isGuest(guest);
+            return this.parent.isGuest(guestName);
         } else {
             if (this.guestList != null) {
-                return this.guestList.contains(guest.toLowerCase());
+                Guest guest = this.guestList.get(guestName.toLowerCase());
+                if (guest != null) {
+                    return guest.hasAccess(guestName);
+                }
             }
             return false;
         }

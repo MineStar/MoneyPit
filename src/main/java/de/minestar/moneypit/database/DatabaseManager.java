@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import com.bukkit.gemo.patchworking.BlockVector;
+import com.bukkit.gemo.patchworking.Guest;
 import com.bukkit.gemo.patchworking.IProtection;
 import com.bukkit.gemo.patchworking.ProtectionType;
 
@@ -385,9 +387,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    public boolean updateEntityProtectionGuestList(EntityProtection protectedEntity, String guestList) {
+    public boolean updateEntityProtectionGuestList(EntityProtection protectedEntity, Collection<Guest> guestList) {
         try {
-            this.updateGuestListEntityProtection.setString(1, guestList);
+            this.updateGuestListEntityProtection.setString(1, ListHelper.toString(guestList));
             this.updateGuestListEntityProtection.setString(2, protectedEntity.getUuid().toString());
             this.updateGuestListEntityProtection.executeUpdate();
             return true;
@@ -404,9 +406,9 @@ public class DatabaseManager extends AbstractSQLiteHandler {
      * @param guestList
      * @return <b>true</b> if the update was successful, otherwise <b>false</b>
      */
-    public boolean updateGuestList(IProtection protection, String guestList) {
+    public boolean updateGuestList(IProtection protection, Collection<Guest> guestList) {
         try {
-            this.updateGuestList.setString(1, guestList);
+            this.updateGuestList.setString(1, ListHelper.toString(guestList));
             this.updateGuestList.setInt(2, protection.getDatabaseID());
             this.updateGuestList.executeUpdate();
             return true;
