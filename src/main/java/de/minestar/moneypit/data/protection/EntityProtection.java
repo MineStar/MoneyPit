@@ -72,9 +72,10 @@ public class EntityProtection {
     }
 
     public boolean isGuest(String guestName) {
-        Guest guest = this.guestList.get(guestName.toLowerCase());
-        if (guest != null) {
-            return guest.hasAccess(guestName);
+        for (Guest guest : this.guestList.values()) {
+            if (guest.hasAccess(guestName)) {
+                return true;
+            }
         }
         return false;
     }

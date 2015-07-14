@@ -9,6 +9,7 @@ import de.minestar.minestarlibrary.commands.AbstractExtendedCommand;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
+import de.minestar.moneypit.data.guests.GuestHelper;
 
 public class cmd_cuninvite extends AbstractExtendedCommand {
 
@@ -19,14 +20,18 @@ public class cmd_cuninvite extends AbstractExtendedCommand {
 
     public void execute(String[] args, Player player) {
         // create guestList
-        HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
+        HashSet<String> guestList = cmd_cinvite.parseGuestList(player.getName(), args);
 
         // send info
         PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to uninvite the following people:");
         String infoMessage = "";
         int i = 0;
         for (String name : guestList) {
-            infoMessage += name;
+            if (name.startsWith(GuestHelper.GROUP_PREFIX)) {
+                infoMessage += name.replaceFirst(GuestHelper.GROUP_PREFIX, "group: ");
+            } else {
+                infoMessage += name;
+            }
             ++i;
             if (i < guestList.size()) {
                 infoMessage += ", ";

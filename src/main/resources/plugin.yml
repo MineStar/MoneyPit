@@ -7,6 +7,9 @@ commands:
   cremove:
     description: Remove a protection
     usage: /cremove
+  cgroup:
+    description: Add/edit/delete a group
+    usage: /cgroup <Name> <+|-|--> [Players ...]   
   cinfo:
     description: Get some information about a protection
     usage: /cinfo
