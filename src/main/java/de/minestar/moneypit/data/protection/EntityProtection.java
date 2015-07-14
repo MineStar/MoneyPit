@@ -61,16 +61,12 @@ public class EntityProtection {
         this.guests.add(guest);
     }
 
-    public void addGuests(HashSet<String> guestList) {
-        this.guests.add(guestList);
-    }
-
     public void removeGuest(String guest) {
         this.guests.remove(guest.toLowerCase());
     }
 
-    public void setGuestList(GuestGroup group) {
-        this.guests = group;
+    public void setGuestList(HashSet<String> list) {
+        this.guests.add(list);
     }
 
     public GuestGroup getGuestList() {
@@ -86,13 +82,11 @@ public class EntityProtection {
     }
 
     public void clearGuestList() {
-        if (this.guests.isDefault()) {
-            this.guests.clear();
-        }
+        this.guests.clear();
     }
 
     public void defaultGuestList() {
-        this.guests = new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
+        new GuestGroup(GuestGroup.DEFAULT_NAME, this.owner);
     }
 
 }

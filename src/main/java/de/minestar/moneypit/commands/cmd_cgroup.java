@@ -53,9 +53,9 @@ public class cmd_cgroup extends AbstractExtendedCommand {
             // remove group
             GroupManager.removeGroup(group);
 
-            // update protections...
-            MoneyPitCore.protectionManager.resetGuestList(group);
-            MoneyPitCore.entityProtectionManager.resetGuestList(group);
+            // TODO: update protections...
+            MoneyPitCore.protectionManager.cleanGroups(group);
+
         } else {
             // edit|create group
             String groupName = args[0];

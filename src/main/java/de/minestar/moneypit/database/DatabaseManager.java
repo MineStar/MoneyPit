@@ -615,22 +615,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
             while (results.next()) {
                 try {
                     EntityProtection protectedEntity = new EntityProtection(results.getString("owner"), UUID.fromString(results.getString("entityUuid")), EntityType.valueOf(results.getString("entityType")), ProtectionType.byID(results.getInt("protectionType")));
-
-                    // fetch groups...
-                    String guestListString = results.getString("guestList");
-                    // format: [MONEYPIT GROUP][ ]groupname
-                    if (guestListString.startsWith("[MONEYPIT GROUP][ ]")) {
-                        String[] split = guestListString.split("[ ]");
-                        if (split.length == 2) {
-                            GuestGroup group = GroupManager.getGroup(protectedEntity.getOwner(), split[1]);
-                            if (group != null) {
-                                protectedEntity.setGuestList(group);
-                            }
-                        }
-                    } else {
-                        protectedEntity.addGuests(ListHelper.toList(guestListString));
-                    }
-
+                    protectedEntity.setGuestList(ListHelper.toList(results.getString("guestList")));
                     MoneyPitCore.entityProtectionManager.addProtection(protectedEntity);
                     loaded++;
                 } catch (Exception error) {
@@ -682,7 +667,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     }
 
                     IProtection protection = new Protection(results.getInt("ID"), vector, results.getString("owner"), ProtectionType.byID(results.getInt("protectionType")));
-                    // fetch groups...
+                    // TODO: implement groups...
                     String guestListString = results.getString("guestList");
                     // format: [MONEYPIT GROUP][ ]groupname
                     if (guestListString.startsWith("[MONEYPIT GROUP][ ]")) {
