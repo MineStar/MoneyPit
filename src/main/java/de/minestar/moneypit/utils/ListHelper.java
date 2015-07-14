@@ -43,7 +43,7 @@ public class ListHelper {
         return result;
     }
 
-    public static HashSet<String> toList(String text) {
+    public static Collection<String> toList(String text) {
         HashSet<String> list = null;
         if (text == null) {
             return list;

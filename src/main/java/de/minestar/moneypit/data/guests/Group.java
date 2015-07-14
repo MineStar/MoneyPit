@@ -1,5 +1,6 @@
 package de.minestar.moneypit.data.guests;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 public class Group implements Comparable<Group> {
@@ -48,6 +49,7 @@ public class Group implements Comparable<Group> {
         }
         return false;
     }
+
     @Override
     public int hashCode() {
         return _name.hashCode();
@@ -56,5 +58,21 @@ public class Group implements Comparable<Group> {
     @Override
     public int compareTo(Group o) {
         return _name.compareTo(o._name);
+    }
+
+    public void addPlayers(Collection<String> list) {
+        for (String playerName : list) {
+            this.addPlayer(playerName);
+        }
+    }
+
+    public void removePlayers(Collection<String> list) {
+        for (String playerName : list) {
+            this.removePlayer(playerName);
+        }
+    }
+
+    public HashSet<String> getPlayerList() {
+        return _playerList;
     }
 }

@@ -2,7 +2,6 @@ package de.minestar.moneypit.data.protection;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,7 +64,7 @@ public class EntityProtection {
         this.guestList.remove(guestName.toLowerCase());
     }
 
-    public void setGuestList(HashSet<String> list) {
+    public void setGuestList(Collection<String> list) {
         this.guestList.clear();
         for (String guest : list) {
             this.addGuest(guest);
