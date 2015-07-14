@@ -22,7 +22,7 @@ public class cmd_cgroup extends AbstractExtendedCommand {
     public static HashSet<String> parseGuestList(String[] args) {
         // create guestList
         HashSet<String> guestList = new HashSet<String>();
-        for (int i = 2; i < args.length; i++) {
+        for (int i = 1; i < args.length; i++) {
             String correctName = PlayerUtils.getCorrectPlayerName(args[i]);
             if (correctName == null) {
                 correctName = args[i];
@@ -33,10 +33,10 @@ public class cmd_cgroup extends AbstractExtendedCommand {
     }
 
     public void execute(String[] args, Player player) {
-        if (args.length < 2) {
+        if (args.length < 1) {
             PlayerUtils.sendError(player, MoneyPitCore.NAME, "Wrong syntax! Usage: " + this.getSyntax());
             return;
-        } else if (args.length == 2) {
+        } else if (args.length == 1) {
             // delete group
             String groupName = args[0];
             GuestGroup group = GroupManager.getGroup(player.getName(), groupName);
@@ -57,16 +57,6 @@ public class cmd_cgroup extends AbstractExtendedCommand {
             MoneyPitCore.protectionManager.resetGuestList(group);
             MoneyPitCore.entityProtectionManager.resetGuestList(group);
         } else {
-            boolean add = true;
-            if (args[1].equalsIgnoreCase("+")) {
-                add = true;
-            } else if (args[1].equalsIgnoreCase("-")) {
-                add = false;
-            } else {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Wrong syntax! Usage: " + this.getSyntax());
-                return;
-            }
-
             // edit|create group
             String groupName = args[0];
             GuestGroup group = GroupManager.getGroup(player.getName(), groupName);
@@ -79,12 +69,7 @@ public class cmd_cgroup extends AbstractExtendedCommand {
             }
 
             // create guestList
-            HashSet<String> playerList = cmd_cgroup.parseGuestList(args);
-            if (add) {
-                group.add(playerList);
-            } else {
-                group.remove(playerList);
-            }
+            group.add(cmd_cgroup.parseGuestList(args));
 
             // save to database
             if (groupIsNew) {
