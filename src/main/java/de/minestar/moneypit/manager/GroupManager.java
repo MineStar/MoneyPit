@@ -10,10 +10,6 @@ public class GroupManager {
 
     private static Map<String, HashSet<GuestGroup>> groups = new HashMap<String, HashSet<GuestGroup>>();
 
-    public static HashSet<GuestGroup> getGroups(String owner) {
-        return groups.get(owner.toLowerCase());
-    }
-
     public static boolean containsGroup(String owner, String groupName) {
         HashSet<GuestGroup> groupSet = groups.get(owner.toLowerCase());
         if (groupSet != null) {

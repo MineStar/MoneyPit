@@ -5,13 +5,10 @@ import java.util.HashSet;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.bukkit.gemo.patchworking.GuestGroup;
-
 import de.minestar.minestarlibrary.commands.AbstractExtendedCommand;
 import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.PlayerState;
-import de.minestar.moneypit.manager.GroupManager;
 
 public class cmd_cinvite extends AbstractExtendedCommand {
 
@@ -34,56 +31,24 @@ public class cmd_cinvite extends AbstractExtendedCommand {
     }
 
     public void execute(String[] args, Player player) {
-        if (args[0].startsWith("g:")) {
-            String groupName = args[0].replaceFirst("g:", "");
-            GuestGroup group = GroupManager.getGroup(player.getName(), groupName);
-            if (group == null) {
-                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Group '" + groupName + "' not found.");
-                listGroups(player);
-                return;
+        // create guestList
+        HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
+
+        // send info
+        PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to invite the following people:");
+        String infoMessage = "";
+        int i = 0;
+        for (String name : guestList) {
+            infoMessage += name;
+            ++i;
+            if (i < guestList.size()) {
+                infoMessage += ", ";
             }
-            MoneyPitCore.playerManager.setGuestList(player.getName(), groupName);
-
-            // send info
-            PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to invite the group '" + group.getName() + "'");
-
-            // set states
-            MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
-        } else {
-            // create guestList
-            HashSet<String> guestList = cmd_cinvite.parseGuestList(args);
-            MoneyPitCore.playerManager.setGuestList(player.getName(), guestList);
-
-            // send info
-            PlayerUtils.sendMessage(player, ChatColor.DARK_AQUA, MoneyPitCore.NAME, "Click on a private protection to invite the following people:");
-            String infoMessage = "";
-            int i = 0;
-            for (String name : guestList) {
-                infoMessage += name;
-                ++i;
-                if (i < guestList.size()) {
-                    infoMessage += ", ";
-                }
-            }
-            PlayerUtils.sendInfo(player, infoMessage);
-
-            // set states
-            MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
         }
-    }
+        PlayerUtils.sendInfo(player, infoMessage);
 
-    private void listGroups(Player player) {
-        HashSet<GuestGroup> groups = GroupManager.getGroups(player.getName());
-        if (groups == null) {
-            PlayerUtils.sendInfo(player, "You have no groups yet. Create one with /cgroup...");
-        } else {
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "Your groups:");
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
-            for (GuestGroup group : groups) {
-                PlayerUtils.sendMessage(player, ChatColor.AQUA, " - '" + group.getName() + "'");
-            }
-            PlayerUtils.sendMessage(player, ChatColor.GRAY, "-------------------");
-        }
+        // set states
+        MoneyPitCore.playerManager.setGuestList(player.getName(), guestList);
+        MoneyPitCore.playerManager.setState(player.getName(), PlayerState.PROTECTION_INVITE);
     }
 }

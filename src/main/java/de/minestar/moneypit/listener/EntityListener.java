@@ -22,7 +22,6 @@ import de.minestar.moneypit.data.protection.EntityProtection;
 import de.minestar.moneypit.entitymodules.EntityModule;
 import de.minestar.moneypit.manager.EntityModuleManager;
 import de.minestar.moneypit.manager.EntityProtectionManager;
-import de.minestar.moneypit.manager.GroupManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.QueueManager;
 import de.minestar.moneypit.queues.entity.AddEntityProtectionQueue;
@@ -188,25 +187,7 @@ public class EntityListener implements Listener {
             }
 
             if (protectedEntity.canEdit(player)) {
-                if (this.playerManager.isGroupInvite(player.getName())) {
-                    // handle group-invite
-                    GuestGroup group = GroupManager.getGroup(player.getName(), this.playerManager.getGroupInvite(player.getName()));
-                    if (group != null) {
-                        if (protectedEntity.isOwner(player.getName())) {
-                            protectedEntity.defaultGuestList();
-                            if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Guestlist cleared.");
-                            } else {
-                                PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                                PlayerUtils.sendInfo(player, "Please contact an admin.");
-                            }
-                        } else {
-                            PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not the owner of this protection!");
-                        }
-                    } else {
-                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Group '" + this.playerManager.getGroupInvite(player.getName()) + "' not found!");
-                    }
-                } else {
+                if (protectedEntity.getGuestList().isDefault()) {
                     // clear guestlist
                     protectedEntity.clearGuestList();
 
@@ -217,6 +198,8 @@ public class EntityListener implements Listener {
                         PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
                         PlayerUtils.sendInfo(player, "Please contact an admin.");
                     }
+                } else {
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
                 }
             } else {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
@@ -230,6 +213,7 @@ public class EntityListener implements Listener {
         }
         return true;
     }
+
     private boolean handleInviteInteract(Player player, Entity interactedEntity, boolean addGuests) {
         // return to normalmode
         if (!this.playerManager.keepsMode(player.getName())) {
@@ -246,61 +230,30 @@ public class EntityListener implements Listener {
 
             boolean canEdit = protectedEntity.canEdit(player);
             if (canEdit) {
-                if (this.playerManager.isGroupInvite(player.getName())) {
-                    // handle group-invite
-                    GuestGroup group = GroupManager.getGroup(player.getName(), this.playerManager.getGroupInvite(player.getName()));
-                    if (group != null) {
-                        if (protectedEntity.isOwner(player.getName())) {
-                            if (addGuests) {
-                                protectedEntity.setGuestList(group);
-                                // send info
-                                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                                    PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Guestlist updated.");
-                                } else {
-                                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                                    PlayerUtils.sendInfo(player, "Please contact an admin.");
-                                }
-                            } else {
-                                protectedEntity.defaultGuestList();
-                                if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                                    PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Guestlist cleared.");
-                                } else {
-                                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                                    PlayerUtils.sendInfo(player, "Please contact an admin.");
-                                }
+                if (protectedEntity.getGuestList().isDefault()) {
+                    // add people to guestlist
+                    for (String guest : this.playerManager.getGuestList(player.getName())) {
+                        if (addGuests) {
+                            if (!protectedEntity.isOwner(guest)) {
+                                protectedEntity.addGuest(guest);
                             }
                         } else {
-                            PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not the owner of this protection!");
+                            protectedEntity.removeGuest(guest);
                         }
+                    }
+
+                    // send info
+                    if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
+                        if (addGuests)
+                            PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
+                        else
+                            PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                     } else {
-                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Group '" + this.playerManager.getGroupInvite(player.getName()) + "' not found!");
+                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                        PlayerUtils.sendInfo(player, "Please contact an admin.");
                     }
                 } else {
-                    if (protectedEntity.getGuestList().isDefault()) {
-                        // add people to guestlist
-                        for (String guest : this.playerManager.getGuestList(player.getName())) {
-                            if (addGuests) {
-                                if (!protectedEntity.isOwner(guest)) {
-                                    protectedEntity.addGuest(guest);
-                                }
-                            } else {
-                                protectedEntity.removeGuest(guest);
-                            }
-                        }
-
-                        // send info
-                        if (MoneyPitCore.databaseManager.updateEntityProtectionGuestList(protectedEntity, protectedEntity.getGuestList())) {
-                            if (addGuests)
-                                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been added to the guestlist.");
-                            else
-                                PlayerUtils.sendSuccess(player, MoneyPitCore.NAME, "Players have been removed from the guestlist.");
-                        } else {
-                            PlayerUtils.sendError(player, MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                            PlayerUtils.sendInfo(player, "Please contact an admin.");
-                        }
-                    } else {
-                        PlayerUtils.sendError(player, MoneyPitCore.NAME, "You must use /cgroup to edit group-invites.");
-                    }
+                    PlayerUtils.sendError(player, MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
                 }
             } else {
                 PlayerUtils.sendError(player, MoneyPitCore.NAME, "You are not allowed to edit this protection.");
@@ -316,6 +269,7 @@ public class EntityListener implements Listener {
         }
         return true;
     }
+
     private boolean handleAddInteract(Player player, Entity interactedEntity, EntityModule module, PlayerState state) {
         // return to normalmode
         if (!this.playerManager.keepsMode(player.getName())) {

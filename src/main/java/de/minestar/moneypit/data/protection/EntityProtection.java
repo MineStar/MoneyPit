@@ -88,8 +88,6 @@ public class EntityProtection {
     public void clearGuestList() {
         if (this.guests.isDefault()) {
             this.guests.clear();
-        } else {
-            this.defaultGuestList();
         }
     }
 

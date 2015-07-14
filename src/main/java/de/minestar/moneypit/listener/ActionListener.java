@@ -62,9 +62,7 @@ import de.minestar.minestarlibrary.utils.PlayerUtils;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.EventResult;
 import de.minestar.moneypit.data.PlayerState;
-import de.minestar.moneypit.data.protection.Protection;
 import de.minestar.moneypit.data.protection.ProtectionInfo;
-import de.minestar.moneypit.manager.GroupManager;
 import de.minestar.moneypit.manager.ModuleManager;
 import de.minestar.moneypit.manager.PlayerManager;
 import de.minestar.moneypit.manager.ProtectionManager;
@@ -872,17 +870,8 @@ public class ActionListener implements Listener {
 
             boolean canEdit = this.protectionInfo.getProtection().canEdit(event.getPlayer());
             if (canEdit) {
-                if (this.playerManager.isGroupInvite(event.getPlayer().getName())) {
-                    GuestGroup group = GroupManager.getGroup(event.getPlayer().getName(), this.playerManager.getGroupInvite(event.getPlayer().getName()));
-                    if (group != null) {
-                        if (this.protectionInfo.getProtection().isOwner(event.getPlayer().getName())) {
-                            ((Protection) this.protectionInfo.getProtection()).defaultGuestList();
-                        } else {
-                            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not the owner of this protection!");
-                        }
-                    } else {
-                        PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Group '" + this.playerManager.getGroupInvite(event.getPlayer().getName()) + "' not found!");
-                    }
+                if (!this.protectionInfo.getProtection().getGuestList().isDefault()) {
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
                 } else {
                     // clear guestlist
                     this.protectionInfo.getProtection().clearGuestList();
@@ -954,63 +943,31 @@ public class ActionListener implements Listener {
 
             boolean canEdit = this.protectionInfo.getProtection().canEdit(event.getPlayer());
             if (canEdit) {
-                if (this.playerManager.isGroupInvite(event.getPlayer().getName())) {
-                    // handle group-invite
-                    GuestGroup group = GroupManager.getGroup(event.getPlayer().getName(), this.playerManager.getGroupInvite(event.getPlayer().getName()));
-                    if (group != null) {
-                        if (this.protectionInfo.getProtection().isOwner(event.getPlayer().getName())) {
-                            if (add) {
-                                this.protectionInfo.getProtection().setGuestList(group);
-                                // send info
-                                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
-                                    PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Guestlist updated.");
-                                } else {
-                                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
-                                }
-                            } else {
-                                ((Protection) this.protectionInfo.getProtection()).defaultGuestList();
-                                if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
-                                    PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Guestlist cleared.");
-                                } else {
-                                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                                    PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
-                                }
-                            }
-                        } else {
-                            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not the owner of this protection!");
-                        }
-                    } else {
-                        PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Group '" + this.playerManager.getGroupInvite(event.getPlayer().getName()) + "' not found!");
-                    }
+                if (!this.protectionInfo.getProtection().getGuestList().isDefault()) {
+                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "This protection uses group-invites. Edit the group to edit the guestlist.");
                 } else {
-                    if (this.protectionInfo.getProtection().getGuestList().isDefault()) {
-                        // add people to guestlist
-                        for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
-                            if (add) {
-                                if (!this.protectionInfo.getProtection().isOwner(guest)) {
-                                    this.protectionInfo.getProtection().addGuest(guest);
-                                }
-                            } else {
-                                this.protectionInfo.getProtection().removeGuest(guest);
-                            }
-                        }
-                        // send info
-                        if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
-                            if (add) {
-                                PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
-                            } else {
-                                PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been removed from the guestlist.");
+                    // add people to guestlist
+                    for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                        if (add) {
+                            if (!this.protectionInfo.getProtection().isOwner(guest)) {
+                                this.protectionInfo.getProtection().addGuest(guest);
                             }
                         } else {
-                            PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
-                            PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
+                            this.protectionInfo.getProtection().removeGuest(guest);
                         }
+                    }
+
+                    // send info
+                    if (MoneyPitCore.databaseManager.updateGuestList(this.protectionInfo.getProtection(), this.protectionInfo.getProtection().getGuestList())) {
+                        if (add)
+                            PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
+                        else
+                            PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                     } else {
-                        PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You must use /cgroup to edit group-invites.");
+                        PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
+                        PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
                     }
                 }
-
             } else {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());
@@ -1021,55 +978,32 @@ public class ActionListener implements Listener {
                 // for each SubProtection...
                 boolean result = true;
                 for (IProtection subProtection : this.protectionInfo.getSubProtections().getProtections()) {
-                    if (subProtection.isPrivate()) {
-                        if (this.playerManager.isGroupInvite(event.getPlayer().getName())) {
-                            // handle group-invite
-                            GuestGroup group = GroupManager.getGroup(event.getPlayer().getName(), this.playerManager.getGroupInvite(event.getPlayer().getName()));
-                            if (group != null) {
-                                if (this.protectionInfo.getProtection().isOwner(event.getPlayer().getName())) {
-                                    if (add) {
-                                        this.protectionInfo.getProtection().setGuestList(group);
-                                    } else {
-                                        ((Protection) this.protectionInfo.getProtection()).defaultGuestList();
+                    if (subProtection.getGuestList().isDefault()) {
+                        if (subProtection.isPrivate()) {
+                            // add people to guestlist
+                            for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
+                                if (add) {
+                                    if (!subProtection.isOwner(guest)) {
+                                        subProtection.addGuest(guest);
                                     }
                                 } else {
-                                    PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not the owner of this protection!");
+                                    subProtection.removeGuest(guest);
                                 }
-                            } else {
-                                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Group '" + this.playerManager.getGroupInvite(event.getPlayer().getName()) + "' not found!");
-                            }
-                        } else {
-                            if (subProtection.getGuestList().isDefault()) {
-                                // add people to guestlist
-                                for (String guest : this.playerManager.getGuestList(event.getPlayer().getName())) {
-                                    if (add) {
-                                        if (!subProtection.isOwner(guest)) {
-                                            subProtection.addGuest(guest);
-                                        }
-                                    } else {
-                                        subProtection.removeGuest(guest);
-                                    }
-                                }
-                            } else {
-                                PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You must use /cgroup to edit group-invites.");
                             }
                         }
-                    }
-                    if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), subProtection.getGuestList())) {
-                        result = false;
+                        if (!MoneyPitCore.databaseManager.updateGuestList(subProtection.getMainProtection(), subProtection.getGuestList())) {
+                            result = false;
+                        }
+                    } else {
+                        PlayerUtils.sendInfo(event.getPlayer(), "Some protections use group-invites. Edit the groups to edit the guestlist.");
                     }
                 }
                 // send info
                 if (result) {
-                    if (add) {
-                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Guestlist updated.");
-                    } else {
-                        if (this.playerManager.isGroupInvite(event.getPlayer().getName())) {
-                            PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Guestlist cleared.");
-                        } else {
-                            PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Guestlist updated.");
-                        }
-                    }
+                    if (add)
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been added to the guestlist.");
+                    else
+                        PlayerUtils.sendSuccess(event.getPlayer(), MoneyPitCore.NAME, "Players have been removed from the guestlist.");
                 } else {
                     PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");

@@ -79,30 +79,4 @@ public class PlayerManager {
     public void clearGuestList(String playerName) {
         this.guestMap.remove(playerName);
     }
-
-    public boolean isGroupInvite(String playerName) {
-        if (!this.guestMap.containsKey(playerName)) {
-            return false;
-        }
-        for (String name : this.guestMap.get(playerName)) {
-            return name.startsWith("group: ");
-        }
-        return false;
-    }
-
-    public String getGroupInvite(String playerName) {
-        if (!this.guestMap.containsKey(playerName)) {
-            return null;
-        }
-        for (String name : this.guestMap.get(playerName)) {
-            return name.replaceFirst("group: ", "");
-        }
-        return null;
-    }
-
-    public void setGuestList(String playerName, String groupName) {
-        HashSet<String> nameTag = new HashSet<String>();
-        nameTag.add("group: " + groupName);
-        this.guestMap.put(playerName, nameTag);
-    }
 }
