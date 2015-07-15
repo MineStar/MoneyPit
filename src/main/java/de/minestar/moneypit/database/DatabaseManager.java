@@ -645,7 +645,7 @@ public class DatabaseManager extends AbstractSQLiteHandler {
                     }
                     loaded++;
                 } catch (Exception error) {
-                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load group: Owner=" + results.getInt("owner") + " -> Name=" + results.getString("name"));
+                    ConsoleUtils.printWarning(MoneyPitCore.NAME, "Can't load group: Owner=" + results.getString("owner") + " -> Name=" + results.getString("name"));
                     continue;
                 }
             }
