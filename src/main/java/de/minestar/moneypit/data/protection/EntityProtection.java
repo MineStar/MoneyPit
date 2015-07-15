@@ -79,7 +79,7 @@ public class EntityProtection {
                     return true;
                 }
             } else {
-                this.guestList.remove(guest.getName().toLowerCase());
+                this.removeGuest(guest.getName());
             }
         }
         return false;
