@@ -1,6 +1,7 @@
 package de.minestar.moneypit.data.protection;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class EntityProtection {
         this.uuid = uuid;
         this.entityType = type;
         this.protectionType = protectionType;
-        this.guestList = new HashMap<String, Guest>(1);
+        this.guestList = Collections.synchronizedMap(new HashMap<String, Guest>(1));
     }
 
     public String getOwner() {
@@ -73,8 +74,12 @@ public class EntityProtection {
 
     public boolean isGuest(String guestName) {
         for (Guest guest : this.guestList.values()) {
-            if (guest.hasAccess(guestName)) {
-                return true;
+            if (guest.isValid()) {
+                if (guest.hasAccess(guestName)) {
+                    return true;
+                }
+            } else {
+                this.guestList.remove(guest.getName().toLowerCase());
             }
         }
         return false;

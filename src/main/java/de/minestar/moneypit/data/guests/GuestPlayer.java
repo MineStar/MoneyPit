@@ -9,6 +9,11 @@ public class GuestPlayer extends Guest {
     }
 
     @Override
+    public boolean isValid() {
+        return true;
+    }
+
+    @Override
     public boolean hasAccess(String playerName) {
         return getName().equalsIgnoreCase(playerName);
     }

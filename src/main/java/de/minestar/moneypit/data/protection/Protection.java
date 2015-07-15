@@ -1,6 +1,7 @@
 package de.minestar.moneypit.data.protection;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -123,7 +124,7 @@ public class Protection implements IProtection {
             this.parent.addGuest(guest);
         } else {
             if (this.guestList == null) {
-                this.guestList = new HashMap<String, Guest>();
+                this.guestList = Collections.synchronizedMap(new HashMap<String, Guest>());
             }
             this.guestList.put(guest.toLowerCase(), GuestHelper.create(owner, guest));
         }
@@ -183,8 +184,12 @@ public class Protection implements IProtection {
         } else {
             if (this.guestList != null) {
                 for (Guest guest : this.guestList.values()) {
-                    if (guest.hasAccess(guestName)) {
-                        return true;
+                    if (guest.isValid()) {
+                        if (guest.hasAccess(guestName)) {
+                            return true;
+                        }
+                    } else {
+                        this.guestList.remove(guest.getName().toLowerCase());
                     }
                 }
             }

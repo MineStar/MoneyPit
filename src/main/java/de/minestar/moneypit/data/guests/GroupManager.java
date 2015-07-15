@@ -34,6 +34,7 @@ public class GroupManager {
         if (group == null) {
             return;
         }
+        group.markDeleted();
         GROUPS.get(owner.toLowerCase()).remove(groupName.toLowerCase());
         if (GROUPS.get(owner.toLowerCase()).isEmpty()) {
             GROUPS.remove(owner.toLowerCase());

@@ -881,7 +881,7 @@ public class ActionListener implements Listener {
                 } else {
                     PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Error while saving guestlist to database.");
                     PlayerUtils.sendInfo(event.getPlayer(), "Please contact an admin.");
-                }                
+                }
             } else {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "You are not allowed to edit this protection.");
                 this.showInformation(event.getPlayer());

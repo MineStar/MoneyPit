@@ -7,11 +7,20 @@ public class Group implements Comparable<Group> {
     private String _owner;
     private final String _name;
     private final HashSet<String> _playerList;
+    private boolean _deleted;
 
     public Group(String owner, String name) {
         _owner = owner;
         _name = name;
         _playerList = new HashSet<String>();
+    }
+
+    public void markDeleted() {
+        _deleted = true;
+    }
+
+    public boolean isDirty() {
+        return _deleted;
     }
 
     public String getName() {
