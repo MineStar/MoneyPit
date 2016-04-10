@@ -1,11 +1,9 @@
 package de.minestar.moneypit.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -77,7 +75,7 @@ import de.minestar.moneypit.utils.DoorHelper;
 
 public class ActionListener implements Listener {
 
-    private static final Set<Integer> nonPistonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId(), 141, 142, 143, 144, 147, 148, 149, 150, 151, 154, 158));
+    //private static final Set<Integer> nonPistonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId(), 141, 142, 143, 144, 147, 148, 149, 150, 151, 154, 158));
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -1591,6 +1589,7 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
+    /*
     private ArrayList<Block> getPistonChangeBlocks(Block pistonBlock, BlockFace direction) {
         ArrayList<Block> list = new ArrayList<Block>();
         Block temp = pistonBlock;
@@ -1603,10 +1602,12 @@ public class ActionListener implements Listener {
         }
         return list;
     }
+    */
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        ArrayList<Block> changedBlocks = this.getPistonChangeBlocks(event.getBlock(), event.getDirection());
+        List <Block> changedBlocks = event.getBlocks();
+        //ArrayList<Block> changedBlocks = this.getPistonChangeBlocks(event.getBlock(), event.getDirection());
         for (Block block : changedBlocks) {
             if (this.cancelBlockEvent(block)) {
                 event.setCancelled(true);
@@ -1617,9 +1618,13 @@ public class ActionListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (this.cancelBlockEvent(event.getRetractLocation().getBlock())) {
-            event.setCancelled(true);
-            return;
+        List<Block> blocks = event.getBlocks();
+        for (Block block : blocks)
+        {
+            if (this.cancelBlockEvent(block)) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 
