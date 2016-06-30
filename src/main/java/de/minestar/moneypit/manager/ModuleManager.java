@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.minestar.minestarlibrary.utils.ConsoleUtils;
@@ -50,7 +51,7 @@ public class ModuleManager {
 
     private static String FILENAME = "modules.yml";
 
-    private HashMap<Integer, Module> registeredModules = new HashMap<Integer, Module>();
+    private HashMap<Material, Module> registeredModules = new HashMap<Material, Module>();
 
     public void init() {
         this.loadConfig();
@@ -64,17 +65,17 @@ public class ModuleManager {
 
     public void registerModule(Module module) {
         // ONLY REGISTER IF NOT ALREADY REGISTERED
-        if (!this.isModuleRegistered(module.getRegisteredTypeID())) {
-            this.registeredModules.put(module.getRegisteredTypeID(), module);
+        if (!this.isModuleRegistered(module.getRegisteredType())) {
+            this.registeredModules.put(module.getRegisteredType(), module);
         }
     }
 
-    public boolean isModuleRegistered(int TypeId) {
-        return this.registeredModules.containsKey(TypeId);
+    public boolean isModuleRegistered(Material material) {
+        return this.registeredModules.containsKey(material);
     }
 
-    public Module getRegisteredModule(int TypeId) {
-        return this.registeredModules.get(TypeId);
+    public Module getRegisteredModule(Material material) {
+        return this.registeredModules.get(material);
     }
 
     private void loadConfig() {

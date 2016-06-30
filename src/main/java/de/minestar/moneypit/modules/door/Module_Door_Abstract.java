@@ -2,6 +2,7 @@ package de.minestar.moneypit.modules.door;
 
 import java.util.ArrayList;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -22,15 +23,15 @@ public abstract class Module_Door_Abstract extends Module {
 
     private final String _name;
 
-    public Module_Door_Abstract(YamlConfiguration ymlFile, String name, int typeId) {
+    public Module_Door_Abstract(YamlConfiguration ymlFile, String name, Material type) {
         _name = name;
         this.writeDefaultConfig(name, ymlFile);
     }
 
-    public Module_Door_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
+    public Module_Door_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, Material type) {
         super();
         _name = name;
-        this.init(moduleManager, ymlFile, typeId, name);
+        this.init(moduleManager, ymlFile, type, name);
         this.setDoNeighbourCheck(true);
         this.setBlockRedstone(ymlFile.getBoolean("protect." + _name + ".handleRedstone", true));
     }
@@ -87,7 +88,7 @@ public abstract class Module_Door_Abstract extends Module {
     @Override
     public final EventResult onPlace(Player player, BlockVector vector) {
         // search a second chest
-        BlockVector doubleDoor = DoorHelper.getSecondDoor(vector, this.getRegisteredTypeID());
+        BlockVector doubleDoor = DoorHelper.getSecondDoor(vector, this.getRegisteredType().getId());
         if (doubleDoor == null) {
             return new EventResult(false, false, null);
         }

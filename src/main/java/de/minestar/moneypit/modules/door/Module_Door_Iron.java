@@ -7,15 +7,15 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Door_Iron extends Module_Door_Abstract {
 
-    private final static String NAME = "irondoor";
-    private final static int TYPE_ID = Material.IRON_DOOR_BLOCK.getId();
+    private final static Material TYPE = Material.IRON_DOOR_BLOCK;
+    private final static String NAME = TYPE.name();
 
     public Module_Door_Iron(YamlConfiguration ymlFile) {
-        super(ymlFile, NAME, TYPE_ID);
+        super(ymlFile, NAME, TYPE);
     }
 
     public Module_Door_Iron(ModuleManager moduleManager, YamlConfiguration ymlFile) {
-        super(moduleManager, ymlFile, NAME, TYPE_ID);
+        super(moduleManager, ymlFile, NAME, TYPE);
     }
 
 }

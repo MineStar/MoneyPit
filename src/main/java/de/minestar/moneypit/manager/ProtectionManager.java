@@ -109,7 +109,7 @@ public class ProtectionManager {
         location.getChunk().load(true);
 
         // get module
-        Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getTypeId());
+        Module module = MoneyPitCore.moduleManager.getRegisteredModule(location.getBlock().getType());
 
         Hanging entityHanging = null;
         if (module == null) {
@@ -119,7 +119,7 @@ public class ProtectionManager {
             for (ItemFrame frame : frames) {
                 BlockVector otherVector = new BlockVector(frame.getLocation());
                 if (vector.equals(otherVector)) {
-                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+                    module = MoneyPitCore.moduleManager.getRegisteredModule(Material.ITEM_FRAME);
                     entityHanging = frame;
                     found = true;
                     break;
@@ -131,7 +131,7 @@ public class ProtectionManager {
                 for (Painting paint : paintings) {
                     BlockVector otherVector = new BlockVector(paint.getLocation());
                     if (vector.equals(otherVector)) {
-                        module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+                        module = MoneyPitCore.moduleManager.getRegisteredModule(Material.PAINTING);
                         entityHanging = paint;
                         found = true;
                         break;
@@ -144,7 +144,7 @@ public class ProtectionManager {
         }
 
         byte subData = location.getBlock().getData();
-        if (module.getRegisteredTypeID() == Material.ITEM_FRAME.getId() || module.getRegisteredTypeID() == Material.PAINTING.getId()) {
+        if (module.getRegisteredType() == Material.ITEM_FRAME || module.getRegisteredType() == Material.PAINTING) {
             if (entityHanging != null) {
                 subData = (byte) entityHanging.getAttachedFace().ordinal();
             } else {

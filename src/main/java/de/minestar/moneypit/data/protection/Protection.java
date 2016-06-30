@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.bukkit.gemo.patchworking.BlockVector;
@@ -75,10 +76,16 @@ public class Protection implements IProtection {
         return this.vector;
     }
 
+    @Deprecated
     public int getBlockTypeID() {
         return this.vector.getLocation().getBlock().getTypeId();
     }
 
+    @Override
+    public Material getBlockType() {
+        return this.vector.getLocation().getBlock().getType();
+    }
+    
     public String getOwner() {
         if (this.isSubProtection) {
             return this.parent.getOwner();

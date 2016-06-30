@@ -1,5 +1,6 @@
 package de.minestar.moneypit.modules.trapdoor;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
@@ -21,10 +22,10 @@ public abstract class Module_TrapDoor_Abstract extends Module {
         this.writeDefaultConfig(name, ymlFile);
     }
 
-    public Module_TrapDoor_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
+    public Module_TrapDoor_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, Material type) {
         super();
         _name = name;
-        this.init(moduleManager, ymlFile, typeId, _name);
+        this.init(moduleManager, ymlFile, type, _name);
         this.setBlockRedstone(ymlFile.getBoolean("protect." + _name + ".handleRedstone", true));
     }
 

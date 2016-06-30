@@ -17,7 +17,8 @@ import de.minestar.moneypit.utils.ChestHelper;
 
 public class Module_TrappedChest extends Module {
 
-    private final String NAME = "trappedchest";
+    private final Material TYPE = Material.TRAPPED_CHEST;
+    private final String NAME = TYPE.name();
 
     public Module_TrappedChest(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -25,7 +26,7 @@ public class Module_TrappedChest extends Module {
 
     public Module_TrappedChest(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.TRAPPED_CHEST.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
         this.setDoNeighbourCheck(true);
     }
 

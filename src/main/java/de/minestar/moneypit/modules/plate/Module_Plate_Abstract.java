@@ -1,5 +1,6 @@
 package de.minestar.moneypit.modules.plate;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bukkit.gemo.patchworking.BlockVector;
@@ -20,10 +21,10 @@ public class Module_Plate_Abstract extends Module {
         this.writeDefaultConfig(_name, ymlFile);
     }
 
-    public Module_Plate_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, int typeId) {
+    public Module_Plate_Abstract(ModuleManager moduleManager, YamlConfiguration ymlFile, String name, Material type) {
         super();
         _name = name;
-        this.init(moduleManager, ymlFile, typeId, _name);
+        this.init(moduleManager, ymlFile, type, _name);
     }
 
     @Override

@@ -9,7 +9,8 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Dropper extends Module {
 
-    private final String NAME = "dropper";
+    private final Material TYPE = Material.DROPPER;
+    private final String NAME = TYPE.name();
 
     public Module_Dropper(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -17,7 +18,7 @@ public class Module_Dropper extends Module {
 
     public Module_Dropper(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.DROPPER.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override
