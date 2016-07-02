@@ -1125,7 +1125,7 @@ public class ActionListener implements Listener {
                 }
                 entities = null;
             }
-            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
+            String message = "This" + ChatColor.RED + pType + moduleType.name() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
 
             if (this.protectionInfo.getProtection().canAccess(player)) {
                 Collection<Guest> guestList = this.protectionInfo.getProtection().getGuestList();
