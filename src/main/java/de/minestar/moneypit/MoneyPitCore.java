@@ -50,6 +50,7 @@ import de.minestar.moneypit.database.DatabaseManager;
 import de.minestar.moneypit.listener.ActionListener;
 import de.minestar.moneypit.listener.EntityListener;
 import de.minestar.moneypit.listener.MonitorListener;
+import de.minestar.moneypit.listener.PlayerListener;
 import de.minestar.moneypit.manager.EntityModuleManager;
 import de.minestar.moneypit.manager.EntityProtectionManager;
 import de.minestar.moneypit.manager.ModuleManager;
@@ -67,6 +68,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
     public static ActionListener actionListener;
     public static EntityListener entityListener;
     public static MonitorListener monitorListener;
+    public static PlayerListener playerListener;
 
     /** MANAGER */
     public static ModuleManager moduleManager;
@@ -174,6 +176,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
         actionListener = new ActionListener();
         entityListener = new EntityListener();
         monitorListener = new MonitorListener();
+        playerListener = new PlayerListener();
         return true;
     }
 
@@ -197,6 +200,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
         pm.registerEvents(actionListener, this);
         pm.registerEvents(entityListener, this);
         pm.registerEvents(monitorListener, this);
+        pm.registerEvents(playerListener, this);
         return true;
     }
 
@@ -213,7 +217,7 @@ public class MoneyPitCore extends AbstractCore implements IProtectionCore {
                 new cmd_cuninvite       ("/cuninvite",      "<Player> [ ... Player n]", "moneypit.commands.cuninvite"),
                 new cmd_cuninviteall    ("/cuninviteall",   "",                         "moneypit.commands.cuninvite"),
                 new cmd_ctoggle         ("/ctoggle",        "",                         "moneypit.commands.cinfo"),
-                new cmd_noLock          ("/cautolock",      "",                         "moneypit.commands.cinfo"),
+                new cmd_noLock          ("/cautolock",      "",                         "moneypit.commands.noLock"),
                 new cmd_cgroup          ("/cgroup",         "[Name] [+|-|--] [Players ...]","moneypit.commands.cgroup")
          );
         //@formatter:on;

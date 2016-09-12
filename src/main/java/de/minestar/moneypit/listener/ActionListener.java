@@ -1288,7 +1288,7 @@ public class ActionListener implements Listener {
 
     private void handleNormalInteract(PlayerInteractEvent event) {
         // ---------> WORKAROUND FOR CHESTS BEING ROTATED
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType().equals(Material.CHEST)) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.CHEST)) {
             Module module = this.moduleManager.getRegisteredModule(Material.CHEST);
             if (module != null) {
                 EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()));
