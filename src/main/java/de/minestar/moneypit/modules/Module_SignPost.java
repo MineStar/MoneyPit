@@ -12,7 +12,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_SignPost extends Module {
 
-    private final String NAME = "signpost";
+    private final Material TYPE = Material.SIGN_POST;
+    private final String NAME = TYPE.name();
 
     public Module_SignPost(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -20,7 +21,7 @@ public class Module_SignPost extends Module {
 
     public Module_SignPost(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.SIGN_POST.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

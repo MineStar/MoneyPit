@@ -7,15 +7,15 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Plate_Golden extends Module_Plate_Abstract {
 
-    private static final String NAME = "goldenplate";
-    private static final int TYPE_ID = Material.GOLD_PLATE.getId();
+    private static final Material TYPE = Material.GOLD_PLATE;
+    private static final String NAME = TYPE.name();
 
     public Module_Plate_Golden(YamlConfiguration ymlFile) {
         super(ymlFile, NAME);
     }
 
     public Module_Plate_Golden(ModuleManager moduleManager, YamlConfiguration ymlFile) {
-        super(moduleManager, ymlFile, NAME, TYPE_ID);
+        super(moduleManager, ymlFile, NAME, TYPE);
     }
 
 }

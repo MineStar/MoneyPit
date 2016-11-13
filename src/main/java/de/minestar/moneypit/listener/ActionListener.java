@@ -1,11 +1,9 @@
 package de.minestar.moneypit.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,9 +12,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.DoubleChest;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftBlockState;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftHopper;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.block.CraftBlockState;
+import org.bukkit.craftbukkit.v1_10_R1.block.CraftHopper;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
@@ -76,8 +74,6 @@ import de.minestar.moneypit.queues.RemoveSubProtectionQueue;
 import de.minestar.moneypit.utils.DoorHelper;
 
 public class ActionListener implements Listener {
-
-    private static final Set<Integer> nonPistonPushableBlocks = new HashSet<Integer>(Arrays.asList(0, 6, 7, 8, 9, 10, 11, 23, 26, 30, 31, 32, 34, 37, 38, 39, 40, 50, 51, 52, 55, 59, 61, 62, 63, 64, 65, 68, 69, 70, 71, 72, 75, 76, 77, 81, 83, 84, 86, 90, 91, 92, 93, 94, 96, 103, 104, 105, 106, 111, 115, 116, 117, 119, 120, 122, 127, 130, 131, 132, Material.FLOWER_POT.getId(), 141, 142, 143, 144, 147, 148, 149, 150, 151, 154, 158));
 
     private ModuleManager moduleManager;
     private PlayerManager playerManager;
@@ -267,7 +263,7 @@ public class ActionListener implements Listener {
                     }
 
                     // get the module
-                    module = this.moduleManager.getRegisteredModule(block.getTypeId());
+                    module = this.moduleManager.getRegisteredModule(block.getType());
                     if (module == null) {
                         continue;
                     }
@@ -282,7 +278,7 @@ public class ActionListener implements Listener {
                     // SubProtection here
                     // check all subprotections at this place and see if we
                     // handle the redstone-event
-                    int moduleID = 0;
+                    Material moduleType = Material.AIR;
                     ISubProtectionHolder holder = this.protectionInfo.getSubProtections();
                     for (IProtection subProtection : holder.getProtections()) {
                         // only private protections are blocked
@@ -304,8 +300,8 @@ public class ActionListener implements Listener {
                         }
 
                         // get the module
-                        moduleID = subProtection.getBlockTypeID();
-                        module = this.moduleManager.getRegisteredModule(moduleID);
+                        moduleType = subProtection.getBlockType();
+                        module = this.moduleManager.getRegisteredModule(moduleType);
                         if (module == null) {
                             continue;
                         }
@@ -350,7 +346,7 @@ public class ActionListener implements Listener {
         }
 
         // get the module
-        Module module = this.moduleManager.getRegisteredModule(event.getBlockPlaced().getTypeId());
+        Module module = this.moduleManager.getRegisteredModule(event.getBlockPlaced().getType());
         if (module == null) {
             return;
         }
@@ -423,7 +419,7 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // we have a regular protection => get the module (must be
             // registered)
-            Module module = this.moduleManager.getRegisteredModule(event.getBlock().getTypeId());
+            Module module = this.moduleManager.getRegisteredModule(event.getBlock().getType());
             if (module == null) {
                 PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getBlock().getType().name() + "' is not registered!");
                 return;
@@ -593,9 +589,9 @@ public class ActionListener implements Listener {
         }
 
         // get the module
-        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME);
         if (event.getEntity().getType().equals(EntityType.PAINTING)) {
-            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING);
         }
 
         // update the BlockVector & the ProtectionInfo
@@ -642,9 +638,9 @@ public class ActionListener implements Listener {
         }
 
         // get the module
-        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME);
         if (entity.getType().equals(EntityType.PAINTING)) {
-            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING);
         }
 
         // is the module registered?
@@ -692,9 +688,9 @@ public class ActionListener implements Listener {
         }
 
         // get the module
-        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME.getId());
+        Module module = this.moduleManager.getRegisteredModule(Material.ITEM_FRAME);
         if (event.getRightClicked().getType().equals(EntityType.PAINTING)) {
-            module = this.moduleManager.getRegisteredModule(Material.PAINTING.getId());
+            module = this.moduleManager.getRegisteredModule(Material.PAINTING);
         }
 
         // is the module registered?
@@ -748,7 +744,7 @@ public class ActionListener implements Listener {
             case PROTECTION_ADD_PRIVATE :
             case PROTECTION_ADD_GIFT : {
                 // the module must be registered
-                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
+                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getType());
                 if (module == null) {
                     PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
                     return;
@@ -760,7 +756,7 @@ public class ActionListener implements Listener {
             }
             case PROTECTION_ADD_PUBLIC : {
                 // the module must be registered
-                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getTypeId());
+                Module module = this.moduleManager.getRegisteredModule(event.getClickedBlock().getType());
                 if (module == null) {
                     PlayerUtils.sendError(event.getPlayer(), MoneyPitCore.NAME, "Module for block '" + event.getClickedBlock().getType().name() + "' is not registered!");
                     return;
@@ -1025,8 +1021,9 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
             String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
-            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();
-            if (moduleID < 1) {
+            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();  // get rid of this shit
+            Material moduleType = this.protectionInfo.getProtection().getBlockType();
+            if (moduleID < 1) {  // get rid of this shit
                 Chunk chunk = this.protectionInfo.getProtection().getVector().getLocation().getBlock().getChunk();
                 Entity[] entities = chunk.getEntities();
                 for (Entity entity : entities) {
@@ -1035,24 +1032,25 @@ public class ActionListener implements Listener {
                     }
                     if (this.protectionInfo.getProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
                         if (entity.getType().equals(EntityType.ITEM_FRAME)) {
-                            moduleID = Material.ITEM_FRAME.getId();
+                            moduleType = Material.ITEM_FRAME;
                         } else {
-                            moduleID = Material.PAINTING.getId();
+                            moduleType = Material.PAINTING;
                         }
                         break;
                     }
                 }
                 entities = null;
             }
-            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
+            String message = "This" + ChatColor.RED + pType + moduleType.name() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
             PlayerUtils.sendInfo(player, message);
             return;
         } else {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
                 String pType = " " + this.protectionInfo.getFirstProtection().getType().toString() + " ";
-                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
-                if (moduleID < 1) {
+                Material moduleType = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getType();
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();  // get rid of this shit
+                if (moduleID < 1) {  // get rid of this shit
                     Chunk chunk = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getChunk();
                     Entity[] entities = chunk.getEntities();
                     for (Entity entity : entities) {
@@ -1061,16 +1059,16 @@ public class ActionListener implements Listener {
                         }
                         if (this.protectionInfo.getFirstProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
                             if (entity.getType().equals(EntityType.ITEM_FRAME)) {
-                                moduleID = Material.ITEM_FRAME.getId();
+                                moduleType = Material.ITEM_FRAME;
                             } else {
-                                moduleID = Material.PAINTING.getId();
+                                moduleType = Material.PAINTING;
                             }
                             break;
                         }
                     }
                     entities = null;
                 }
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
+                String message = "This" + ChatColor.RED + pType + moduleType.name() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
@@ -1107,8 +1105,9 @@ public class ActionListener implements Listener {
         if (this.protectionInfo.hasProtection()) {
             // handle mainprotections
             String pType = " " + this.protectionInfo.getProtection().getType().toString() + " ";
-            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();
-            if (moduleID < 1) {
+            Material moduleType = this.protectionInfo.getProtection().getBlockType();
+            int moduleID = this.protectionInfo.getProtection().getBlockTypeID();    // get rid of this shit
+            if (moduleID < 1) { // get rid of this shit
                 Chunk chunk = this.protectionInfo.getProtection().getVector().getLocation().getBlock().getChunk();
                 Entity[] entities = chunk.getEntities();
                 for (Entity entity : entities) {
@@ -1117,16 +1116,16 @@ public class ActionListener implements Listener {
                     }
                     if (this.protectionInfo.getProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
                         if (entity.getType().equals(EntityType.ITEM_FRAME)) {
-                            moduleID = Material.ITEM_FRAME.getId();
+                            moduleType = Material.ITEM_FRAME;
                         } else {
-                            moduleID = Material.PAINTING.getId();
+                            moduleType = Material.PAINTING;
                         }
                         break;
                     }
                 }
                 entities = null;
             }
-            String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
+            String message = "This" + ChatColor.RED + pType + moduleType.name() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getProtection().getOwner() + ".";
 
             if (this.protectionInfo.getProtection().canAccess(player)) {
                 Collection<Guest> guestList = this.protectionInfo.getProtection().getGuestList();
@@ -1141,8 +1140,9 @@ public class ActionListener implements Listener {
             // handle subprotections
             if (this.protectionInfo.getSubProtections().getSize() == 1) {
                 String pType = " " + this.protectionInfo.getFirstProtection().getType().toString() + " ";
-                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();
-                if (moduleID < 1) {
+                Material moduleType = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getType();
+                int moduleID = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getTypeId();   // get rid of this shit
+                if (moduleID < 1) { // get rid of this shit
                     Chunk chunk = this.protectionInfo.getFirstProtection().getVector().getLocation().getBlock().getChunk();
                     Entity[] entities = chunk.getEntities();
                     for (Entity entity : entities) {
@@ -1151,16 +1151,16 @@ public class ActionListener implements Listener {
                         }
                         if (this.protectionInfo.getFirstProtection().getVector().equals(new BlockVector(entity.getLocation()))) {
                             if (entity.getType().equals(EntityType.ITEM_FRAME)) {
-                                moduleID = Material.ITEM_FRAME.getId();
+                                moduleType = Material.ITEM_FRAME;
                             } else {
-                                moduleID = Material.PAINTING.getId();
+                                moduleType = Material.PAINTING;
                             }
                             break;
                         }
                     }
                     entities = null;
                 }
-                String message = "This" + ChatColor.RED + pType + Material.getMaterial(moduleID) + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
+                String message = "This" + ChatColor.RED + pType + moduleType.name() + ChatColor.GRAY + " is protected by " + ChatColor.YELLOW + this.protectionInfo.getFirstProtection().getOwner() + ".";
                 PlayerUtils.sendInfo(player, message);
 
                 if (this.protectionInfo.getFirstProtection().canAccess(player)) {
@@ -1172,7 +1172,7 @@ public class ActionListener implements Listener {
 
                 return;
             } else if (this.protectionInfo.getSubProtections().getSize() > 1) {
-                String message = "This " + ChatColor.RED + this.protectionInfo.getOrigin().getLocation().getBlock().getType() + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
+                String message = "This " + ChatColor.RED + this.protectionInfo.getOrigin().getLocation().getBlock().getType().name() + ChatColor.GRAY + " is protected with " + ChatColor.YELLOW + "multiple protections.";
                 PlayerUtils.sendInfo(player, message);
                 return;
             }
@@ -1288,8 +1288,8 @@ public class ActionListener implements Listener {
 
     private void handleNormalInteract(PlayerInteractEvent event) {
         // ---------> WORKAROUND FOR CHESTS BEING ROTATED
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType().equals(Material.CHEST)) {
-            Module module = this.moduleManager.getRegisteredModule(Material.CHEST.getId());
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.CHEST)) {
+            Module module = this.moduleManager.getRegisteredModule(Material.CHEST);
             if (module != null) {
                 EventResult result = module.onPlace(event.getPlayer(), new BlockVector(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()));
                 if (result.isCancelEvent()) {
@@ -1591,22 +1591,9 @@ public class ActionListener implements Listener {
     //
     // //////////////////////////////////////////////////////////////////////
 
-    private ArrayList<Block> getPistonChangeBlocks(Block pistonBlock, BlockFace direction) {
-        ArrayList<Block> list = new ArrayList<Block>();
-        Block temp = pistonBlock;
-        for (int count = 0; count < 13; count++) {
-            temp = temp.getRelative(direction);
-            list.add(temp);
-            if (nonPistonPushableBlocks.contains(temp.getTypeId())) {
-                return list;
-            }
-        }
-        return list;
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        ArrayList<Block> changedBlocks = this.getPistonChangeBlocks(event.getBlock(), event.getDirection());
+        List <Block> changedBlocks = event.getBlocks();
         for (Block block : changedBlocks) {
             if (this.cancelBlockEvent(block)) {
                 event.setCancelled(true);
@@ -1617,9 +1604,13 @@ public class ActionListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (this.cancelBlockEvent(event.getRetractLocation().getBlock())) {
-            event.setCancelled(true);
-            return;
+        List<Block> blocks = event.getBlocks();
+        for (Block block : blocks)
+        {
+            if (this.cancelBlockEvent(block)) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 

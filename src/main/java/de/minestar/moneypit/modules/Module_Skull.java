@@ -9,7 +9,8 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Skull extends Module {
 
-    private final String NAME = "skull";
+    private final Material TYPE = Material.SKULL;
+    private final String NAME = TYPE.name();
 
     public Module_Skull(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -17,7 +18,7 @@ public class Module_Skull extends Module {
 
     public Module_Skull(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.SKULL.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

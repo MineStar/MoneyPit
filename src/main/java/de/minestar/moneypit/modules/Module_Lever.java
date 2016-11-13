@@ -14,7 +14,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_Lever extends Module {
 
-    private final String NAME = "lever";
+    private final Material TYPE = Material.LEVER;
+    private final String NAME = TYPE.name();
 
     public Module_Lever(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -22,7 +23,7 @@ public class Module_Lever extends Module {
 
     public Module_Lever(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.LEVER.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

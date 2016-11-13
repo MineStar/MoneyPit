@@ -14,7 +14,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_StoneButton extends Module {
 
-    private final String NAME = "stonebutton";
+    private final Material TYPE = Material.STONE_BUTTON;
+    private final String NAME = TYPE.name();
 
     public Module_StoneButton(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -22,7 +23,7 @@ public class Module_StoneButton extends Module {
 
     public Module_StoneButton(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.STONE_BUTTON.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

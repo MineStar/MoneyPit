@@ -1,5 +1,6 @@
 package de.minestar.moneypit.modules;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -15,7 +16,7 @@ public abstract class Module {
 
     private ProtectionManager protectionManager;
     private String moduleName = "UNKNOWN";
-    private int registeredTypeID = -1;
+    private Material registeredType;
     private boolean enabled = true;
     private boolean autoLock = false;
     private boolean doNeighbourCheck = false;
@@ -50,8 +51,8 @@ public abstract class Module {
         this.blockRedstone = blockRedstone;
     }
 
-    public int getRegisteredTypeID() {
-        return this.registeredTypeID;
+    public Material getRegisteredType() {
+        return this.registeredType;
     }
 
     public String getModuleName() {
@@ -70,8 +71,8 @@ public abstract class Module {
         return this.protectionManager;
     }
 
-    protected void init(ModuleManager moduleManager, YamlConfiguration ymlFile, int registeredTypeID, String moduleName) {
-        this.registeredTypeID = registeredTypeID;
+    protected void init(ModuleManager moduleManager, YamlConfiguration ymlFile, Material registeredType, String moduleName) {
+        this.registeredType = registeredType;
         this.moduleName = moduleName;
         this.enabled = ymlFile.getBoolean("protect." + this.getModuleName() + ".enabled", true);
         this.autoLock = ymlFile.getBoolean("protect." + this.getModuleName() + ".lockOnPlace", false);

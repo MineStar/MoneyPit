@@ -14,7 +14,8 @@ import de.minestar.moneypit.utils.SignHelper;
 
 public class Module_WallSign extends Module {
 
-    private final String NAME = "wallsign";
+    private final Material TYPE = Material.WALL_SIGN;
+    private final String NAME = TYPE.name();
 
     public Module_WallSign(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -22,7 +23,7 @@ public class Module_WallSign extends Module {
 
     public Module_WallSign(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.WALL_SIGN.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

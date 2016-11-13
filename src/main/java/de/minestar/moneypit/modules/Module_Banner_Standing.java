@@ -12,7 +12,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_Banner_Standing extends Module {
 
-    private final String NAME = "banner_standing";
+    private final Material TYPE = Material.STANDING_BANNER;
+    private final String NAME = TYPE.name();
 
     public Module_Banner_Standing(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -20,7 +21,7 @@ public class Module_Banner_Standing extends Module {
 
     public Module_Banner_Standing(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.STANDING_BANNER.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

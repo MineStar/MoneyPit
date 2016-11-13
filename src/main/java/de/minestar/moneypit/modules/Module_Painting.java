@@ -18,7 +18,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_Painting extends Module {
 
-    private final String NAME = "painting";
+    private final Material TYPE = Material.PAINTING;
+    private final String NAME = TYPE.name();
 
     public Module_Painting(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -27,7 +28,7 @@ public class Module_Painting extends Module {
 
     public Module_Painting(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.PAINTING.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
         this.setAutolock(false);
     }
 

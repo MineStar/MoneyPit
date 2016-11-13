@@ -7,14 +7,14 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_FenceGate_Wooden extends Module_FenceGate_Abstract {
 
-    private static final String NAME = "fencegate";
-    private static final int TYPE_ID = Material.FENCE_GATE.getId();
+    private static final Material TYPE = Material.FENCE_GATE;
+    private static final String NAME = TYPE.name();
 
     public Module_FenceGate_Wooden(YamlConfiguration ymlFile) {
         super(ymlFile, NAME);
     }
 
     public Module_FenceGate_Wooden(ModuleManager moduleManager, YamlConfiguration ymlFile) {
-        super(moduleManager, ymlFile, NAME, TYPE_ID);
+        super(moduleManager, ymlFile, NAME, TYPE);
     }
 }

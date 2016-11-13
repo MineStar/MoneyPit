@@ -14,7 +14,8 @@ import de.minestar.moneypit.utils.PhysicsHelper;
 
 public class Module_ItemFrame extends Module {
 
-    private final String NAME = "itemframe";
+    private final Material TYPE = Material.ITEM_FRAME;
+    private final String NAME = TYPE.name();
 
     public Module_ItemFrame(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -23,7 +24,7 @@ public class Module_ItemFrame extends Module {
 
     public Module_ItemFrame(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.ITEM_FRAME.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
         this.setAutolock(false);
     }
 

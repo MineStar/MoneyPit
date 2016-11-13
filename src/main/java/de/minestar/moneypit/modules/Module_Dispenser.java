@@ -9,7 +9,8 @@ import de.minestar.moneypit.manager.ModuleManager;
 
 public class Module_Dispenser extends Module {
 
-    private final String NAME = "dispenser";
+    private final Material TYPE = Material.DISPENSER;
+    private final String NAME = TYPE.name();
 
     public Module_Dispenser(YamlConfiguration ymlFile) {
         this.writeDefaultConfig(NAME, ymlFile);
@@ -17,7 +18,7 @@ public class Module_Dispenser extends Module {
 
     public Module_Dispenser(ModuleManager moduleManager, YamlConfiguration ymlFile) {
         super();
-        this.init(moduleManager, ymlFile, Material.DISPENSER.getId(), NAME);
+        this.init(moduleManager, ymlFile, TYPE, NAME);
     }
 
     @Override

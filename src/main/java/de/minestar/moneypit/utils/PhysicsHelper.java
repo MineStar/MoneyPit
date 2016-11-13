@@ -1,9 +1,8 @@
 package de.minestar.moneypit.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.bukkit.Material;
 
 import com.bukkit.gemo.patchworking.BlockVector;
 import com.bukkit.gemo.patchworking.IProtection;
@@ -11,25 +10,25 @@ import com.bukkit.gemo.patchworking.IProtection;
 import de.minestar.moneypit.MoneyPitCore;
 import de.minestar.moneypit.data.protection.Protection;
 
-@SuppressWarnings("deprecation")
 public class PhysicsHelper {
 
-    private static final Set<Integer> nonSolidStateBlocks = new HashSet<Integer>(Arrays.asList(6, 8, 9, 10, 11, 12, 13, 18, 26, 27, 28, 31, 32, 34, 37, 38, 39, 40, 46, 50, 51, 55, 59, 63, 64, 65, 66, 68, 69, 70, 71, 72, 75, 76, 77, 78, 79, 81, 83, 90, 93, 94, 96, 103, 104, 105, 106, 111, 115, 119, 122, 127, 131, 132, 140, 141, 142, 143, 144, 145, 147, 149, 150, 151, 160, 171, 175));
-
-    public static boolean isBlockNonSolid(int ID) {
-        return nonSolidStateBlocks.contains(ID);
-    }
+    public static boolean isBlockNonSolid(Material TYPE) {
+        if(!TYPE.isSolid()) return true;  // non solid Blocks
+        if(!TYPE.isBlock()) return true; // Liquids, etc
+        if(TYPE.hasGravity()) return true;  // gravel / sand
+        return false;
+     }
 
     public static ArrayList<IProtection> protectNonSolidBlocks(IProtection protection, BlockVector vectorBelowProtection, boolean saveToDatabase) {
         ArrayList<IProtection> list = new ArrayList<IProtection>();
         IProtection subProtection;
         BlockVector tempVector = vectorBelowProtection.getRelative(0, 0, 0);
-        if (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
+        if (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getType())) {
             int distance = 1;
             tempVector = tempVector.getRelative(0, -1, 0);
 
             // search all needed blocks
-            while (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getTypeId())) {
+            while (PhysicsHelper.isBlockNonSolid(tempVector.getLocation().getBlock().getType())) {
                 ++distance;
                 tempVector = tempVector.getRelative(0, -1, 0);
             }

@@ -11,41 +11,40 @@ import com.bukkit.gemo.patchworking.BlockVector;
 
 import de.minestar.moneypit.MoneyPitCore;
 
-@SuppressWarnings("deprecation")
 public class DoorHelper {
     private final static BlockFace[] faceList = new BlockFace[]{BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH};
 
-    private final static Set<Integer> doorIDs = new HashSet<Integer>() {
+    private final static Set<Material> doorIDs = new HashSet<Material>() {
 
         private static final long serialVersionUID = 9110227043191218219L;
 
         {
-            add(Material.WOODEN_DOOR.getId());
-            add(Material.IRON_DOOR_BLOCK.getId());
-            add(Material.SPRUCE_DOOR.getId());
-            add(Material.BIRCH_DOOR.getId());
-            add(Material.JUNGLE_DOOR.getId());
-            add(Material.ACACIA_DOOR.getId());
-            add(Material.DARK_OAK_DOOR.getId());
+            add(Material.WOODEN_DOOR);
+            add(Material.IRON_DOOR_BLOCK);
+            add(Material.SPRUCE_DOOR);
+            add(Material.BIRCH_DOOR);
+            add(Material.JUNGLE_DOOR);
+            add(Material.ACACIA_DOOR);
+            add(Material.DARK_OAK_DOOR);
         }
     };
 
-    private final static Set<Integer> trapDoorIDs = new HashSet<Integer>() {
+    private final static Set<Material> trapDoorIDs = new HashSet<Material>() {
 
         private static final long serialVersionUID = 9110227043191218219L;
 
         {
-            add(Material.TRAP_DOOR.getId());
-            add(Material.IRON_TRAPDOOR.getId());
+            add(Material.TRAP_DOOR);
+            add(Material.IRON_TRAPDOOR);
         }
     };
 
     public static boolean isDoor(Material material) {
-        return doorIDs.contains(material.getId());
+        return doorIDs.contains(material);
     }
 
     public static boolean isTrapDoor(Material material) {
-        return trapDoorIDs.contains(material.getId());
+        return trapDoorIDs.contains(material);
     }
 
     public static BlockVector getSecondDoor(BlockVector vector, int typeId) {
